@@ -1,0 +1,159 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f04/lists-detail.test.ts (7 tests | 7 failed) 3802ms
+   × NFR-01 anonymous access > TEST-11 / AC-08: every protected route returns 401 with no data when there is no session 19ms
+     → GET /api/requests: expected 404 to be 401 // Object.is equality
+   × F-04 lists, detail and history > TEST-35 / AC-27: a user lists only their own requests, newest first 555ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists, detail and history > TEST-36 / AC-28: detail for the owner has items, total, decision fields and history in order 534ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists, detail and history > TEST-37 / AC-29: the assigned approver can read the request 521ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists, detail and history > TEST-38 / AC-29: anyone else, including another approver, gets 404 and no data 266ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists, detail and history > TEST-39 / AC-30: the review queue holds only the caller's PENDING requests 546ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists, detail and history > TEST-40 / AC-30: an employee gets 403 and no data from the review queue 257ms
+     → expected 404 to be 403 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > NFR-01 anonymous access > TEST-11 / AC-08: every protected route returns 401 with no data when there is no session
+AssertionError: GET /api/requests: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:42:47
+     40|       const call = method === "GET" ? request(app).get(path) : request…
+     41|       const res = await call;
+     42|       expect(res.status, `${method} ${path}`).toBe(401);
+       |                                               ^
+     43|       expect(Object.keys(res.body), `${method} ${path}`).toEqual(["err…
+     44|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-35 / AC-27: a user lists only their own requests, newest first
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:57:26
+     55| 
+     56|     const listA = await a.get("/api/requests");
+     57|     expect(listA.status).toBe(200);
+       |                          ^
+     58|     const idsA = (listA.body.requests as { id: number }[]).map((r) => …
+     59|     expect(idsA.indexOf(second.id)).toBeLessThan(idsA.indexOf(first.id…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-36 / AC-28: detail for the owner has items, total, decision fields and history in order
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:75:24
+     73| 
+     74|     const res = await owner.get(`/api/requests/${pending.id}`);
+     75|     expect(res.status).toBe(200);
+       |                        ^
+     76|     const r = res.body.request;
+     77|     expect(r).toMatchObject({ title: "Detail check", status: "APPROVED…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-37 / AC-29: the assigned approver can read the request
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:92:24
+     90|     const approver = await loginAgent(APP_A);
+     91|     const res = await approver.get(`/api/requests/${pending.id}`);
+     92|     expect(res.status).toBe(200);
+       |                        ^
+     93|     expect(res.body.request.title).toBe("For Somchai");
+     94|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-38 / AC-29: anyone else, including another approver, gets 404 and no data
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:100:69
+     98|     const pending = await createPending(owner, ids[APP_A], { title: "P…
+     99|     // Control: the owner can read it, so a 404 for the others is a re…
+    100|     expect((await owner.get(`/api/requests/${pending.id}`)).status).to…
+       |                                                                     ^
+    101|     for (const email of [U2, APP_B]) {
+    102|       const agent = await loginAgent(email);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-39 / AC-30: the review queue holds only the caller's PENDING requests
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:121:24
+    119| 
+    120|     const res = await approver.get("/api/reviews");
+    121|     expect(res.status).toBe(200);
+       |                        ^
+    122|     const queue = res.body.requests as { id: number; title: string; re…
+    123|     const titles = queue.map((q) => q.title);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/f04/lists-detail.test.ts > F-04 lists, detail and history > TEST-40 / AC-30: an employee gets 403 and no data from the review queue
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f04/lists-detail.test.ts:134:24
+    132|     const employee = await loginAgent(U1);
+    133|     const res = await employee.get("/api/reviews");
+    134|     expect(res.status).toBe(403);
+       |                        ^
+    135|     expect(res.body.requests).toBeUndefined();
+    136|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  02:37:54
+   Duration  4.10s (transform 58ms, setup 0ms, collect 159ms, tests 3.80s, environment 0ms, prepare 37ms)
+
