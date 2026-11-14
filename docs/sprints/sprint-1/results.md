@@ -1,7 +1,7 @@
 # Sprint 1 Results
 
-Tested commit: `9adc825201035b42f31384bc762535fa65fe438b` on branch `feature/UI-requests` (working tree had uncommitted changes).
-Run started: 2026-11-14T19:45:33.957Z. Raw output: `docs/sprints/sprint-1/test-output/`.
+Tested commit: `95878ec3973dbdb1946e536ddefb706771050f2d` on branch `feature/UI-requests` (clean working tree).
+Run started: 2026-11-14T19:46:49.091Z. Raw output: `docs/sprints/sprint-1/test-output/`.
 
 ## Commands and counts
 
