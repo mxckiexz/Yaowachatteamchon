@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+playwright-report/
+test-results/
+artifacts/
+/BuyFlow_Deliverable1.pdf
+/_deliverable1.html
