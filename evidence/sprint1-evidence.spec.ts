@@ -1,5 +1,6 @@
 import { expect, request as pwRequest, test, type Page } from "@playwright/test";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { ACCOUNTS, DEMO_PASSWORD, loginAs, logout } from "../e2e/helpers/accounts";
 import { createDraftViaUi, submitViaUi } from "../e2e/helpers/requests";
 
@@ -13,6 +14,13 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(() => {
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
+  // Start from an empty list for the four demo accounts (local development database only).
+  const env = { ...process.env };
+  for (const line of readFileSync("server/.env", "utf8").split("\n")) {
+    const m = line.match(/^([A-Z_]+)="?(.*?)"?$/);
+    if (m && !(m[1] in env)) env[m[1]] = m[2];
+  }
+  execSync("npx tsx scripts/reset-demo-requests.ts", { cwd: "server", env, stdio: "inherit" });
 });
 
 const shot = (page: Page, name: string) => page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true });

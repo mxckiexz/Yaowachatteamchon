@@ -77,6 +77,10 @@ const resultsTail = "## Tests that are not" + results.split("## Tests that are n
 const testedCommit = (results.match(/Tested commit: `([0-9a-f]{40})`/) ?? [])[1] ?? "(unknown)";
 if (/NOT RUN|\| FAIL \||SKIPPED/.test(acTable)) warnings.push("results.md has a test that is not PASS");
 
+const afterTested = testedCommit.length === 40 ? git("diff", "--name-only", `${testedCommit}..HEAD`).split("\n").filter(Boolean) : [];
+const codeAfterTested = afterTested.filter((f) => /^(server|client|e2e)\/(src|tests|prisma)|^server\/src|^client\/src/.test(f));
+if (codeAfterTested.length) warnings.push(`code changed after the tested commit: ${codeAfterTested.join(", ")}`);
+
 const outputExcerpt = (file, n) => esc(read(`${S1}/test-output/${file}`).split("\n").filter((l) => /Test Files|Tests |Duration|^\$|# commit|passed|failed/.test(l)).slice(0, n).join("\n"));
 
 // Git history for the sequence of contracts, tests and implementation.
@@ -241,6 +245,7 @@ h3 { font-size: 11pt; margin: 5mm 0 1.5mm; break-after: avoid; }
 h4, h5 { font-size: 10pt; margin: 3mm 0 1mm; break-after: avoid; }
 p, li { margin: 1mm 0 2mm; }
 table { border-collapse: collapse; width: 100%; font-size: 8.4pt; line-height: 1.4; margin: 1mm 0 3mm; }
+td:first-child { white-space: nowrap; }
 th, td { text-align: left; vertical-align: top; padding: 1.1mm 1.6mm; border-bottom: 0.3pt solid #ccc; }
 th { font-weight: 700; }
 table tr { break-inside: avoid; }
@@ -273,7 +278,7 @@ const front = (pages) => `
 <tr><th>Theme and context</th><td>${esc(team.theme)}. ${esc(team.context)}</td></tr>
 <tr><th>Repository</th><td>${esc(team.repoUrl || "(repository URL to fill)")}</td></tr>
 <tr><th>Submitted release</th><td>${esc(releaseRef)}</td></tr>
-<tr><th>Tested commit</th><td>${esc(testedCommit)}</td></tr>
+<tr><th>Tested commit</th><td>${esc(testedCommit)}. Commits after it change only documents, results and evidence files (${afterTested.length} files, none in source or tests).</td></tr>
 </table>
 <h3>Navigation</h3>
 <table class="nav"><tr><th>Part</th><th>Pages</th><th>Relevant IDs</th></tr>
