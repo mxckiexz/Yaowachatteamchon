@@ -1,0 +1,18 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ✓ tests/f02/create-submit.test.ts (10 tests) 4548ms
+   ✓ F-02 create a request > TEST-13 / AC-11: creates a DRAFT, the server calculates the total and ignores a client total 303ms
+   ✓ F-02 submit a request > TEST-21 / AC-16: someone who is not the owner gets 404 and nothing changes 517ms
+   ✓ F-02 submit a request > TEST-23 / AC-17: the approver list holds active approvers except the caller 515ms
+ ✓ tests/f01/auth.test.ts (11 tests) 2873ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 512ms
+ ✓ tests/f01/password.test.ts (2 tests) 1040ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 760ms
+ ✓ tests/f02/money.test.ts (2 tests) 1ms
+
+ Test Files  4 passed (4)
+      Tests  25 passed (25)
+   Start at  02:36:05
+   Duration  9.11s (transform 54ms, setup 0ms, collect 225ms, tests 8.46s, environment 0ms, prepare 102ms)
+
