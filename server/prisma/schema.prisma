@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  APPROVER
+}
+
+enum RequestStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum HistoryAction {
+  CREATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  name             String
+  email            String            @unique
+  passwordHash     String
+  role             Role
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  sessions         Session[]
+  requested        PurchaseRequest[] @relation("Requester")
+  assigned         PurchaseRequest[] @relation("Approver")
+  historyEntries   RequestHistory[]
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+}
+
+model PurchaseRequest {
+  id              Int              @id @default(autoincrement())
+  requesterId     Int
+  approverId      Int?
+  title           String
+  justification   String           @default("")
+  status          RequestStatus    @default(DRAFT)
+  totalSatang     Int
+  createdAt       DateTime         @default(now())
+  submittedAt     DateTime?
+  decidedAt       DateTime?
+  decisionComment String?
+  requester       User             @relation("Requester", fields: [requesterId], references: [id], onDelete: Restrict)
+  approver        User?            @relation("Approver", fields: [approverId], references: [id], onDelete: Restrict)
+  items           RequestItem[]
+  history         RequestHistory[]
+
+  @@index([requesterId])
+  @@index([approverId, status])
+}
+
+model RequestItem {
+  id              Int             @id @default(autoincrement())
+  requestId       Int
+  name            String
+  quantity        Int
+  unitPriceSatang Int
+  request         PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model RequestHistory {
+  id         Int             @id @default(autoincrement())
+  requestId  Int
+  actorId    Int
+  action     HistoryAction
+  fromStatus RequestStatus?
+  toStatus   RequestStatus
+  comment    String?
+  createdAt  DateTime        @default(now())
+  request    PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  actor      User            @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt])
+}

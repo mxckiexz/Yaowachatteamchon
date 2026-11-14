@@ -1,6 +1,8 @@
 # Feature contract F-01: Authentication and session (with R-01, R-02)
 
-Contract version 1.0. Written before implementation.
+Contract version 1.1. Version 1.0 was written before implementation.
+
+Revision 1.1 (before F-01 implementation): TEST-12 now uses POST logout instead of POST create request, because the create route does not exist until F-02. The check is the same: a foreign Origin is rejected with 403. The anonymous check of every protected route (AC-08, TEST-11) is written when the last protected route exists, in the F-04 branch.
 
 Linked requirements: FR-01, NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-06. Rules: none of BR-01 to BR-11 apply directly. Depends on: R-01 (database, seed, configuration).
 
@@ -79,7 +81,7 @@ The response never contains `passwordHash`.
 | TEST-09 | AC-06 | API integration | Seeded users | Read stored `passwordHash` values | None equals the demo password; all start with `$2` |
 | TEST-10 | AC-07 | API integration | User with isActive false | POST login with correct password | 401, same message as TEST-02 |
 | TEST-11 | AC-08 | API integration | No cookie | Call every protected route (table of method and path) | Each returns 401; body has only the `error` field |
-| TEST-12 | AC-09 | API integration | Logged in | POST create request with Origin `http://evil.example` | 403 and no request is stored |
+| TEST-12 | AC-09 | API integration | Logged in | POST logout with Origin `http://evil.example` | 403 and the session is still valid (me returns 200) |
 | TEST-41 | AC-33 | API integration | none | POST login with a malformed JSON body | 400; body is JSON with an `error` string; no `stack`; no "at " trace text |
 | TEST-42 | AC-34 | API integration | No cookie | GET health | 200 `{ status: "ok" }` |
 | TEST-45 | AC-10 | UI end to end | Seeded accounts | Log in wrongly, then correctly, then log out | Error text shown; list page shown; login page shown |
