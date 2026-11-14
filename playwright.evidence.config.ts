@@ -9,8 +9,8 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   reporter: [["list"]],
-  use: { baseURL: "http://localhost:5173", viewport: { width: 1100, height: 700 } },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], viewport: { width: 1100, height: 700 } } }],
+  use: { baseURL: "http://localhost:5173", viewport: { width: 900, height: 480 } },
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], viewport: { width: 900, height: 480 } } }],
   webServer: [
     { command: "npm run dev", cwd: "server", url: "http://localhost:3000/api/health", reuseExistingServer: true, timeout: 30_000 },
     { command: "npm run dev", cwd: "client", url: "http://localhost:5173", reuseExistingServer: true, timeout: 30_000 },

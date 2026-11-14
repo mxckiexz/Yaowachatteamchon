@@ -140,9 +140,9 @@ ${scenarioMeta([
   ["Starting conditions", "Seeded demo accounts, no request with the new title"],
   ["Steps", "Employee fills the form with two items and saves a draft. Chooses Somchai and submits. Reloads the page. Approver opens the queue, approves with a comment. Employee opens the request."],
   ["Expected", "Draft with total 261.00 calculated by the server. Pending with approver Somchai and two history entries. Same data after reload. Approved with the comment and three history entries."],
-  ["Actual", "Matches the expected result in every step (figures 1 to 10 and the API outputs)."],
+  ["Actual", "Matches the expected result in every step (figures 1 to 9 and the API outputs)."],
 ])}
-<div class="grid2">
+<div>
 ${fig("s1-01-employee-list.png", "Employee list before the new request", 100)}
 ${fig("s1-02-new-request-form.png", "Form with two items and the estimated total", 100)}
 ${fig("s1-03-draft-detail.png", "Saved draft, total calculated by the server", 100)}
@@ -165,7 +165,7 @@ ${scenarioMeta([
   ["Expected", "422 REASON_REQUIRED and the request stays pending. Rejected. 409 ILLEGAL_TRANSITION. 422 SELF_REVIEW. 422 VALIDATION_ERROR with a message per field and nothing stored."],
   ["Actual", "Matches the expected result (figures and API outputs below)."],
 ])}
-<div class="grid2">
+<div>
 ${fig("s2-01-reject-without-reason.png", "Rejection without a reason is refused", 100)}
 ${fig("s2-03-rejected.png", "Rejection with a reason, final", 100)}
 ${fig("s2-06-validation-errors.png", "Server validation messages beside the fields", 100)}
@@ -184,7 +184,7 @@ ${scenarioMeta([
   ["Expected", "Error message. No review link, redirect, 403 from the API. Login page, 401 after logout. Request not found, 404 with no data. 401 with only an error field."],
   ["Actual", "Matches the expected result."],
 ])}
-<div class="grid2">
+<div>
 ${fig("s3-01-wrong-login.png", "Wrong password message", 100)}
 ${fig("s3-02-employee-no-review-link.png", "Employee has no review link", 100)}
 ${fig("s3-05-after-logout.png", "Login page after logout", 100)}
@@ -197,7 +197,7 @@ ${apiText("s3-08-api-other-approver.txt", "API output, unassigned approver reads
 ${apiText("s3-09-api-anonymous.txt", "API output, no session")}
 
 <h2>F.2 Build and automated test results</h2>
-<p>The Sprint 1 release was built and tested with the commands below. Output is in <code>${S1}/test-output/</code>. Tested commit: <code>${testedCommit}</code>.</p>
+<p>The Sprint 1 release was built and tested with the commands below. Output is in <code>${S1}/test-output/</code>.</p>
 ${marked.parse(resultsHead.split("\n").slice(2).join("\n"), { gfm: true })}
 <pre>${outputExcerpt("server-vitest.txt", 8)}</pre>
 <pre>${outputExcerpt("client-vitest.txt", 8)}</pre>
@@ -277,7 +277,7 @@ const front = (pages) => `
 </table>
 <h3>Navigation</h3>
 <table class="nav"><tr><th>Part</th><th>Pages</th><th>Relevant IDs</th></tr>
-${partOrder.map(([k, t, ids]) => `<tr><td>Part ${k}. ${esc(t)}</td><td class="pg">${pages.range[k] ?? "00 to 00"}</td><td>${esc(ids)}. Evidence for E is in Part F, ${pages.sub["F.1"] ?? "00"}.</td></tr>`).join("")}
+${partOrder.map(([k, t, ids]) => `<tr><td>Part ${k}. ${esc(t)}</td><td class="pg">${pages.range[k] ?? "00 to 00"}</td><td>${esc(ids)}${k === "E" ? `. Execution evidence for these contracts is in Part F, page ${pages.sub["F.1"] ?? "00"}` : ""}.</td></tr>`).join("")}
 </table>
 <h3>Contents</h3>
 <table class="toc">
