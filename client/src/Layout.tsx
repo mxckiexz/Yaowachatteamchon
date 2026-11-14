@@ -37,3 +37,10 @@ export default function Layout() {
     </>
   );
 }
+
+// UI convenience only: the API returns 403 for non-approvers on its own.
+export function RequireApprover({ children }: { children: JSX.Element }) {
+  const { user } = useAuth();
+  if (user?.role !== "APPROVER") return <Navigate to="/requests" replace />;
+  return children;
+}
