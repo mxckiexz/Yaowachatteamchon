@@ -1,0 +1,236 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f02/create-submit.test.ts (10 tests | 10 failed) 3992ms
+   × F-02 create a request > TEST-13 / AC-11: creates a DRAFT, the server calculates the total and ignores a client total 290ms
+     → expected 404 to be 201 // Object.is equality
+   × F-02 create a request > TEST-15 / AC-12: title boundaries (empty and 2 characters fail, 3 passes) and nothing is stored on failure 269ms
+     → expected 404 to be 422 // Object.is equality
+   × F-02 create a request > TEST-16 / AC-12: quantity boundaries (0, 1001, 1.5 fail; 1 and 1000 pass) and at least one item 260ms
+     → quantity 0: expected 404 to be 422 // Object.is equality
+   × F-02 create a request > TEST-17 / AC-12: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 258ms
+     → price 0: expected 404 to be 422 // Object.is equality
+   × F-02 submit a request > TEST-18 / AC-13: the owner submits a DRAFT to an active approver 263ms
+     → createDraft failed: 404 {}
+   × F-02 submit a request > TEST-19 / AC-14: a request cannot be assigned to its own requester (SELF_REVIEW) 257ms
+     → createDraft failed: 404 {}
+   × F-02 submit a request > TEST-20 / AC-15: an employee, an inactive approver and an unknown id are not valid approvers 268ms
+     → createDraft failed: 404 {}
+   × F-02 submit a request > TEST-21 / AC-16: someone who is not the owner gets 404 and nothing changes 256ms
+     → createDraft failed: 404 {}
+   × F-02 submit a request > TEST-22 / AC-16: submitting a request that is not a DRAFT gives 409 and changes nothing 257ms
+     → createDraft failed: 404 {}
+   × F-02 submit a request > TEST-23 / AC-17: the approver list holds active approvers except the caller 255ms
+     → expected 404 to be 200 // Object.is equality
+ ❯ tests/f02/money.test.ts (2 tests | 2 failed) 4ms
+   × F-02 money helpers (unit) > TEST-14 / AC-11: the total is the exact sum in satang (0.1 x 3 = 30 satang) 3ms
+     → expected +0 to be 30 // Object.is equality
+   × F-02 money helpers (unit) > TEST-24 / AC-11, AC-12: bahtToSatang accepts numbers and numeric strings with at most 2 decimals 0ms
+     → expected null to be 25050 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 create a request > TEST-13 / AC-11: creates a DRAFT, the server calculates the total and ignores a client total
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f02/create-submit.test.ts:37:24
+     35|       .set("Origin", ORIGIN)
+     36|       .send({ title: "Office supplies", justification: "Low stock", to…
+     37|     expect(res.status).toBe(201);
+       |                        ^
+     38|     expect(res.body.request.status).toBe("DRAFT");
+     39|     expect(res.body.request.total).toBe(261);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 create a request > TEST-15 / AC-12: title boundaries (empty and 2 characters fail, 3 passes) and nothing is stored on failure
+AssertionError: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-submit.test.ts:53:26
+     51|     for (const title of ["", "ab", "   a "]) {
+     52|       const res = await agent.post("/api/requests").set("Origin", ORIG…
+     53|       expect(res.status).toBe(422);
+       |                          ^
+     54|       expect(res.body.code).toBe("VALIDATION_ERROR");
+     55|       expect(res.body.fields.title).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 create a request > TEST-16 / AC-12: quantity boundaries (0, 1001, 1.5 fail; 1 and 1000 pass) and at least one item
+AssertionError: quantity 0: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-submit.test.ts:69:50
+     67|     for (const quantity of [0, 1001, 1.5, -1]) {
+     68|       const res = await post([{ name: "Pen", quantity, unitPrice: 5 }]…
+     69|       expect(res.status, `quantity ${quantity}`).toBe(422);
+       |                                                  ^
+     70|       expect(res.body.fields).toBeTruthy();
+     71|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 create a request > TEST-17 / AC-12: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass)
+AssertionError: price 0: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-submit.test.ts:85:52
+     83|     for (const price of [0, -1, 10.505, 1000000.01, "abc", null]) {
+     84|       const res = await post(price);
+     85|       expect(res.status, `price ${String(price)}`).toBe(422);
+       |                                                    ^
+     86|     }
+     87|     const low = await post(0.01);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-18 / AC-13: the owner submits a DRAFT to an active approver
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:16:33
+     14|     .set("Origin", ORIGIN)
+     15|     .send({ title: "Office supplies", justification: "Stock is low", i…
+     16|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     17|   return res.body.request as { id: number; status: string; total: numb…
+     18| }
+ ❯ tests/f02/create-submit.test.ts:99:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-19 / AC-14: a request cannot be assigned to its own requester (SELF_REVIEW)
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:16:33
+     14|     .set("Origin", ORIGIN)
+     15|     .send({ title: "Office supplies", justification: "Stock is low", i…
+     16|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     17|   return res.body.request as { id: number; status: string; total: numb…
+     18| }
+ ❯ tests/f02/create-submit.test.ts:116:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-20 / AC-15: an employee, an inactive approver and an unknown id are not valid approvers
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:16:33
+     14|     .set("Origin", ORIGIN)
+     15|     .send({ title: "Office supplies", justification: "Stock is low", i…
+     16|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     17|   return res.body.request as { id: number; status: string; total: numb…
+     18| }
+ ❯ tests/f02/create-submit.test.ts:127:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-21 / AC-16: someone who is not the owner gets 404 and nothing changes
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:16:33
+     14|     .set("Origin", ORIGIN)
+     15|     .send({ title: "Office supplies", justification: "Stock is low", i…
+     16|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     17|   return res.body.request as { id: number; status: string; total: numb…
+     18| }
+ ❯ tests/f02/create-submit.test.ts:139:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-22 / AC-16: submitting a request that is not a DRAFT gives 409 and changes nothing
+Error: createDraft failed: 404 {}
+ ❯ createDraft tests/helpers/requests.ts:16:33
+     14|     .set("Origin", ORIGIN)
+     15|     .send({ title: "Office supplies", justification: "Stock is low", i…
+     16|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     17|   return res.body.request as { id: number; status: string; total: numb…
+     18| }
+ ❯ Module.createPending tests/helpers/requests.ts:25:17
+ ❯ tests/f02/create-submit.test.ts:149:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/f02/create-submit.test.ts > F-02 submit a request > TEST-23 / AC-17: the approver list holds active approvers except the caller
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f02/create-submit.test.ts:161:24
+    159|     const asApprover = await loginAgent(APP_A);
+    160|     const res = await asApprover.get("/api/approvers");
+    161|     expect(res.status).toBe(200);
+       |                        ^
+    162|     const listed = (res.body.approvers as { id: number }[]).map((a) =>…
+    163|     expect(listed).toContain(ids[APP_B]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  tests/f02/money.test.ts > F-02 money helpers (unit) > TEST-14 / AC-11: the total is the exact sum in satang (0.1 x 3 = 30 satang)
+AssertionError: expected +0 to be 30 // Object.is equality
+
+- Expected
++ Received
+
+- 30
++ 0
+
+ ❯ tests/f02/money.test.ts:6:90
+      4| describe("F-02 money helpers (unit)", () => {
+      5|   it("TEST-14 / AC-11: the total is the exact sum in satang (0.1 x 3 =…
+      6|     expect(calculateTotalSatang([{ quantity: 3, unitPriceSatang: bahtT…
+       |                                                                                          ^
+      7|     expect(
+      8|       calculateTotalSatang([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  tests/f02/money.test.ts > F-02 money helpers (unit) > TEST-24 / AC-11, AC-12: bahtToSatang accepts numbers and numeric strings with at most 2 decimals
+AssertionError: expected null to be 25050 // Object.is equality
+
+- Expected: 
+25050
+
++ Received: 
+null
+
+ ❯ tests/f02/money.test.ts:17:33
+     15| 
+     16|   it("TEST-24 / AC-11, AC-12: bahtToSatang accepts numbers and numeric…
+     17|     expect(bahtToSatang(250.5)).toBe(25050);
+       |                                 ^
+     18|     expect(bahtToSatang("12")).toBe(1200);
+     19|     expect(bahtToSatang(0.01)).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+ Test Files  2 failed (2)
+      Tests  12 failed (12)
+   Start at  02:35:31
+   Duration  4.39s (transform 47ms, setup 0ms, collect 149ms, tests 4.00s, environment 0ms, prepare 64ms)
+
