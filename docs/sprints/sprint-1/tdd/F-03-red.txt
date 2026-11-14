@@ -1,0 +1,245 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f03/decision.test.ts (10 tests | 10 failed) 6315ms
+   × F-03 approver decision > TEST-25 / AC-19, AC-26: the assigned approver approves and one history row is written 564ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approver decision > TEST-26 / AC-20, AC-26: the assigned approver rejects with a reason 522ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approver decision > TEST-27 / AC-20: a rejection needs a reason of at least 5 characters 521ms
+     → comment undefined: expected 404 to be 422 // Object.is equality
+   × F-03 approver decision > TEST-28 / AC-21: an employee cannot use the decision route 523ms
+     → expected 404 to be 403 // Object.is equality
+   × F-03 approver decision > TEST-29 / AC-22: an approver who is not assigned cannot decide 522ms
+     → expected 404 to be 403 // Object.is equality
+   × F-03 approver decision > TEST-30 / AC-23: a requester cannot decide their own request even with the APPROVER role 259ms
+     → expected 404 to be 403 // Object.is equality
+   × F-03 approver decision > TEST-31 / AC-24: a decided request cannot be decided again 519ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approver decision > TEST-32 / AC-24: a DRAFT cannot be decided 515ms
+     → expected [ 403, 409 ] to include 404
+   × F-03 approver decision > TEST-33 / AC-25: two simultaneous decisions produce exactly one decision 776ms
+     → expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+   × F-03 approver decision > an unknown decision value is rejected 520ms
+     → expected 404 to be 422 // Object.is equality
+ ❯ tests/f03/transitions.test.ts (1 test | 1 failed) 4ms
+   × F-03 status transitions (unit) > TEST-34 / BR-01: only DRAFT to PENDING, PENDING to APPROVED and PENDING to REJECTED are allowed 4ms
+     → expected [] to deeply equal [ 'DRAFT>PENDING', …(2) ]
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-25 / AC-19, AC-26: the assigned approver approves and one history row is written
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/decision.test.ts:37:24
+     35|     const approver = await loginAgent(APP_A);
+     36|     const res = await decide(approver, request.id, "APPROVED", "OK");
+     37|     expect(res.status).toBe(200);
+       |                        ^
+     38|     expect(res.body.request).toMatchObject({ status: "APPROVED", decis…
+     39|     const row = await load(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-26 / AC-20, AC-26: the assigned approver rejects with a reason
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/decision.test.ts:50:24
+     48|     const approver = await loginAgent(APP_A);
+     49|     const res = await decide(approver, request.id, "REJECTED", "Over b…
+     50|     expect(res.status).toBe(200);
+       |                        ^
+     51|     expect(res.body.request).toMatchObject({ status: "REJECTED", decis…
+     52|     const row = await load(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-27 / AC-20: a rejection needs a reason of at least 5 characters
+AssertionError: comment undefined: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f03/decision.test.ts:62:56
+     60|     for (const comment of [undefined, "", "abcd", "    "]) {
+     61|       const res = await decide(approver, request.id, "REJECTED", comme…
+     62|       expect(res.status, `comment ${String(comment)}`).toBe(422);
+       |                                                        ^
+     63|       expect(res.body.code).toBe("REASON_REQUIRED");
+     64|       expect((await load(request.id)).status).toBe("PENDING");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-28 / AC-21: an employee cannot use the decision route
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f03/decision.test.ts:75:24
+     73|     const employee = await loginAgent(EMP);
+     74|     const res = await decide(employee, request.id, "APPROVED", "I appr…
+     75|     expect(res.status).toBe(403);
+       |                        ^
+     76|     const row = await load(request.id);
+     77|     expect(row.status).toBe("PENDING");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-29 / AC-22: an approver who is not assigned cannot decide
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f03/decision.test.ts:85:24
+     83|     const other = await loginAgent(APP_B);
+     84|     const res = await decide(other, request.id, "APPROVED", "Looks fin…
+     85|     expect(res.status).toBe(403);
+       |                        ^
+     86|     expect(res.body.code).toBe("NOT_ASSIGNED");
+     87|     expect((await load(request.id)).status).toBe("PENDING");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-30 / AC-23: a requester cannot decide their own request even with the APPROVER role
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f03/decision.test.ts:106:24
+    104|     const self = await loginAgent(APP_SELF);
+    105|     const res = await decide(self, row.id, "APPROVED", "Approved by me…
+    106|     expect(res.status).toBe(403);
+       |                        ^
+    107|     expect(res.body.code).toBe("SELF_APPROVAL");
+    108|     expect((await load(row.id)).status).toBe("PENDING");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-31 / AC-24: a decided request cannot be decided again
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/decision.test.ts:114:75
+    112|     const request = await pendingFor(APP_A);
+    113|     const approver = await loginAgent(APP_A);
+    114|     expect((await decide(approver, request.id, "APPROVED", "OK")).stat…
+       |                                                                           ^
+    115|     const again = await decide(approver, request.id, "REJECTED", "Chan…
+    116|     expect(again.status).toBe(409);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-32 / AC-24: a DRAFT cannot be decided
+AssertionError: expected [ 403, 409 ] to include 404
+ ❯ tests/f03/decision.test.ts:128:24
+    126|     const approver = await loginAgent(APP_A);
+    127|     const res = await decide(approver, draft.id, "APPROVED", "OK");
+    128|     expect([403, 409]).toContain(res.status);
+       |                        ^
+    129|     const row = await load(draft.id);
+    130|     expect(row.status).toBe("DRAFT");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > TEST-33 / AC-25: two simultaneous decisions produce exactly one decision
+AssertionError: expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+
+- Expected
++ Received
+
+  Array [
+-   200,
+-   409,
++   404,
++   404,
+  ]
+
+ ❯ tests/f03/decision.test.ts:142:41
+    140|       decide(second, request.id, "REJECTED", "No thanks"),
+    141|     ]);
+    142|     expect([a.status, b.status].sort()).toEqual([200, 409]);
+       |                                         ^
+    143|     const winner = a.status === 200 ? a : b;
+    144|     const row = await load(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/f03/decision.test.ts > F-03 approver decision > an unknown decision value is rejected
+AssertionError: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f03/decision.test.ts:153:24
+    151|     const approver = await loginAgent(APP_A);
+    152|     const res = await decide(approver, request.id, "MAYBE", "hmm hmm");
+    153|     expect(res.status).toBe(422);
+       |                        ^
+    154|     expect((await load(request.id)).status).toBe("PENDING");
+    155|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/f03/transitions.test.ts > F-03 status transitions (unit) > TEST-34 / BR-01: only DRAFT to PENDING, PENDING to APPROVED and PENDING to REJECTED are allowed
+AssertionError: expected [] to deeply equal [ 'DRAFT>PENDING', …(2) ]
+
+- Expected
++ Received
+
+- Array [
+-   "DRAFT>PENDING",
+-   "PENDING>APPROVED",
+-   "PENDING>REJECTED",
+- ]
++ Array []
+
+ ❯ tests/f03/transitions.test.ts:10:28
+      8|     const allowed: string[] = [];
+      9|     for (const from of STATUSES) for (const to of STATUSES) if (canTra…
+     10|     expect(allowed.sort()).toEqual(["DRAFT>PENDING", "PENDING>APPROVED…
+       |                            ^
+     11|   });
+     12| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+ Test Files  2 failed (2)
+      Tests  11 failed (11)
+   Start at  02:36:44
+   Duration  6.69s (transform 45ms, setup 0ms, collect 153ms, tests 6.32s, environment 0ms, prepare 57ms)
+
