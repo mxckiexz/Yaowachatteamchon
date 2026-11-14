@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ✓ tests/f01/auth.test.ts (11 tests) 2911ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 509ms
+ ✓ tests/f01/password.test.ts (2 tests) 1036ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 759ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  02:33:15
+   Duration  4.32s (transform 36ms, setup 0ms, collect 143ms, tests 3.95s, environment 0ms, prepare 58ms)
+
