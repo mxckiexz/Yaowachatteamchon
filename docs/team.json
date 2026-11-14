@@ -1,0 +1,12 @@
+{
+  "teamName": "",
+  "students": [
+    { "name": "", "id": "", "github": "" },
+    { "name": "", "id": "", "github": "" }
+  ],
+  "repoUrl": "",
+  "releaseTag": "",
+  "theme": "Theme 5: Workflow and Approval System",
+  "context": "Purchase requests in a small company (BuyFlow)",
+  "pullRequests": []
+}
