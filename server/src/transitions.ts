@@ -1,4 +1,11 @@
-// Stub for the red phase of F-03.
-export function canTransition(_from: string, _to: string): boolean {
-  return false;
+// BR-01: the only legal status changes in Sprint 1.
+const ALLOWED: Record<string, string[]> = {
+  DRAFT: ["PENDING"],
+  PENDING: ["APPROVED", "REJECTED"],
+  APPROVED: [],
+  REJECTED: [],
+};
+
+export function canTransition(from: string, to: string): boolean {
+  return (ALLOWED[from] ?? []).includes(to);
 }
