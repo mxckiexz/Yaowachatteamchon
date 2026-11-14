@@ -1,0 +1,14 @@
+$ npx playwright test
+# commit 3c2a5ff8063e83fb16d3da011fe38f076017bfea
+
+PASS  e2e/f01/login.spec.ts > TEST-45 / AC-10: wrong login shows an error, correct login reaches the list, logout returns to login
+PASS  e2e/f01/login.spec.ts > AC-10: an anonymous visit to a protected route is redirected to login
+PASS  e2e/f01/login.spec.ts > helper: login helper works for an approver and shows the review link
+PASS  e2e/requests/approver-journey.spec.ts > TEST-48 / AC-32: the approver approves one request and rejects another with a reason; the requester sees both
+PASS  e2e/requests/approver-journey.spec.ts > TEST-49 / AC-32, AC-21: an employee has no review link, is redirected from /reviews, and the API says 403
+PASS  e2e/requests/approver-journey.spec.ts > an approver cannot read another person's request by guessing its URL
+PASS  e2e/requests/employee-journey.spec.ts > TEST-46 / AC-18: an employee creates a draft with two items and submits it to an approver
+PASS  e2e/requests/employee-journey.spec.ts > TEST-46 / AC-12 in the UI: server validation messages appear beside the fields
+PASS  e2e/requests/employee-journey.spec.ts > TEST-47 / AC-31: saved data is still there after reloading the detail page and the list
+
+9 passed, 0 failed, 0 skipped
