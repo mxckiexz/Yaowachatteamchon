@@ -1,39 +1,39 @@
 $ cd server && npx vitest run
-# commit 3c2a5ff8063e83fb16d3da011fe38f076017bfea
+# commit 9adc825201035b42f31384bc762535fa65fe438b
 
 
  RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
 
- ✓ tests/f02/create-submit.test.ts (10 tests) 4600ms
+ ✓ tests/f02/create-submit.test.ts (10 tests) 4641ms
+   ✓ F-02 create a request > TEST-13 / AC-11: creates a DRAFT, the server calculates the total and ignores a client total 307ms
    ✓ F-02 submit a request > TEST-21 / AC-16: someone who is not the owner gets 404 and nothing changes 516ms
-   ✓ F-02 submit a request > TEST-23 / AC-17: the approver list holds active approvers except the caller 518ms
- ✓ tests/f03/decision.test.ts (10 tests) 6430ms
-   ✓ F-03 approver decision > TEST-25 / AC-19, AC-26: the assigned approver approves and one history row is written 624ms
-   ✓ F-03 approver decision > TEST-26 / AC-20, AC-26: the assigned approver rejects with a reason 528ms
-   ✓ F-03 approver decision > TEST-27 / AC-20: a rejection needs a reason of at least 5 characters 538ms
-   ✓ F-03 approver decision > TEST-28 / AC-21: an employee cannot use the decision route 520ms
-   ✓ F-03 approver decision > TEST-29 / AC-22: an approver who is not assigned cannot decide 521ms
-   ✓ F-03 approver decision > TEST-31 / AC-24: a decided request cannot be decided again 526ms
-   ✓ F-03 approver decision > TEST-32 / AC-24: a DRAFT cannot be decided 515ms
-   ✓ F-03 approver decision > TEST-33 / AC-25: two simultaneous decisions produce exactly one decision 785ms
-   ✓ F-03 approver decision > an unknown decision value is rejected 534ms
- ✓ tests/f04/lists-detail.test.ts (7 tests) 4532ms
+   ✓ F-02 submit a request > TEST-23 / AC-17: the approver list holds active approvers except the caller 524ms
+ ✓ tests/f03/decision.test.ts (10 tests) 6330ms
+   ✓ F-03 approver decision > TEST-25 / AC-19, AC-26: the assigned approver approves and one history row is written 560ms
+   ✓ F-03 approver decision > TEST-26 / AC-20, AC-26: the assigned approver rejects with a reason 532ms
+   ✓ F-03 approver decision > TEST-27 / AC-20: a rejection needs a reason of at least 5 characters 531ms
+   ✓ F-03 approver decision > TEST-28 / AC-21: an employee cannot use the decision route 518ms
+   ✓ F-03 approver decision > TEST-29 / AC-22: an approver who is not assigned cannot decide 522ms
+   ✓ F-03 approver decision > TEST-31 / AC-24: a decided request cannot be decided again 524ms
+   ✓ F-03 approver decision > TEST-32 / AC-24: a DRAFT cannot be decided 517ms
+   ✓ F-03 approver decision > TEST-33 / AC-25: two simultaneous decisions produce exactly one decision 788ms
+   ✓ F-03 approver decision > an unknown decision value is rejected 532ms
+ ✓ tests/f04/lists-detail.test.ts (7 tests) 4521ms
    ✓ F-04 lists, detail and history > TEST-35 / AC-27: a user lists only their own requests, newest first 549ms
-   ✓ F-04 lists, detail and history > TEST-36 / AC-28: detail for the owner has items, total, decision fields and history in order 534ms
-   ✓ F-04 lists, detail and history > TEST-37 / AC-29: the assigned approver can read the request 522ms
-   ✓ F-04 lists, detail and history > TEST-38 / AC-29: anyone else, including another approver, gets 404 and no data 1040ms
-   ✓ F-04 lists, detail and history > TEST-39 / AC-30: the review queue holds only the caller's PENDING requests 551ms
- ✓ tests/f01/auth.test.ts (11 tests) 2889ms
-   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 513ms
- ✓ tests/f01/password.test.ts (2 tests) 1157ms
-   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 763ms
-   ✓ F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 389ms
+   ✓ F-04 lists, detail and history > TEST-36 / AC-28: detail for the owner has items, total, decision fields and history in order 530ms
+   ✓ F-04 lists, detail and history > TEST-37 / AC-29: the assigned approver can read the request 520ms
+   ✓ F-04 lists, detail and history > TEST-38 / AC-29: anyone else, including another approver, gets 404 and no data 1042ms
+   ✓ F-04 lists, detail and history > TEST-39 / AC-30: the review queue holds only the caller's PENDING requests 546ms
+ ✓ tests/f01/auth.test.ts (11 tests) 2925ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 517ms
+ ✓ tests/f01/password.test.ts (2 tests) 1038ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 760ms
  ✓ tests/f02/money.test.ts (2 tests) 1ms
  ✓ tests/f03/transitions.test.ts (1 test) 1ms
 
  Test Files  7 passed (7)
       Tests  43 passed (43)
-   Start at  02:41:39
-   Duration  20.73s (transform 74ms, setup 0ms, collect 371ms, tests 19.61s, environment 1ms, prepare 174ms)
+   Start at  02:45:34
+   Duration  20.57s (transform 77ms, setup 0ms, collect 369ms, tests 19.46s, environment 1ms, prepare 175ms)
 
 JSON report written to /tmp/vitest-buyflow.json

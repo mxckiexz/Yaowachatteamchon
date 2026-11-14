@@ -1,5 +1,5 @@
 $ npx playwright test
-# commit 3c2a5ff8063e83fb16d3da011fe38f076017bfea
+# commit 9adc825201035b42f31384bc762535fa65fe438b
 
 PASS  e2e/f01/login.spec.ts > TEST-45 / AC-10: wrong login shows an error, correct login reaches the list, logout returns to login
 PASS  e2e/f01/login.spec.ts > AC-10: an anonymous visit to a protected route is redirected to login
