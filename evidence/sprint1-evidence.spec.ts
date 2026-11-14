@@ -1,7 +1,10 @@
 import { expect, request as pwRequest, test, type Page } from "@playwright/test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { ACCOUNTS, DEMO_PASSWORD, loginAs, logout } from "../e2e/helpers/accounts";
-import { createDraftViaUi, submitViaUi, uniqueTitle } from "../e2e/helpers/requests";
+import { createDraftViaUi, submitViaUi } from "../e2e/helpers/requests";
+
+// Short readable titles for the screenshots; the 4-letter tag keeps repeated runs apart.
+const uniqueTitle = (label: string) => `${label} ${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
 const OUT = "artifacts/sprint-1/evidence";
 const ORIGIN = "http://localhost:5173";
