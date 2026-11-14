@@ -171,3 +171,63 @@ requestRouter.post(
     res.json({ request: serializeRequest(full) });
   })
 );
+
+// F-04: my requests, newest first. FR-04, BR-03.
+requestRouter.get(
+  "/requests",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const rows = await getPrisma().purchaseRequest.findMany({
+      where: { requesterId: req.user!.id },
+      include: REQUEST_INCLUDE,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    });
+    res.json({
+      requests: rows.map((r) => {
+        const { id, title, status, total, createdAt, approver } = serializeRequest(r);
+        return { id, title, status, total, createdAt, approver };
+      }),
+    });
+  })
+);
+
+// F-04: review queue, PENDING requests assigned to the caller, oldest submission first. FR-05.
+requestRouter.get(
+  "/reviews",
+  requireAuth,
+  requireRole("APPROVER"),
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const rows = await getPrisma().purchaseRequest.findMany({
+      where: { approverId: req.user!.id, status: "PENDING" },
+      include: REQUEST_INCLUDE,
+      orderBy: [{ submittedAt: "asc" }, { id: "asc" }],
+    });
+    res.json({
+      requests: rows.map((r) => {
+        const { id, title, status, total, submittedAt, requester } = serializeRequest(r);
+        return { id, title, status, total, submittedAt, requester };
+      }),
+    });
+  })
+);
+
+// F-04: one request with items and history. Only the owner and the assigned approver may read it;
+// everyone else gets 404 so the request's existence is not revealed (BR-03). FR-04, FR-05, FR-07.
+requestRouter.get(
+  "/requests/:id",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const id = parseId(req.params.id);
+    if (id === null) return res.status(404).json(notFound);
+    const userId = req.user!.id;
+    const row = await getPrisma().purchaseRequest.findFirst({
+      where: { id, OR: [{ requesterId: userId }, { approverId: userId }] },
+      include: {
+        ...REQUEST_INCLUDE,
+        history: { include: { actor: { select: { id: true, name: true } } }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] },
+      },
+    });
+    if (!row) return res.status(404).json(notFound);
+    res.json({ request: serializeRequest(row) });
+  })
+);
