@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { app } from "../../src/app.js";
 import { getPrisma } from "../../src/prisma.js";
 import { cleanupUsers, createUser, FIXTURE_PASSWORD, loginAgent, ORIGIN } from "../helpers/fixtures.js";
-import { approve, createBody, createDraft, createSubmitted, loadRequest, reject, submit } from "../helpers/requests.js";
+import { createBody,createDraft, createSubmitted, loadRequest, reject, submit } from "../helpers/requests.js";
 
 const REQ = "q-req@test.local";
 const REQ2 = "q-req2@test.local";
@@ -80,6 +80,34 @@ describe("NFR-09 input is data (penetration-style checks, automated)", () => {
     expect(rejected.status).toBe(200);
     expect(rejected.body.request.status).toBe("REJECTED");
     expect((await loadRequest(r.id)).requesterId).toBe(ids[REQ]);
+
+    // Approve with forged server-owned fields: the decision is APPROVED and nothing else the client sent is kept.
+    const toApprove = await createSubmitted(await loginAgent(REQ));
+    const before = await loadRequest(toApprove.id);
+    const forged = {
+      comment: "Looks fine",
+      status: "REJECTED",
+      requesterId: ids[REQ2],
+      totalSatang: 1,
+      total: 1,
+      id: 1,
+      requestNumber: "PR-0000-0000",
+      rejectionReason: "forged rejection",
+      decidedAt: "2000-01-01T00:00:00.000Z",
+    };
+    const approved = await approver.post(`/api/requests/${toApprove.id}/approve`).set("Origin", ORIGIN).send(forged);
+    expect(approved.status).toBe(200);
+    expect(approved.body.request).toMatchObject({ id: toApprove.id, requestNumber: toApprove.requestNumber, status: "APPROVED", total: 201, rejectionReason: null });
+    expect(approved.body.request.requester.id).toBe(ids[REQ]);
+    const after = await loadRequest(toApprove.id);
+    expect(after.status).toBe("APPROVED");
+    expect(after.requesterId).toBe(ids[REQ]);
+    expect(after.requestNumber).toBe(before.requestNumber);
+    expect(after.totalSatang).toBe(before.totalSatang);
+    expect(after.rejectionReason).toBeNull();
+    expect(after.decidedAt!.getFullYear()).toBeGreaterThan(2000);
+    expect(after.history.map((h) => h.action)).toEqual(["CREATED", "SUBMITTED", "APPROVED"]);
+    expect(after.history.at(-1)).toMatchObject({ actorId: ids[APP], comment: "Looks fine" });
   });
 
   it("TEST-82 / AC-47: forged session cookies get 401 on protected routes and never a 500", async () => {
