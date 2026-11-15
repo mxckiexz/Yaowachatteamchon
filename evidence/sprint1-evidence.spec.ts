@@ -192,6 +192,7 @@ test("Scenario 4: the administrator", async ({ page }) => {
   }
   await page.getByRole("link", { name: "All requests" }).click();
   await expect(page.getByRole("heading", { name: "All requests (read only)" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^PR-/ }).first()).toBeVisible();
   await shot(page, "s4-04-admin-all-requests");
   const first = (await (await page.request.get("/api/requests?scope=all")).json()).requests[0];
   await apiCall(page, "s4-05-api-admin-approve", "POST", `/api/requests/${first.id}/approve`, { comment: "Admin may not decide" }, 403);
