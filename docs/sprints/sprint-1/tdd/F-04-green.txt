@@ -1,0 +1,61 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ✓ tests/f02/create-edit-submit.test.ts (16 tests) 12063ms
+   ✓ F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total 511ms
+   ✓ F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure 475ms
+   ✓ F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass) 477ms
+   ✓ F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 472ms
+   ✓ F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 484ms
+   ✓ F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 495ms
+   ✓ F-02 create > TEST-31 / AC-22: the administrator cannot create a request 453ms
+   ✓ F-02 create > TEST-32 / AC-22: an approver can create a request of their own 452ms
+   ✓ F-02 edit > TEST-23 / AC-16: the owner edits a DRAFT; the total is recalculated and the number stays 466ms
+   ✓ F-02 edit > TEST-24 / AC-17: only a DRAFT can be edited (SUBMITTED, APPROVED, REJECTED, CANCELLED are refused) 474ms
+   ✓ F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 1797ms
+   ✓ F-02 submit > TEST-26 / AC-18: the owner submits a complete DRAFT 458ms
+   ✓ F-02 submit > TEST-27 / AC-19: a draft without a reason or a category cannot be submitted (INCOMPLETE) 481ms
+   ✓ F-02 submit > TEST-28 / AC-20: submitting a request that is not a DRAFT gives 409 and changes nothing 462ms
+   ✓ F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 1347ms
+   ✓ F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 911ms
+ ✓ tests/f04/lists-detail-history.test.ts (8 tests) 12913ms
+   ✓ F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first 978ms
+   ✓ F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first 1853ms
+   ✓ F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue 910ms
+   ✓ F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them 2337ms
+   ✓ F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order 947ms
+   ✓ F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft 936ms
+   ✓ F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data 1005ms
+   ✓ F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail 1657ms
+ ✓ tests/f03/approve-reject.test.ts (10 tests) 12143ms
+   ✓ F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 984ms
+   ✓ F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 958ms
+   ✓ F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 935ms
+   ✓ F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 1409ms
+   ✓ F-03 approve and reject > TEST-40 / AC-27: an approver cannot approve or reject their own request 473ms
+   ✓ F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 917ms
+   ✓ F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 924ms
+   ✓ F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 1385ms
+   ✓ F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 911ms
+   ✓ F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 1396ms
+ ✓ tests/f01/auth.test.ts (12 tests) 6494ms
+   ✓ F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash 488ms
+   ✓ F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message 508ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 940ms
+   ✓ F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session 489ms
+   ✓ F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent 457ms
+   ✓ F-01 authentication > TEST-07 / AC-05: an expired session gives 401 589ms
+   ✓ F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in 601ms
+   ✓ F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once 473ms
+   ✓ F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives 472ms
+ ✓ tests/f02/money-validation.unit.test.ts (4 tests) 3ms
+ ✓ tests/f01/password.test.ts (2 tests) 1837ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 1353ms
+   ✓ F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 477ms
+ ✓ tests/f03/transitions.test.ts (1 test) 2ms
+
+ Test Files  7 passed (7)
+      Tests  53 passed (53)
+   Start at  14:40:20
+   Duration  47.92s (transform 140ms, setup 0ms, collect 801ms, tests 45.46s, environment 1ms, prepare 348ms)
+

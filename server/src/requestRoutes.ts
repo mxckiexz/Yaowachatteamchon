@@ -3,7 +3,7 @@ import { requireAuth, requireRole, type AuthedRequest } from "./auth.js";
 import { asyncHandler, parseId } from "./http.js";
 import { calculateTotalSatang, satangToBaht } from "./money.js";
 import { getPrisma } from "./prisma.js";
-import { REQUEST_INCLUDE, serializeRequest } from "./requestView.js";
+import { HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
 import { validateRequestInput } from "./validation.js";
 
@@ -206,3 +206,87 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
 
 requestRouter.post("/requests/:id/approve", requireAuth, requireRole("APPROVER"), decisionHandler("APPROVED"));
 requestRouter.post("/requests/:id/reject", requireAuth, requireRole("APPROVER"), decisionHandler("REJECTED"));
+
+// F-04: who may read a request (BR-12). The owner; an approver for every request that is not a draft;
+// the administrator for all. Everyone else gets "not found".
+function visibilityWhere(user: { id: number; role: string }) {
+  if (user.role === "ADMIN") return {};
+  if (user.role === "APPROVER") return { OR: [{ requesterId: user.id }, { status: { not: "DRAFT" as const } }] };
+  return { requesterId: user.id };
+}
+
+// F-04: lists. scope=mine (default), scope=review (approvers: submitted requests of others), scope=all (administrator).
+requestRouter.get(
+  "/requests",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const scope = req.query.scope === undefined ? "mine" : String(req.query.scope);
+    const user = req.user!;
+    let where: object;
+    let orderBy: object[];
+    if (scope === "mine") {
+      where = { requesterId: user.id };
+      orderBy = [{ createdAt: "desc" }, { id: "desc" }];
+    } else if (scope === "review") {
+      if (user.role !== "APPROVER") return res.status(403).json({ error: "You do not have permission to perform this action.", code: "FORBIDDEN" });
+      where = { status: "SUBMITTED", requesterId: { not: user.id } };
+      orderBy = [{ submittedAt: "asc" }, { id: "asc" }];
+    } else if (scope === "all") {
+      if (user.role !== "ADMIN") return res.status(403).json({ error: "You do not have permission to perform this action.", code: "FORBIDDEN" });
+      where = {};
+      orderBy = [{ createdAt: "desc" }, { id: "desc" }];
+    } else {
+      return res.status(422).json({ error: "scope must be mine, review or all.", code: "VALIDATION_ERROR", fields: { scope: "Unknown scope." } });
+    }
+    const rows = await getPrisma().purchaseRequest.findMany({ where, include: REQUEST_INCLUDE, orderBy: orderBy as any });
+    res.json({
+      requests: rows.map((r) => {
+        const s = serializeRequest(r);
+        return {
+          id: s.id,
+          requestNumber: s.requestNumber,
+          itemName: s.itemName,
+          quantity: s.quantity,
+          total: s.total,
+          category: s.category,
+          status: s.status,
+          createdAt: s.createdAt,
+          submittedAt: s.submittedAt,
+          requester: s.requester,
+        };
+      }),
+    });
+  })
+);
+
+// F-04: one request with its history. FR-04, FR-06, FR-10, FR-11, FR-12, BR-12.
+requestRouter.get(
+  "/requests/:id",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const id = parseId(req.params.id);
+    if (id === null) return res.status(404).json(notFound);
+    const row = await getPrisma().purchaseRequest.findFirst({
+      where: { id, ...visibilityWhere(req.user!) },
+      include: { ...REQUEST_INCLUDE, ...HISTORY_INCLUDE },
+    });
+    if (!row) return res.status(404).json(notFound);
+    res.json({ request: serializeRequest(row) });
+  })
+);
+
+// F-04: the history alone, same visibility as the detail. FR-11.
+requestRouter.get(
+  "/requests/:id/history",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const id = parseId(req.params.id);
+    if (id === null) return res.status(404).json(notFound);
+    const row = await getPrisma().purchaseRequest.findFirst({
+      where: { id, ...visibilityWhere(req.user!) },
+      include: HISTORY_INCLUDE,
+    });
+    if (!row) return res.status(404).json(notFound);
+    res.json({ history: (row.history ?? []).map(serializeHistory) });
+  })
+);
