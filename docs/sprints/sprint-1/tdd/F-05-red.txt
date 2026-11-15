@@ -1,0 +1,181 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f05/admin-users.test.ts (7 tests | 7 failed) 6205ms
+   × F-05 administrator, user management > TEST-61 / AC-39: the administrator lists users without any password hash 679ms
+     → expected 404 to be 200 // Object.is equality
+   × F-05 administrator, user management > TEST-62 / AC-39: a requester and an approver get 403 and no data, and cannot change a user 510ms
+     → f05-req@test.local: expected 404 to be 403 // Object.is equality
+   × F-05 administrator, user management > TEST-63 / AC-40: after the administrator deactivates a user, they cannot log in and their session stops at once 927ms
+     → expected 404 to be 200 // Object.is equality
+   × F-05 administrator, user management > TEST-64 / AC-41: the administrator reactivates a user, who can then log in 464ms
+     → expected 404 to be 200 // Object.is equality
+   × F-05 administrator, user management > TEST-65 / AC-41: the role can be changed to a valid value; invalid values and an empty body give 422 476ms
+     → expected 404 to be 200 // Object.is equality
+   × F-05 administrator, user management > TEST-66 / AC-42: the administrator cannot change their own account 456ms
+     → {"isActive":false}: expected 404 to be 409 // Object.is equality
+   × F-05 administrator, user management > TEST-67 / AC-43: an unknown id gives 404 and an invalid body gives 422 709ms
+     → expected 404 to be 422 // Object.is equality
+ ❯ tests/f01/protected-routes.test.ts (1 test | 1 failed) 71ms
+   × NFR-01 anonymous access > TEST-12 / AC-08: every protected route returns 401 with no data when there is no session 70ms
+     → GET /api/admin/users: expected 404 to be 401 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f01/protected-routes.test.ts > NFR-01 anonymous access > TEST-12 / AC-08: every protected route returns 401 with no data when there is no session
+AssertionError: GET /api/admin/users: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f01/protected-routes.test.ts:30:47
+     28|       if (method === "PATCH") call = request(app).patch(path).set("Ori…
+     29|       const res = await call;
+     30|       expect(res.status, `${method} ${path}`).toBe(401);
+       |                                               ^
+     31|       expect(Object.keys(res.body), `${method} ${path}`).toEqual(["err…
+     32|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-61 / AC-39: the administrator lists users without any password hash
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:32:24
+     30|     const admin = await loginAgent(ADM);
+     31|     const res = await admin.get("/api/admin/users");
+     32|     expect(res.status).toBe(200);
+       |                        ^
+     33|     const target = res.body.users.find((u: any) => u.email === TARGET);
+     34|     expect(target).toMatchObject({ id: ids[TARGET], name: "Target", ro…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-62 / AC-39: a requester and an approver get 403 and no data, and cannot change a user
+AssertionError: f05-req@test.local: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:43:34
+     41|       const agent = await loginAgent(email);
+     42|       const list = await agent.get("/api/admin/users");
+     43|       expect(list.status, email).toBe(403);
+       |                                  ^
+     44|       expect(list.body.users).toBeUndefined();
+     45|       expect((await patch(agent, ids[TARGET], { isActive: false })).st…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-63 / AC-40: after the administrator deactivates a user, they cannot log in and their session stops at once
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:56:24
+     54|     const admin = await loginAgent(ADM);
+     55|     const res = await patch(admin, ids[TARGET], { isActive: false });
+     56|     expect(res.status).toBe(200);
+       |                        ^
+     57|     expect(res.body.user).toMatchObject({ id: ids[TARGET], isActive: f…
+     58|     expect((await user.get("/api/auth/me")).status).toBe(401);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-64 / AC-41: the administrator reactivates a user, who can then log in
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:65:74
+     63|   it("TEST-64 / AC-41: the administrator reactivates a user, who can t…
+     64|     const admin = await loginAgent(ADM);
+     65|     expect((await patch(admin, ids[TARGET], { isActive: true })).statu…
+       |                                                                          ^
+     66|     const login = await request(app).post("/api/auth/login").set("Orig…
+     67|     expect(login.status).toBe(200);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-65 / AC-41: the role can be changed to a valid value; invalid values and an empty body give 422
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:73:23
+     71|     const admin = await loginAgent(ADM);
+     72|     const ok = await patch(admin, ids[TARGET], { role: "APPROVER" });
+     73|     expect(ok.status).toBe(200);
+       |                       ^
+     74|     expect(ok.body.user.role).toBe("APPROVER");
+     75|     for (const body of [{ role: "BOSS" }, { role: "" }, { role: 5 }, {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-66 / AC-42: the administrator cannot change their own account
+AssertionError: {"isActive":false}: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:87:48
+     85|     for (const body of [{ isActive: false }, { role: "REQUESTER" }]) {
+     86|       const res = await patch(admin, ids[ADM], body);
+     87|       expect(res.status, JSON.stringify(body)).toBe(409);
+       |                                                ^
+     88|       expect(res.body.code).toBe("SELF_CHANGE");
+     89|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-67 / AC-43: an unknown id gives 404 and an invalid body gives 422
+AssertionError: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f05/admin-users.test.ts:99:24
+     97|     expect((await patch(admin, "abc", { isActive: false })).status).to…
+     98|     const bad = await patch(admin, ids[TARGET], { isActive: "yes" });
+     99|     expect(bad.status).toBe(422);
+       |                        ^
+    100|     expect(bad.body.code).toBe("VALIDATION_ERROR");
+    101|     expect((await stored(TARGET)).isActive).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+ Test Files  2 failed (2)
+      Tests  8 failed (8)
+   Start at  14:41:34
+   Duration  7.19s (transform 91ms, setup 0ms, collect 433ms, tests 6.28s, environment 0ms, prepare 126ms)
+

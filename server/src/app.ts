@@ -14,6 +14,7 @@ import {
   type AuthedRequest,
 } from "./auth.js";
 import { getPrisma } from "./prisma.js";
+import { adminRouter } from "./adminRoutes.js";
 import { requestRouter } from "./requestRoutes.js";
 
 export const app = express();
@@ -82,6 +83,7 @@ app.get("/api/auth/me", requireAuth, (req: AuthedRequest, res) => {
 });
 
 app.use("/api", requestRouter);
+app.use("/api", adminRouter);
 
 // R-02: safe error handling. No stack traces, SQL or file paths reach the client.
 app.use((error: Error & { type?: string; status?: number }, _req: Request, res: Response, _next: NextFunction) => {
