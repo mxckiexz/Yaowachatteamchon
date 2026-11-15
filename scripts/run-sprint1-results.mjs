@@ -66,13 +66,21 @@ try {
 // Planned tests from the contracts.
 const dir = "docs/sprints/sprint-1";
 const planned = [];
-for (const f of readdirSync(dir).filter((n) => /^[FQ]-\d+/.test(n)).sort()) {
+for (const f of readdirSync(dir).filter((n) => /^[FQ]-.+\.md$/.test(n)).sort()) {
   for (const line of readFileSync(`${dir}/${f}`, "utf8").split("\n")) {
     const m = line.match(/^\| (TEST-\d+) \| ([^|]+) \| ([^|]+) \|/);
-    if (m) planned.push({ id: m[1], ac: m[2].trim(), level: m[3].trim(), feature: f.split("-").slice(0, 2).join("-") });
+    if (m) planned.push({ id: m[1], ac: m[2].trim(), level: m[3].trim(), feature: f.replace(/\.md$/, "") });
   }
 }
 planned.sort((a, b) => Number(a.id.slice(5)) - Number(b.id.slice(5)));
+
+// Every executed test that names a TEST id must be in a contract table, or the results would silently omit it.
+const plannedIds = new Set(planned.map((p) => p.id));
+const unplanned = [...new Set(results.flatMap((r) => r.title.match(/\bTEST-\d+\b/g) ?? []))].filter((id) => !plannedIds.has(id));
+if (unplanned.length > 0) {
+  console.error(`ERROR: executed tests not found in any contract table: ${unplanned.join(", ")}`);
+  process.exit(1);
+}
 
 const rows = planned.map((p) => {
   const hits = results.filter((r) => new RegExp(`\\b${p.id}\\b`).test(r.title));
