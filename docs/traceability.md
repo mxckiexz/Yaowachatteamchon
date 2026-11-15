@@ -1,42 +1,71 @@
-# BuyFlow Traceability Matrix
+# PurchaseFlow Traceability Matrix
 
-Version 1.0 (planning). Requirement, feature or responsibility, sprint, acceptance criteria and planned tests. Actual results are recorded after the Sprint 1 run in `docs/sprints/sprint-1/results.md`. Later sprints have a feature and a sprint now; their AC and tests are written before those sprints.
+Version 2.0 (planning). Requirement, feature or responsibility, sprint, acceptance criteria and planned tests. Actual results are recorded after the Sprint 1 run in `docs/sprints/sprint-1/results.md`. Later sprints have a feature and a sprint now; their AC and tests are written before those sprints.
 
 | Requirement | Feature or responsibility | Sprint | AC | Planned tests |
 |---|---|---|---|---|
-| FR-01 | F-01 Authentication | 1 | AC-01 to AC-05, AC-07, AC-10 | TEST-01 to 07, TEST-10, TEST-45 (UI) |
-| FR-02 | F-02 Create request | 1 | AC-11, AC-12, AC-18 | TEST-13 to 17, TEST-24, TEST-46 (UI) |
-| FR-03 | F-02 Submit request | 1 | AC-13 to AC-17 | TEST-18 to 23 |
-| FR-04 | F-04 Lists and detail | 1 | AC-27, AC-28, AC-31 | TEST-35, 36, 47 (UI) |
-| FR-05 | F-04 Approver queue | 1 | AC-29, AC-30, AC-32 | TEST-37, 39, 40, 48, 49 (UI) |
-| FR-06 | F-03 Decision | 1 | AC-19 to AC-22, AC-32 | TEST-25 to 29, 48, 49 (UI) |
-| FR-07 | F-04 History | 1 | AC-26, AC-28 | TEST-25, 36 |
-| FR-08 | F-05 | 2 | planned | planned |
-| FR-09 | F-06 | 2 | planned | planned |
-| FR-10 | F-07 | 2 | planned | planned |
-| FR-11 | F-08 | 2 | planned | planned |
-| FR-12 | F-09 | 3 | planned | planned |
-| FR-13 | F-10 | 3 | planned | planned |
-| FR-14 | F-11 | 3 | planned | planned |
-| BR-01 | F-02, F-03 | 1 | AC-16, AC-24 | TEST-22, 31, 32, 34 |
-| BR-02 | F-02 | 1 | AC-11, AC-12 | TEST-13 to 17, 24 |
-| BR-03 | F-04 | 1 | AC-29 | TEST-37, 38 |
-| BR-04 | F-02, F-03 | 1 | AC-14, AC-23 | TEST-19, 30 |
-| BR-05 | F-02, F-03 | 1 | AC-15, AC-22 | TEST-20, 29 |
-| BR-06 | F-03 | 1 | AC-20 | TEST-26, 27 |
-| BR-07 | F-03 | 1 | AC-24, AC-25 | TEST-31, 32, 33 |
-| BR-08 | F-03, F-04 | 1 | AC-26 | TEST-25, 36 |
-| BR-09 | F-02 | 1 | AC-16 | TEST-21, 22 |
-| BR-10 | F-05 | 2 | planned | planned |
-| BR-11 | F-09 | 3 | planned | planned |
-| NFR-01 | F-01 | 1 | AC-08 | TEST-11 |
-| NFR-02 | F-01 | 1 | AC-06 | TEST-08, 09 |
-| NFR-03 | F-01 | 1 | AC-04, AC-05 | TEST-06, 07 |
-| NFR-04 | R-02 | 1 | AC-09, AC-33 | TEST-12, 41 |
-| NFR-05 | R-01 | 1 | manual | Manual check M-01 in README procedure |
-| NFR-06 | R-01 | 1 | AC-34 | TEST-42 |
-| NFR-07 | R-03, F-08 | 2 | planned | planned |
+| FR-01 | F-02 | 1 | AC-13 to AC-15, AC-22, AC-23 | TEST-16 to 22, 31, 32, 71 |
+| FR-02 | F-02 | 1 | AC-16, AC-17, AC-23 | TEST-23 to 25, 71 |
+| FR-03 | F-02 | 1 | AC-18 to AC-20, AC-23 | TEST-26 to 29, 71 |
+| FR-04 | F-04 | 1 | AC-33, AC-38 | TEST-51, 74 |
+| FR-05 | F-06 | 2 | planned | planned |
+| FR-06 | F-04 | 1 | AC-34, AC-35 | TEST-52, 53, 55 |
+| FR-07 | F-03 | 1 | AC-24, AC-28, AC-32 | TEST-36, 41, 72 |
+| FR-08 | F-03 | 1 | AC-25, AC-32 | TEST-37, 38, 72 |
+| FR-09 | F-03 | 1 | AC-25 | TEST-37, 54 |
+| FR-10 | F-04 | 1 | AC-33, AC-35 | TEST-51, 54 |
+| FR-11 | F-03, F-04 | 1 | AC-24, AC-25, AC-36 | TEST-36, 37, 54, 57 |
+| FR-12 | F-04 | 1 | AC-35 | TEST-56 |
+| FR-13 | F-03 | 1 | AC-26, AC-32 | TEST-39, 73 |
+| FR-14 | F-02 | 1 | AC-17 | TEST-25 |
+| FR-15 | F-05 | 1 | AC-39 to AC-44 | TEST-61 to 67, 75 |
+| FR-16 | F-01 | 1 | AC-01 to AC-05, AC-12 | TEST-01 to 07, 70 |
+| FR-17 | F-07 | 2 | planned | planned |
+| FR-18 | F-08 | 2 | planned | planned |
+| FR-19 | F-09 | 2 | planned | planned |
+| FR-20 | F-10 | 2 | planned | planned |
+| FR-21 | F-11 | 2 | planned | planned |
+| FR-22 | F-12 | 2 | planned | planned |
+| FR-23 | F-13 | 3 | planned | planned |
+| FR-24 | F-14 | 3 | planned | planned |
+| FR-25 | F-15 | 3 | planned | planned |
+| FR-26 | F-16 | 3 | planned | planned |
+| FR-27 | F-17 | 3 | planned | planned |
+| FR-28 | F-18 | 3 | planned | planned |
+| BR-01 | F-02 | 1 | AC-14 | TEST-18, 34 |
+| BR-02 | F-02 | 1 | AC-14 | TEST-18, 34 |
+| BR-03 | F-02 | 1 | AC-14 | TEST-19, 34 |
+| BR-04 | F-02 | 1 | AC-14 | TEST-20, 33, 34 |
+| BR-05 | F-02 | 1 | AC-13 | TEST-16, 17, 23 |
+| BR-06 | F-02 | 1 | AC-19 | TEST-27 |
+| BR-07 | F-03 | 1 | AC-27 | TEST-40 |
+| BR-08 | F-03 | 1 | AC-29 | TEST-42, 43, 44 |
+| BR-09 | F-03 | 1 | AC-25 | TEST-38 |
+| BR-10 | F-02 | 1 | AC-17 | TEST-24 |
+| BR-11 | F-02, F-03, F-04 | 1 | AC-18, AC-24, AC-25, AC-36 | TEST-26, 36, 37, 54, 57 |
+| BR-12 | F-04 | 1 | AC-35, AC-37 | TEST-55, 56, 58 |
+| BR-13 | F-01, F-05 | 1 | AC-07, AC-40 | TEST-10, 11, 63 |
+| BR-14 | F-02 | 1 | AC-15 | TEST-22 |
+| BR-15 | F-02 | 1 | AC-14 | TEST-21, 34 |
+| BR-16 | F-05 | 1 | AC-42 | TEST-66 |
+| BR-17 | F-03 | 1 | AC-30 | TEST-45 |
+| BR-18 | F-02 | 1 | AC-17, AC-20 | TEST-25, 29 |
+| BR-19 | F-13 | 3 | planned | planned |
+| BR-20 | F-14 | 3 | planned | planned |
+| NFR-01 | F-01 | 1 | AC-08, AC-26, AC-34, AC-37, AC-39 | TEST-12, 39, 53, 58, 62 |
+| NFR-02 | F-04 | 1 | AC-35 | TEST-55, 56 |
+| NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |
+| NFR-04 | R-02 | 1 | AC-10, AC-14, AC-48 | TEST-14, 18 to 21, 83 |
+| NFR-05 | R-06 | 1 | AC-53 | TEST-88 |
+| NFR-06 | F-02, F-03 | 1 | AC-18, AC-24, AC-25, AC-29, AC-31 | TEST-26, 36, 37, 42 to 44, 46 |
+| NFR-07 | F-04 | 1 | AC-33, AC-38 | TEST-51, 74 |
+| NFR-08 | F-02 | 1 | AC-21 | TEST-30 |
+| NFR-09 | R-02, R-05 | 1 | AC-45 to AC-51 | TEST-80 to 86 |
+| NFR-10 | R-06 | 1 | AC-52, AC-53 | TEST-87, 88 |
+| NFR-11 | R-01 | 1 | AC-11 | TEST-15, manual check M-01 |
+| NFR-12 | R-03, F-07, R-05 | 2 (early check in 1) | AC-54, AC-55 (early); formal AC planned | TEST-89, 90 (early); formal planned |
+| NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
 
-None in the baseline. FR-08 to FR-14, BR-10, BR-11 and NFR-07 have no executable tests yet because their sprints have not started. This is planned, not forgotten.
+None in the baseline. FR-05, FR-17 to FR-28, BR-19, BR-20 and the formal NFR-12 measurement have no executable tests yet because their sprints have not started. This is planned, not forgotten.
