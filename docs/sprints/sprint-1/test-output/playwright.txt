@@ -1,5 +1,5 @@
 $ npx playwright test
-# commit 1d8a590dab6ed2f220c49ce93cfe2e5a7de6fd12
+# commit 7995a3503fa6ea24775f7109a96b48f5885d7793
 
 PASS  e2e/admin/users.spec.ts > TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected
 PASS  e2e/f01/login.spec.ts > TEST-70 / AC-12: wrong login shows an error, correct login reaches the role's first screen, logout returns to login
