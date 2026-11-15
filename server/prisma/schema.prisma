@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  REQUESTER
+  APPROVER
+  ADMIN
+}
+
+enum RequestStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum HistoryAction {
+  CREATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum Category {
+  EQUIPMENT
+  SOFTWARE
+  FURNITURE
+  STATIONERY
+  OTHER
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  name           String
+  email          String            @unique
+  passwordHash   String
+  role           Role
+  isActive       Boolean           @default(true)
+  createdAt      DateTime          @default(now())
+  sessions       Session[]
+  requests       PurchaseRequest[]
+  historyEntries RequestHistory[]
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+}
+
+model PurchaseRequest {
+  id              Int              @id @default(autoincrement())
+  requestNumber   String           @unique
+  requesterId     Int
+  itemName        String
+  description     String
+  quantity        Int
+  unitPriceSatang Int
+  totalSatang     Int
+  reason          String           @default("")
+  category        Category?
+  status          RequestStatus    @default(DRAFT)
+  rejectionReason String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  submittedAt     DateTime?
+  decidedAt       DateTime?
+  requester       User             @relation(fields: [requesterId], references: [id], onDelete: Restrict)
+  history         RequestHistory[]
+
+  @@index([requesterId])
+  @@index([status, submittedAt])
+}
+
+model RequestHistory {
+  id         Int             @id @default(autoincrement())
+  requestId  Int
+  actorId    Int
+  action     HistoryAction
+  fromStatus RequestStatus?
+  toStatus   RequestStatus
+  comment    String?
+  createdAt  DateTime        @default(now())
+  request    PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  actor      User            @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt])
+}
