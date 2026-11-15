@@ -1,0 +1,180 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f04/lists-detail-history.test.ts (8 tests | 8 failed) 9721ms
+   × F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first 982ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first 1404ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue 447ms
+     → f04-a@test.local: expected 404 to be 403 // Object.is equality
+   × F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them 1354ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order 928ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft 912ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data 459ms
+     → expected 404 to be 200 // Object.is equality
+   × F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail 906ms
+     → expected 404 to be 200 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:37:26
+     35| 
+     36|     const listA = await a.get("/api/requests");
+     37|     expect(listA.status).toBe(200);
+       |                          ^
+     38|     const idsA = idsOf(listA);
+     39|     expect(idsA.indexOf(second.id)).toBeLessThan(idsA.indexOf(first.id…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:60:24
+     58| 
+     59|     const res = await approver.get("/api/requests?scope=review");
+     60|     expect(res.status).toBe(200);
+       |                        ^
+     61|     const list = idsOf(res);
+     62|     expect(list).toContain(first.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue
+AssertionError: f04-a@test.local: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:75:33
+     73|     for (const email of [A, ADM]) {
+     74|       const res = await (await loginAgent(email)).get("/api/requests?s…
+     75|       expect(res.status, email).toBe(403);
+       |                                 ^
+     76|       expect(res.body.requests).toBeUndefined();
+     77|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:86:24
+     84|     const admin = await loginAgent(ADM);
+     85|     const res = await admin.get("/api/requests?scope=all");
+     86|     expect(res.status).toBe(200);
+       |                        ^
+     87|     expect(idsOf(res)).toEqual(expect.arrayContaining([draft.id, sub.i…
+     88|     expect((await admin.get(`/api/requests/${draft.id}`)).status).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:107:24
+    105| 
+    106|     const res = await owner.get(`/api/requests/${approved.id}`);
+    107|     expect(res.status).toBe(200);
+       |                        ^
+    108|     const r = res.body.request;
+    109|     expect(r).toMatchObject({ itemName: "Detail approved", status: "AP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:126:23
+    124|     const approver = await loginAgent(APP);
+    125|     const ok = await approver.get(`/api/requests/${submitted.id}`);
+    126|     expect(ok.status).toBe(200);
+       |                       ^
+    127|     expect(ok.body.request.itemName).toBe("Approver may read");
+    128|     const no = await approver.get(`/api/requests/${draft.id}`);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:139:69
+    137|     const request = await createSubmitted(owner, { itemName: "Private …
+    138|     // Control: the owner can read it, so the 404 for the other reques…
+    139|     expect((await owner.get(`/api/requests/${request.id}`)).status).to…
+       |                                                                     ^
+    140|     const res = await (await loginAgent(B)).get(`/api/requests/${reque…
+    141|     expect(res.status).toBe(404);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f04/lists-detail-history.test.ts:156:26
+    154|     for (const agent of [owner, approver]) {
+    155|       const res = await agent.get(`/api/requests/${request.id}/history…
+    156|       expect(res.status).toBe(200);
+       |                          ^
+    157|       expect(res.body.history.map((h: any) => h.action)).toEqual(["CRE…
+    158|       expect(res.body.history[2]).toMatchObject({ comment: "Not needed…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  14:39:55
+   Duration  10.12s (transform 72ms, setup 0ms, collect 213ms, tests 9.72s, environment 0ms, prepare 52ms)
+
