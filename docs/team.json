@@ -13,7 +13,7 @@
     }
   ],
   "repoUrl": "https://github.com/mxckiexz/Yaowachatteamchon",
-  "releaseTag": "",
+  "releaseTag": "sprint-1-release",
   "theme": "Theme 5: Workflow and Approval System",
   "context": "PurchaseFlow: equipment purchase approval system",
   "pullRequests": [
@@ -26,7 +26,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I reviewed the Spec 2.0 contract and found no blocking issues. The SRS, feature inventory, traceability, system SDS and Sprint 1 contracts are consistent with the PurchaseFlow proposal. The roles, ownership rules, status transitions, self-approval restriction, append-only approval history, server-calculated totals, protected routes and negative cases are clearly specified.",
       "mergedIntoStaging": "2026-11-15 (merge commit eed7c0d)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#14",
@@ -37,7 +37,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I completed a detailed review of PR #22 for F-01 Authentication, Sessions, Health Route, Safe Errors, Seed and Login Screen. I found no blocking implementation issue. The login flow uses bcrypt with an adequate cost, performs a dummy comparison for unknown accounts, returns the same error for wrong, unknown and inactive users, creates UUID-backed eight-hour sessions, invalidates sessions after logout or ... (excerpt; full text on the PR)",
       "mergedIntoStaging": "2026-11-15 (merge commit 24a9080)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#15",
@@ -48,7 +48,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I reviewed PR #23 against the F-02 contract and AC-13 to AC-23. The API and database implementation is correct for the reviewed scope. Request creation, server-calculated totals, BIGINT storage, sequence-backed request numbers, field validation, draft editing, owner isolation, submit completeness checks, history creation, administrator restrictions and concurrent request-number generation are all covered by the ... (excerpt; full text on the PR)",
       "mergedIntoStaging": "2026-11-15 (merge commit 7b560a9)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#16",
@@ -59,7 +59,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "Approved. The server-side approval and rejection behavior is correct. The related UI and browser coverage will be reviewed in PR #27.",
       "mergedIntoStaging": "2026-11-15 (merge commit 887ca37)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#17",
@@ -70,7 +70,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I reviewed PR #25 against the F-04 contract and AC-33 to AC-38. The server implementation is correct for the required visibility rules. scope=mine is owner-scoped and newest-first; scope=review is restricted to APPROVER and returns only submitted requests from other users, oldest submission first; scope=all is restricted to ADMIN.",
       "mergedIntoStaging": "2026-11-15 (merge commit c3d080d)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#18",
@@ -81,7 +81,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I reviewed PR #26 against the F-05 contract and AC-39 to AC-44. The server-side implementation correctly restricts both admin routes to ADMIN users, excludes passwordHash from all responses, validates isActive and role, returns the specified 404/422 errors, prevents an administrator from changing their own account with SELF_CHANGE, and immediately invalidates an inactive user's existing session through requireAuth.",
       "mergedIntoStaging": "2026-11-15 (merge commit 93b3ced)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#19",
@@ -92,7 +92,7 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "I reviewed the UI implementation against AC-12, AC-23, AC-32, AC-38 and AC-44. The screens cover the required requester, approver and administrator flows: login/logout and role redirects, creating and editing drafts, server-calculated totals, incomplete-submit errors, request detail and ordered history, approval and rejection panels, administrator read-only lists, and user activation/role management.",
       "mergedIntoStaging": "2026-11-15 (merge commit 1940e21)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     },
     {
       "issue": "#20",
@@ -103,7 +103,18 @@
       "reviewer": "Thanwarat1303",
       "reviewComment": "Requested two changes first (Q contract missing from results.md, TEST-81 did not exercise approve). After the fixes: Reviewed again after the fixes. Both previously reported issues are resolved: - run-sprint1-results.mjs now discovers all F-*.md and Q-*.md contracts, including Q-quality-checks.md. It also fails when an executed TEST ID is missing from the contract tables. - results.md now contains all 79 planned tests, including TEST-80 through TEST-92, and all are marked PASS.",
       "mergedIntoStaging": "2026-11-15 (merge commit 9ac453e)",
-      "mergedIntoMain": ""
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
+    },
+    {
+      "issue": "#13 to #20",
+      "number": "#29",
+      "feature": "Release of sprint-1/staging to main",
+      "branch": "release/sprint-1",
+      "author": "mxckiexz",
+      "reviewer": "Thanwarat1303",
+      "reviewComment": "Approved. The previous blocking issues are resolved: - docs/team.json now contains the team name, both students’ names, IDs and GitHub accounts. - The contribution table is completed and matches the actual Issue and pull-request review history. - The AI-use declaration now records supervision by both students. - releaseTag and mergedIntoMain are correctly left empty until the release is merged into main. The PR and ... (excerpt; full text on the PR)",
+      "mergedIntoStaging": "not applicable",
+      "mergedIntoMain": "2026-11-15 (release PR #29, merge commit 1fa292c)"
     }
   ]
 }
