@@ -1,6 +1,6 @@
 # BuyFlow Feature Inventory
 
-Version 1.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a system responsibility (R-xx).
+Version 1.1 (adds R-05 and R-06 for NFR-08 and NFR-09). Every baseline FR, BR and NFR is covered by a feature (F-xx) or a system responsibility (R-xx).
 
 ## 1. Features
 
@@ -23,8 +23,10 @@ Version 1.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a s
 | ID | Responsibility | Description | Requirements | Sprint |
 |---|---|---|---|---|
 | R-01 | Platform foundation | Database schema, migrations, reproducible seed, environment configuration, health route. | NFR-05, NFR-06 | 1 |
-| R-02 | Safe error handling | JSON errors without stack traces or database details, request origin check. | NFR-04 | 1 |
+| R-02 | Safe error handling | JSON errors without stack traces or database details, request origin check, no technology header, basic protective headers. | NFR-04, NFR-08 | 1 |
 | R-03 | Performance check | Script that measures list response time with 200 requests. | NFR-07 | 2 |
+| R-05 | Quality checks | Security, performance smoke, concurrency smoke and regression checks. | NFR-07 (early), NFR-08 | 1 |
+| R-06 | Accessible UI conventions | Labels, contrast, keyboard use and narrow-screen layout of all screens. | NFR-09 | 1 |
 | R-04 | Deployment readiness | Dockerfile, CI and cloud deployment (Lab 5). The design in Sprint 1 only keeps configuration in environment variables. | NFR-06 | Lab 5 |
 
 ## 3. Coverage gaps and approved changes
@@ -35,4 +37,4 @@ No baseline requirement is without a feature or responsibility.
 |---|---|
 | Sprint 2 and Sprint 3 features | Planned. Contracts are written before each sprint, not now. |
 | R-04 | Verified in Lab 5, not in Deliverable 1. |
-| Approved changes | None yet. |
+| Approved changes | SRS 1.1: NFR-08 and NFR-09 added, with R-05 and R-06 (Sprint 1). |

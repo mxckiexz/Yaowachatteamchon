@@ -1,6 +1,6 @@
 # BuyFlow Traceability Matrix
 
-Version 1.0 (planning). Requirement, feature or responsibility, sprint, acceptance criteria and planned tests. Actual results are recorded after the Sprint 1 run in `docs/sprints/sprint-1/results.md`. Later sprints have a feature and a sprint now; their AC and tests are written before those sprints.
+Version 1.1 (planning; NFR-08 and NFR-09 added). Requirement, feature or responsibility, sprint, acceptance criteria and planned tests. Actual results are recorded after the Sprint 1 run in `docs/sprints/sprint-1/results.md`. Later sprints have a feature and a sprint now; their AC and tests are written before those sprints.
 
 | Requirement | Feature or responsibility | Sprint | AC | Planned tests |
 |---|---|---|---|---|
@@ -18,8 +18,8 @@ Version 1.0 (planning). Requirement, feature or responsibility, sprint, acceptan
 | FR-12 | F-09 | 3 | planned | planned |
 | FR-13 | F-10 | 3 | planned | planned |
 | FR-14 | F-11 | 3 | planned | planned |
-| BR-01 | F-02, F-03 | 1 | AC-16, AC-24 | TEST-22, 31, 32, 34 |
-| BR-02 | F-02 | 1 | AC-11, AC-12 | TEST-13 to 17, 24 |
+| BR-01 | F-02, F-03 | 1 | AC-16, AC-24, AC-36, AC-46 | TEST-22, 31, 32, 34, 51, 61 |
+| BR-02 | F-02 | 1 | AC-11, AC-12, AC-45, AC-47 | TEST-13 to 17, 24, 60, 62 |
 | BR-03 | F-04 | 1 | AC-29 | TEST-37, 38 |
 | BR-04 | F-02, F-03 | 1 | AC-14, AC-23 | TEST-19, 30 |
 | BR-05 | F-02, F-03 | 1 | AC-15, AC-22 | TEST-20, 29 |
@@ -29,13 +29,15 @@ Version 1.0 (planning). Requirement, feature or responsibility, sprint, acceptan
 | BR-09 | F-02 | 1 | AC-16 | TEST-21, 22 |
 | BR-10 | F-05 | 2 | planned | planned |
 | BR-11 | F-09 | 3 | planned | planned |
-| NFR-01 | F-01 | 1 | AC-08 | TEST-11 |
+| NFR-01 | F-01 | 1 | AC-08, AC-37 | TEST-11, 52 |
 | NFR-02 | F-01 | 1 | AC-06 | TEST-08, 09 |
-| NFR-03 | F-01 | 1 | AC-04, AC-05 | TEST-06, 07 |
-| NFR-04 | R-02 | 1 | AC-09, AC-33 | TEST-12, 41 |
+| NFR-03 | F-01 | 1 | AC-04, AC-05, AC-39 | TEST-06, 07, 54 |
+| NFR-04 | R-02 | 1 | AC-09, AC-33, AC-38 | TEST-12, 41, 53 |
 | NFR-05 | R-01 | 1 | manual | Manual check M-01 in README procedure |
 | NFR-06 | R-01 | 1 | AC-34 | TEST-42 |
-| NFR-07 | R-03, F-08 | 2 | planned | planned |
+| NFR-07 | R-03, F-08, R-05 | 2 (early check in 1) | AC-44, AC-45 (early); formal AC planned | TEST-59, 60 (early); formal planned |
+| NFR-08 | R-02, R-05 | 1 | AC-35 to AC-41 | TEST-50 to 56 |
+| NFR-09 | R-06 | 1 | AC-42, AC-43 | TEST-57, 58 |
 
 ## Uncovered requirements
 

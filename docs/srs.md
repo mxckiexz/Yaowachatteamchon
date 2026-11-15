@@ -1,7 +1,7 @@
 # BuyFlow Software Requirements Specification (SRS)
 
 Theme 5: Workflow and Approval System. Context: internal purchase requests in a small company.
-Document version 1.0, written before Sprint 1 implementation.
+Document version 1.1. Version 1.0 was written before Sprint 1 implementation; 1.1 adds NFR-08 and NFR-09 (see the change log).
 
 ## 1. Stakeholder problem and context
 
@@ -88,7 +88,9 @@ In scope for the whole product:
 | NFR-04 | Errors return a JSON message without stack traces or database details. | API test with malformed input. | 1 |
 | NFR-05 | A new developer can run the product locally from a fresh clone by following the README in at most 8 commands. | Documented procedure run on a clean database. | 1 |
 | NFR-06 | The product reads all configuration (database URL, port, allowed origin) from environment variables, exposes `GET /api/health`, and keeps all durable data in the database so it can be packaged with Docker later. | API test for the health route; design review against the SDS. | 1 |
-| NFR-07 | The request list for one user with 200 requests responds in under 500 ms on a local machine (median of 20 calls). | Measured by a script in Sprint 2. | 2 |
+| NFR-07 | The request list for one user with 200 requests responds in under 500 ms on a local machine (median of 20 calls). | Early smoke check in Sprint 1 (TEST-59); the formal measurement script is Sprint 2. | 2 |
+| NFR-08 | Text typed by users is treated as data: SQL metacharacters never change a query, HTML or script in text is shown as text and never executed, fields owned by the server cannot be set by the client, and the API does not announce its technology and sends basic protective headers. | API tests (TEST-50 to 55) and a browser test (TEST-56). | 1 |
+| NFR-09 | The main screens have no serious or critical automated accessibility violations (WCAG 2.1 A and AA rules of axe-core), work at 375 px width without horizontal scrolling, and the login works by keyboard alone. | Browser tests (TEST-57, 58). | 1 |
 
 ## 8. Assumptions
 
@@ -116,3 +118,4 @@ In scope for the whole product:
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | Sprint 1 planning | First complete baseline. |
+| 1.1 | Sprint 1, before the quality tests were written | Added NFR-08 (input handling and basic hardening) and NFR-09 (accessibility, narrow screen, keyboard) after the team decided to add security and accessibility checks. NFR-07 now has an early smoke check in Sprint 1. Contract: `docs/sprints/sprint-1/Q-quality-checks.md`. |

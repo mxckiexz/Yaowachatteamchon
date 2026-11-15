@@ -66,7 +66,7 @@ try {
 // Planned tests from the contracts.
 const dir = "docs/sprints/sprint-1";
 const planned = [];
-for (const f of readdirSync(dir).filter((n) => /^F-\d+/.test(n)).sort()) {
+for (const f of readdirSync(dir).filter((n) => /^[FQ]-\d+/.test(n)).sort()) {
   for (const line of readFileSync(`${dir}/${f}`, "utf8").split("\n")) {
     const m = line.match(/^\| (TEST-\d+) \| ([^|]+) \| ([^|]+) \|/);
     if (m) planned.push({ id: m[1], ac: m[2].trim(), level: m[3].trim(), feature: f.split("-").slice(0, 2).join("-") });
