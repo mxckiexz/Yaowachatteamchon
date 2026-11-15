@@ -1,0 +1,227 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f03/approve-reject.test.ts (10 tests | 10 failed) 10996ms
+   × F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 967ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 906ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 912ms
+     → reason undefined: expected 404 to be 422 // Object.is equality
+   × F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 905ms
+     → f03-req@test.local approve: expected 404 to be 403 // Object.is equality
+   × F-03 approve and reject > TEST-40 / AC-27: an approver cannot approve or reject their own request 459ms
+     → expected 404 to be 403 // Object.is equality
+   × F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 905ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 902ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 904ms
+     → expected 404 to be 200 // Object.is equality
+   × F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 907ms
+     → expected 404 to be 409 // Object.is equality
+   × F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 1352ms
+     → expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+ ✓ tests/f03/transitions.test.ts (1 test) 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:33:24
+     31|     const approver = await loginAgent(APP);
+     32|     const res = await approve(approver, request.id, "OK");
+     33|     expect(res.status).toBe(200);
+       |                        ^
+     34|     expect(res.body.request.status).toBe("APPROVED");
+     35|     const row = await loadRequest(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:46:24
+     44|     const approver = await loginAgent(APP);
+     45|     const res = await reject(approver, request.id, "Over budget");
+     46|     expect(res.status).toBe(200);
+       |                        ^
+     47|     expect(res.body.request).toMatchObject({ status: "REJECTED", rejec…
+     48|     const row = await loadRequest(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters
+AssertionError: reason undefined: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:59:54
+     57|     for (const reason of [undefined, "", "abcd", "    "]) {
+     58|       const res = await reject(approver, request.id, reason);
+     59|       expect(res.status, `reason ${String(reason)}`).toBe(422);
+       |                                                      ^
+     60|       expect(res.body.code).toBe("REASON_REQUIRED");
+     61|       expect((await loadRequest(request.id)).status).toBe("SUBMITTED");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject
+AssertionError: f03-req@test.local approve: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:72:90
+     70|     for (const email of [REQ, ADM]) {
+     71|       const agent = await loginAgent(email);
+     72|       expect((await approve(agent, request.id, "I approve")).status, `…
+       |                                                                                          ^
+     73|       expect((await reject(agent, request.id, "I reject it")).status, …
+     74|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-40 / AC-27: an approver cannot approve or reject their own request
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:84:22
+     82|     const own = await createSubmitted(approver);
+     83|     const a = await approve(approver, own.id, "Approved by me");
+     84|     expect(a.status).toBe(403);
+       |                      ^
+     85|     expect(a.body.code).toBe("SELF_APPROVAL");
+     86|     const r = await reject(approver, own.id, "Rejected by me");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:96:24
+     94|     const second = await loginAgent(APP2);
+     95|     const res = await approve(second, request.id);
+     96|     expect(res.status).toBe(200);
+       |                        ^
+     97|     expect(res.body.request.status).toBe("APPROVED");
+     98|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:103:64
+    101|     const request = await submittedRequest();
+    102|     const approver = await loginAgent(APP);
+    103|     expect((await approve(approver, request.id, "OK")).status).toBe(20…
+       |                                                                ^
+    104|     const again = await reject(approver, request.id, "Changed my mind"…
+    105|     expect(again.status).toBe(409);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:116:64
+    114|     // Control: the approver can decide a submitted request, so a 404 …
+    115|     const control = await submittedRequest();
+    116|     expect((await approve(approver, control.id, "OK")).status).toBe(20…
+       |                                                                ^
+    117|     const draft = await createDraft(await loginAgent(REQ));
+    118|     expect((await approve(approver, draft.id, "OK")).status).toBe(404);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/f03/approve-reject.test.ts:127:64
+    125|     await getPrisma().purchaseRequest.update({ where: { id: request.id…
+    126|     const approver = await loginAgent(APP);
+    127|     expect((await approve(approver, request.id, "OK")).status).toBe(40…
+       |                                                                ^
+    128|     expect((await loadRequest(request.id)).status).toBe("CANCELLED");
+    129|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision
+AssertionError: expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+
+- Expected
++ Received
+
+  Array [
+-   200,
+-   409,
++   404,
++   404,
+  ]
+
+ ❯ tests/f03/approve-reject.test.ts:136:41
+    134|     const second = await loginAgent(APP2);
+    135|     const [a, b] = await Promise.all([approve(first, request.id, "Go a…
+    136|     expect([a.status, b.status].sort()).toEqual([200, 409]);
+       |                                         ^
+    137|     const winner = a.status === 200 ? a : b;
+    138|     const row = await loadRequest(request.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  10 failed | 1 passed (11)
+   Start at  14:38:25
+   Duration  11.61s (transform 73ms, setup 0ms, collect 222ms, tests 11.00s, environment 0ms, prepare 94ms)
+
