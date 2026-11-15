@@ -115,7 +115,7 @@ Component tests CT-01 to CT-12 (client), the API test of HTML text kept as typed
 
 | ID | Check | Result |
 |---|---|---|
-| M-01 | NFR-11: a fresh clone and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, \`npm run dev\` started the API, health returned 200, a seeded approver could log in, and \`npm test\` passed in server and client | PENDING (to be run on the release commit and recorded here) |
+| M-01 | NFR-11: a fresh clone (commit cb75eeb) and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): both migrations applied, seed ran, \`npm run dev\` started the API, health returned 200, a seeded approver could log in, and \`npm test\` passed in server (71) and client (14) | PASS (run 2026-11-15) |
 `;
 writeFileSync(`${dir}/results.md`, md);
 console.log(md.split("\n").slice(0, 14).join("\n"));
