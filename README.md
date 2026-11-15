@@ -54,10 +54,13 @@ All four share the local demo password from `SEED_DEFAULT_PASSWORD` in `server/.
 ## Tests
 
 ```bash
-cd server && npm test          # API and unit tests (needs the database)
-cd client && npm test          # component tests
-npx playwright test            # end-to-end tests (starts the API and client, seeds demo accounts)
+npm --prefix server test       # API, security and unit tests (needs the database)
+npm --prefix client test       # component and unit tests
+npx playwright test            # browser tests: journeys, XSS, accessibility, narrow screen (starts the API and client, seeds demo accounts)
+npm run test:all               # all three, one after another (the regression run)
 ```
+
+`docs/sprints/sprint-1/test-strategy.md` explains which kinds of testing are covered (unit, integration, end to end, QA, UAT, UI and UX, performance, load, penetration, regression) and which are not claimed. Defects found and known limitations are in `docs/qa-defect-log.md`; UAT cases for Lab 6 are in `docs/uat/uat-cases.md`.
 
 Environment variables are listed in `server/.env.example` and described in `docs/system-sds.md` section 7.
 

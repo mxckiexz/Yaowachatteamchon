@@ -81,6 +81,8 @@ const afterTested = testedCommit.length === 40 ? git("diff", "--name-only", `${t
 const codeAfterTested = afterTested.filter((f) => /^(server|client|e2e)\/(src|tests|prisma)|^server\/src|^client\/src/.test(f));
 if (codeAfterTested.length) warnings.push(`code changed after the tested commit: ${codeAfterTested.join(", ")}`);
 
+const measured = esc(read(`${S1}/test-output/server-vitest.txt`).split("\n").filter((l) => /^TEST-(59|60) /.test(l)).join("\n"));
+
 const outputExcerpt = (file, n) => esc(read(`${S1}/test-output/${file}`).split("\n").filter((l) => /Test Files|Tests |Duration|^\$|# commit|passed|failed/.test(l)).slice(0, n).join("\n"));
 
 // Git history for the sequence of contracts, tests and implementation.
@@ -111,12 +113,12 @@ const resultLine = (id) => (acTable.split("\n").find((l) => l.startsWith(`| ${id
 const scenarioMeta = (rows) => `<table class="meta">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>`;
 
 const partOrder = [
-  ["A", "SRS and product scope", "FR-01 to FR-14, BR-01 to BR-11, NFR-01 to NFR-07, D-01 to D-08"],
-  ["B", "Feature inventory and traceability", "F-01 to F-11, R-01 to R-04, every FR, BR, NFR"],
+  ["A", "SRS and product scope", "FR-01 to FR-14, BR-01 to BR-11, NFR-01 to NFR-09, D-01 to D-08"],
+  ["B", "Feature inventory and traceability", "F-01 to F-11, R-01 to R-06, every FR, BR, NFR"],
   ["C", "System-Level SDS", "Stack, data model, API, roles, configuration, deployment plan"],
   ["D", "Three-sprint plan", "Sprint 1 (F-01 to F-04), Sprint 2 (F-05 to F-08), Sprint 3 (F-09 to F-11)"],
-  ["E", "Sprint 1 engineering contracts", "F-01 to F-04, AC-01 to AC-34, TEST-01 to TEST-49, Definition of Done"],
-  ["F", "Working Sprint 1 and verification", "Demonstrations, results, TEST-30 and TEST-38 excerpts, history, contributions"],
+  ["E", "Sprint 1 engineering contracts", "F-01 to F-04, Q-01, AC-01 to AC-48, TEST-01 to TEST-63, test strategy, Definition of Done"],
+  ["F", "Working Sprint 1 and verification", "Demonstrations, results, TEST-30 and TEST-38 excerpts, history, contributions, QA defect log, UAT cases"],
 ];
 const partTitle = Object.fromEntries(partOrder.map(([k, t]) => [k, t]));
 
@@ -126,6 +128,8 @@ const partC = md(read("docs/system-sds.md"));
 const partD = md(read("docs/sprints/plan.md"));
 const partE =
   ["F-01-authentication", "F-02-create-submit", "F-03-decision", "F-04-lists-detail-history"].map((f) => md(read(`${S1}/${f}.md`))).join("") +
+  md(read(`${S1}/Q-quality-checks.md`)) +
+  md(read(`${S1}/test-strategy.md`)) +
   md(read(`${S1}/definition-of-done.md`));
 
 const readme = read("README.md");
@@ -205,6 +209,8 @@ ${apiText("s3-09-api-anonymous.txt", "API output, no session")}
 ${marked.parse(resultsHead.split("\n").slice(2).join("\n"), { gfm: true })}
 <pre>${outputExcerpt("server-vitest.txt", 8)}</pre>
 <pre>${outputExcerpt("client-vitest.txt", 8)}</pre>
+<p>Measured values printed by the speed and concurrency checks (TEST-59, TEST-60), one local machine:</p>
+<pre>${measured}</pre>
 <pre>${esc(read(`${S1}/test-output/playwright.txt`).split("\n").slice(0, 20).join("\n"))}</pre>
 
 <h3>Results of every Sprint 1 acceptance criterion's tests</h3>
@@ -233,6 +239,10 @@ ${md(read(`${S1}/contributions-and-ai-use.md`)).replace(/<h3>/g, "<h4>").replace
 <h2>F.6 Setup summary</h2>
 ${md(setupMd).replace(/<h3>/g, "<h4>").replace(/<h2>/g, "<h3>")}
 <p>Environment variables: <code>DATABASE_URL</code>, <code>PORT</code>, <code>CLIENT_ORIGIN</code>, <code>SEED_DEFAULT_PASSWORD</code> (names and examples in <code>server/.env.example</code>; real values are not committed). Database setup: <code>npx prisma migrate deploy</code> then <code>npm run prisma:seed</code>. Build: <code>cd client && npm run build</code> and <code>cd server && npm run build</code>.</p>
+
+<h2>F.7 QA defect log, known limitations and UAT preparation</h2>
+${md(read("docs/qa-defect-log.md")).replace(/<h3>/g, "<h4>").replace(/<h2>/g, "<h3>").replace(/<h1>/g, "<h3>")}
+<div class="uat">${md(read("docs/uat/uat-cases.md")).replace(/<h3>/g, "<h4>").replace(/<h2>/g, "<h3>").replace(/<h1>/g, "<h3>")}</div>
 `;
 
 const css = `
@@ -259,6 +269,7 @@ figure { margin: 2mm 0; break-inside: avoid; }
 figure img { width: 100%; display: block; border: 0.3pt solid #ccc; }
 figcaption { font-size: 8pt; margin-top: 0.8mm; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 4mm; align-items: start; }
+.uat table { font-size: 6.3pt; }
 .apiblock { break-inside: avoid; margin: 1mm 0 2mm; }
 .apiblock .cap { font-size: 8pt; }
 .todo { font-weight: 700; }
@@ -287,7 +298,7 @@ ${partOrder.map(([k, t, ids]) => `<tr><td>Part ${k}. ${esc(t)}</td><td class="pg
 <h3>Contents</h3>
 <table class="toc">
 ${partOrder.map(([k, t]) => `<tr><td><strong>Part ${k}. ${esc(t)}</strong></td><td class="p">${pages.start[k] ?? "00"}</td></tr>`).join("\n")}
-${[["F.1", "Program demonstrations"], ["F.2", "Build and automated test results"], ["F.3", "TDD evidence"], ["F.4", "Git workflow and history"], ["F.5", "Contributions, AI-use declaration, known limitations"], ["F.6", "Setup summary"]]
+${[["F.1", "Program demonstrations"], ["F.2", "Build and automated test results"], ["F.3", "TDD evidence"], ["F.4", "Git workflow and history"], ["F.5", "Contributions, AI-use declaration, known limitations"], ["F.6", "Setup summary"], ["F.7", "QA defect log, limitations, UAT preparation"]]
   .map(([k, t]) => `<tr><td>&nbsp;&nbsp;${k} ${esc(t)}</td><td class="p">${pages.sub[k] ?? "00"}</td></tr>`)
   .join("\n")}
 </table>`;
@@ -322,7 +333,7 @@ function locate() {
   const pageText = (n) => execFileSync("pdftotext", ["-f", String(n), "-l", String(n), "-layout", OUT_PDF, "-"], { encoding: "utf8" });
   const start = {};
   const sub = {};
-  const subHeads = { "F.1": "F.1 Program demonstrations", "F.2": "F.2 Build and automated test results", "F.3": "F.3 TDD evidence", "F.4": "F.4 Git workflow and history", "F.5": "F.5 Both students", "F.6": "F.6 Setup summary" };
+  const subHeads = { "F.1": "F.1 Program demonstrations", "F.2": "F.2 Build and automated test results", "F.3": "F.3 TDD evidence", "F.4": "F.4 Git workflow and history", "F.5": "F.5 Both students", "F.6": "F.6 Setup summary", "F.7": "F.7 QA defect log" };
   for (let n = 1; n <= total; n++) {
     const lines = pageText(n).split("\n").map((l) => l.trim());
     for (const [k, t] of partOrder) {
