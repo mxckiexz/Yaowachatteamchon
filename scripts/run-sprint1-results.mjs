@@ -109,13 +109,13 @@ ${rows.join("\n")}
 
 ## Tests that are not in the STS table
 
-Component tests CT-01 to CT-10 (client) and extra end-to-end checks (anonymous redirect, approver 2 cannot read another approver's request, validation messages in the UI) were added during implementation as supporting checks. They are in the raw output above.
+Component tests CT-01 to CT-10 (client), the one-line API test of HTML text kept as typed (AC-41 data side), the trim and total-ignored unit test, and extra end-to-end checks (anonymous redirect, approver 2 cannot read another approver's request, validation messages in the UI) were added during implementation as supporting checks. They are in the raw output above.
 
 ## Manual checks
 
 | ID | Check | Result |
 |---|---|---|
-| M-01 | NFR-05: a fresh clone and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, \`npm run dev\` started the API, health returned 200, a seeded approver could log in, and \`npm test\` passed in server (43) and client (10) | PASS (run on the Sprint 1 release branch, 2026-11-15, after two README defects were found and fixed: seed and dev did not read server/.env, and the test config did not load it) |
+| M-01 | NFR-05: a fresh clone (commit 57a0510) and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, \`npm run dev\` started the API, health returned 200, a seeded approver could log in, and \`npm test\` passed in server (55) and client (12) | PASS (run 2026-11-15; an earlier run of this check found the README defects DEF-01 and DEF-02 in the QA defect log) |
 `;
 writeFileSync(`${dir}/results.md`, md);
 console.log(md.split("\n").slice(0, 14).join("\n"));
