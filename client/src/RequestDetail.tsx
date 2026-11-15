@@ -41,6 +41,7 @@ export default function RequestDetail() {
       <p className="mb-1">Approver: {request.approver?.name ?? "Not sent yet"}</p>
       {request.justification && <p>{request.justification}</p>}
 
+      <div className="table-responsive">
       <table className="table table-sm w-auto">
         <thead><tr><th>Item</th><th className="text-end">Quantity</th><th className="text-end">Unit price</th><th className="text-end">Line total</th></tr></thead>
         <tbody>
@@ -55,6 +56,7 @@ export default function RequestDetail() {
         </tbody>
         <tfoot><tr><th colSpan={3} className="text-end">Total</th><th className="text-end" data-testid="total">{formatBaht(request.total)}</th></tr></tfoot>
       </table>
+      </div>
 
       {request.decisionComment && (
         <p><strong>Decision comment:</strong> <span data-testid="decision-comment">{request.decisionComment}</span></p>

@@ -30,6 +30,7 @@ export default function MyRequests() {
       {!error && requests === null && <p>Loading...</p>}
       {requests && requests.length === 0 && <p className="text-muted">You have no requests yet.</p>}
       {requests && requests.length > 0 && (
+        <div className="table-responsive">
         <table className="table align-middle">
           <thead>
             <tr><th>Title</th><th>Status</th><th className="text-end">Total</th><th>Approver</th><th>Created</th></tr>
@@ -46,6 +47,7 @@ export default function MyRequests() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </>
   );

@@ -12,7 +12,7 @@ export default function Layout() {
 
   return (
     <>
-      <nav className="navbar navbar-expand navbar-dark bg-dark px-3">
+      <nav className="navbar navbar-expand navbar-dark bg-dark px-3 flex-wrap gap-1">
         <Link className="navbar-brand" to="/requests">BuyFlow</Link>
         <div className="navbar-nav me-auto">
           <Link className="nav-link" to="/requests">My requests</Link>

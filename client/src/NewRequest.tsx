@@ -76,6 +76,7 @@ export default function NewRequest() {
 
       <h2 className="h6">Items</h2>
       {fields.items && <div className="text-danger mb-2">{fields.items}</div>}
+      <div className="table-responsive">
       <table className="table align-middle">
         <thead>
           <tr><th>Item</th><th style={{ width: 120 }}>Quantity</th><th style={{ width: 160 }}>Unit price (THB)</th><th /></tr>
@@ -104,6 +105,7 @@ export default function NewRequest() {
           ))}
         </tbody>
       </table>
+      </div>
       <button type="button" className="btn btn-outline-primary btn-sm mb-3" onClick={() => setRows((c) => [...c, { key: nextKey++, name: "", quantity: "1", unitPrice: "" }])}>
         Add item
       </button>

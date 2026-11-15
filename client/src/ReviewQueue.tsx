@@ -27,6 +27,7 @@ export default function ReviewQueue() {
       {!error && requests === null && <p>Loading...</p>}
       {requests && requests.length === 0 && <p className="text-muted">Nothing is waiting for you.</p>}
       {requests && requests.length > 0 && (
+        <div className="table-responsive">
         <table className="table align-middle">
           <thead>
             <tr><th>Title</th><th>Requester</th><th className="text-end">Total</th><th>Submitted</th></tr>
@@ -42,6 +43,7 @@ export default function ReviewQueue() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </>
   );
