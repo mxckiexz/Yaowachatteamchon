@@ -21,6 +21,8 @@ afterAll(async () => {
   await getPrisma().$disconnect();
 });
 
+// A request row as text (the total is a BigInt, which JSON cannot print by itself).
+const snapshot = async (id: number) => JSON.stringify(await loadRequest(id), (_k, v) => (typeof v === "bigint" ? v.toString() : v));
 const count = (userId: number) => getPrisma().purchaseRequest.count({ where: { requesterId: userId } });
 const post = (agent: any, body: unknown) => agent.post("/api/requests").set("Origin", ORIGIN).send(body);
 const patch = (agent: any, id: number, body: unknown) => agent.patch(`/api/requests/${id}`).set("Origin", ORIGIN).send(body);
@@ -230,10 +232,10 @@ describe("F-02 submit", () => {
     const a = await loginAgent(REQ);
     const b = await loginAgent(REQ2);
     const bDraft = await createDraft(b, { itemName: "B's item" });
-    const before = JSON.stringify(await loadRequest(bDraft.id));
+    const before = await snapshot(bDraft.id);
     const aDraft = await createDraft(a);
     expect((await patch(a, aDraft.id, { itemName: "A edited", quantity: 7 })).status).toBe(200);
     expect((await submit(a, aDraft.id)).status).toBe(200);
-    expect(JSON.stringify(await loadRequest(bDraft.id))).toBe(before);
+    expect(await snapshot(bDraft.id)).toBe(before);
   });
 });
