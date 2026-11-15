@@ -115,7 +115,7 @@ Component tests CT-01 to CT-10 (client) and extra end-to-end checks (anonymous r
 
 | ID | Check | Result |
 |---|---|---|
-| M-01 | NFR-05: a fresh clone, an empty database, then the README setup commands; migration applied, seed ran, the API started, health returned 200 and a seeded user could log in | PASS (run on the Sprint 1 release branch, 2026-11-15) |
+| M-01 | NFR-05: a fresh clone and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, \`npm run dev\` started the API, health returned 200, a seeded approver could log in, and \`npm test\` passed in server (43) and client (10) | PASS (run on the Sprint 1 release branch, 2026-11-15, after two README defects were found and fixed: seed and dev did not read server/.env, and the test config did not load it) |
 `;
 writeFileSync(`${dir}/results.md`, md);
 console.log(md.split("\n").slice(0, 14).join("\n"));
