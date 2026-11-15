@@ -37,6 +37,19 @@ Tests  36 passed (36)
 
 In the first F-04 red run TEST-38 passed before any code existed, because a missing route also answers 404. A refusal test that passes for the wrong reason proves nothing, so the test was changed to first check that the owner can read the request (200) and only then that others get 404. The red run was repeated: 7 failed (7). This change is in commit `f40c501`.
 
+## Quality checks (Q-01)
+
+The security, accessibility, speed and regression checks were written after the four features, from the contract `Q-quality-checks.md` (committed first in `b33dad1`). Most of them passed on the first run, because the features were already correct; those are checks, not red-green evidence. Two runs failed and led to fixes:
+
+| Commit | What happened |
+|---|---|
+| `d3c767a` | Server checks: 12 tests, 2 failed (TEST-52 forged cookie `%00` gave 500; TEST-55 `X-Powered-By: Express` and missing protective headers) |
+| `6f860b8` | Fix: session id must be a UUID before any lookup; header removed and protective headers added. 55 server tests pass |
+| `2cbc3f6` | Browser checks: TEST-58 failed (request list 516 px wide at 375 px); TEST-56 and TEST-57 passed |
+| `f4fdfbc` | Fix: tables scroll inside their own box, navigation bar wraps. All browser checks pass |
+
+Raw runs: `tdd/Q-01-first-run.txt` and `tdd/Q-01-after-fix.txt`.
+
 ## Not covered by red-green
 
 The React screens and the component tests (CT-01 to CT-10) and the Playwright tests were written together with the UI, not before it. Their evidence is the passing run in `results.md`, not a red-green sequence.

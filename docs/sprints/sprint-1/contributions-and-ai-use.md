@@ -23,7 +23,7 @@ The four features depend on each other, so the feature branches were built one o
 
 ## AI-use declaration
 
-An AI coding assistant (Claude Code) was used to help with: drafting the SRS, SDS and feature contracts from the group specification; writing the tests first and the implementation of F-01 to F-04; writing the React screens and the Playwright tests; running the suites and building the results table and the PDF. The students supplied the context and the decisions listed in the SRS, read the generated code and documents, and are responsible for them. Test results in this submission come from the commands recorded in `results.md`, not from a statement by the assistant.
+An AI coding assistant (Claude Code) was used to help with: drafting the SRS, SDS and feature contracts from the group specification; writing the tests first and the implementation of F-01 to F-04; writing the React screens, the Playwright tests and the security, accessibility and performance checks; running the suites and building the results table and the PDF. The students supplied the context and the decisions listed in the SRS, read the generated code and documents, and are responsible for them. Test results in this submission come from the commands recorded in `results.md`, not from a statement by the assistant.
 
 ## Known limitations and incomplete work
 
@@ -32,6 +32,6 @@ An AI coding assistant (Claude Code) was used to help with: drafting the SRS, SD
 - A request can only go to one approver. There is no way to change the approver after submission.
 - The UI has no pagination; lists show every request of the user.
 - The estimate on the New request form is a hint calculated in the browser; the server total is the real one.
-- There are no automated accessibility checks.
+- Accessibility is checked only by automated rules (axe-core), keyboard and narrow-screen tests; there is no screen reader or user test. Other limits (no login rate limiting, no real load test, no professional penetration test, no UAT yet) are in `docs/qa-defect-log.md`.
 - Docker, CI and GCP deployment are not part of Deliverable 1 (Lab 5).
 - Pull request reviews, Issues and the final board status are produced on GitHub by the two students; this repository's local history shows the commit order only.
