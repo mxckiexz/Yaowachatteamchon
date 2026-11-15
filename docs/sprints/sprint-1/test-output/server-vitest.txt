@@ -1,66 +1,67 @@
 $ cd server && npx vitest run
-# commit 74ab71c091896273e532c2c0efdcd10237c7c94a
+# commit 1fa292ce9169a98f57d6cfbab710b3a8cbbfc282
 
 
  RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
 
- ✓ tests/f02/create-edit-submit.test.ts (16 tests) 7621ms
-   ✓ F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass) 411ms
-   ✓ F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 464ms
-   ✓ F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 384ms
-   ✓ F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 311ms
-   ✓ F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 1061ms
-   ✓ F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 815ms
-   ✓ F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 567ms
- ✓ tests/f04/lists-detail-history.test.ts (8 tests) 7296ms
-   ✓ F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first 579ms
-   ✓ F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first 1093ms
-   ✓ F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue 523ms
-   ✓ F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them 1319ms
-   ✓ F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order 557ms
-   ✓ F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft 544ms
-   ✓ F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data 533ms
-   ✓ F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail 809ms
- ✓ tests/q/security.test.ts (7 tests) 5136ms
-   ✓ NFR-09 input is data (penetration-style checks, automated) > TEST-80 / AC-45: SQL metacharacters never log anyone in, never cause a 500, and are stored unchanged 2413ms
-   ✓ NFR-09 input is data (penetration-style checks, automated) > TEST-81 / AC-46: fields owned by the server cannot be set by the client 820ms
-   ✓ AC-51 data side: HTML in text is stored as typed > returns HTML text unchanged from the API (the UI escapes it, see TEST-86) 539ms
- ✓ tests/f03/approve-reject.test.ts (10 tests) 7025ms
-   ✓ F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 573ms
-   ✓ F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 547ms
-   ✓ F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 551ms
-   ✓ F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 801ms
-   ✓ F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 535ms
-   ✓ F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 534ms
-   ✓ F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 801ms
-   ✓ F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 533ms
-   ✓ F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 809ms
- ✓ tests/f01/auth.test.ts (12 tests) 3540ms
-   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 525ms
- ✓ tests/f05/admin-users.test.ts (7 tests) 4026ms
-   ✓ F-05 administrator, user management > TEST-62 / AC-39: a requester and an approver get 403 and no data, and cannot change a user 534ms
-   ✓ F-05 administrator, user management > TEST-63 / AC-40: after the administrator deactivates a user, they cannot log in and their session stops at once 788ms
-   ✓ F-05 administrator, user management > TEST-64 / AC-41: the administrator reactivates a user, who can then log in 526ms
+ ✓ tests/f02/create-edit-submit.test.ts (16 tests) 7623ms
+   ✓ F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total 472ms
+   ✓ F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure 304ms
+   ✓ F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 302ms
+   ✓ F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 326ms
+   ✓ F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 1084ms
+   ✓ F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 812ms
+   ✓ F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 554ms
+ ✓ tests/f04/lists-detail-history.test.ts (8 tests) 7552ms
+   ✓ F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first 588ms
+   ✓ F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first 1137ms
+   ✓ F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue 543ms
+   ✓ F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them 1373ms
+   ✓ F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order 560ms
+   ✓ F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft 556ms
+   ✓ F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data 562ms
+   ✓ F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail 826ms
+ ✓ tests/q/security.test.ts (7 tests) 5283ms
+   ✓ NFR-09 input is data (penetration-style checks, automated) > TEST-80 / AC-45: SQL metacharacters never log anyone in, never cause a 500, and are stored unchanged 2446ms
+   ✓ NFR-09 input is data (penetration-style checks, automated) > TEST-81 / AC-46: fields owned by the server cannot be set by the client 836ms
+   ✓ AC-51 data side: HTML in text is stored as typed > returns HTML text unchanged from the API (the UI escapes it, see TEST-86) 590ms
+ ✓ tests/f03/approve-reject.test.ts (10 tests) 7670ms
+   ✓ F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 783ms
+   ✓ F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 821ms
+   ✓ F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 581ms
+   ✓ F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 822ms
+   ✓ F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 550ms
+   ✓ F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 550ms
+   ✓ F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 819ms
+   ✓ F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 543ms
+   ✓ F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 823ms
+ ✓ tests/f01/auth.test.ts (12 tests) 3593ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 546ms
+ ✓ tests/f05/admin-users.test.ts (7 tests) 4112ms
+   ✓ F-05 administrator, user management > TEST-61 / AC-39: the administrator lists users without any password hash 304ms
+   ✓ F-05 administrator, user management > TEST-62 / AC-39: a requester and an approver get 403 and no data, and cannot change a user 549ms
+   ✓ F-05 administrator, user management > TEST-63 / AC-40: after the administrator deactivates a user, they cannot log in and their session stops at once 815ms
+   ✓ F-05 administrator, user management > TEST-64 / AC-41: the administrator reactivates a user, who can then log in 534ms
  ✓ tests/f02/money-validation.unit.test.ts (4 tests) 2ms
 stdout | tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms
-TEST-89 measured median 4.8 ms, max 11.2 ms over 20 calls, 200 requests
+TEST-89 measured median 4.6 ms, max 10.1 ms over 20 calls, 200 requests
 
 stdout | tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored
-TEST-90 70 simultaneous calls finished in 63 ms
+TEST-90 70 simultaneous calls finished in 60 ms
 
- ✓ tests/q/performance.test.ts (2 tests) 1369ms
-   ✓ NFR-12 early smoke checks (this is not a load test) > TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms 488ms
-   ✓ NFR-12 early smoke checks (this is not a load test) > TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored 327ms
- ✓ tests/q/regression.test.ts (1 test) 2202ms
-   ✓ Regression: one journey through the features > TEST-91 / AC-56: create, edit, submit, list, queue, approve, detail, second decision refused, outsider refused, administrator reads 1125ms
- ✓ tests/f01/protected-routes.test.ts (1 test) 28ms
- ✓ tests/f01/password.test.ts (2 tests) 1068ms
-   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 783ms
+ ✓ tests/q/performance.test.ts (2 tests) 1364ms
+   ✓ NFR-12 early smoke checks (this is not a load test) > TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms 476ms
+   ✓ NFR-12 early smoke checks (this is not a load test) > TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored 330ms
+ ✓ tests/q/regression.test.ts (1 test) 2309ms
+   ✓ Regression: one journey through the features > TEST-91 / AC-56: create, edit, submit, list, queue, approve, detail, second decision refused, outsider refused, administrator reads 1146ms
+ ✓ tests/f01/protected-routes.test.ts (1 test) 30ms
+ ✓ tests/f01/password.test.ts (2 tests) 1056ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 777ms
  ✓ tests/f03/transitions.test.ts (1 test) 1ms
 
  Test Files  12 passed (12)
       Tests  71 passed (71)
-   Start at  17:46:55
-   Duration  41.58s (transform 120ms, setup 0ms, collect 912ms, tests 39.31s, environment 1ms, prepare 336ms)
+   Start at  20:50:25
+   Duration  43.23s (transform 173ms, setup 0ms, collect 1.06s, tests 40.60s, environment 1ms, prepare 416ms)
 
 JSON report written to /tmp/vitest-buyflow.json
