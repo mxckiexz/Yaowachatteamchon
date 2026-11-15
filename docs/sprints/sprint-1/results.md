@@ -1,15 +1,15 @@
 # Sprint 1 Results
 
-Tested commit: `17ec2e3708a0aaff536e903c15479b9cf9a4c517` on branch `feature/UI-requests` (clean working tree).
-Run started: 2026-11-15T06:14:55.347Z. Raw output: `docs/sprints/sprint-1/test-output/`.
+Tested commit: `589081a0fc989b11cc985f3c925748cd1ff48c2d` on branch `feature/quality-tests` (clean working tree).
+Run started: 2026-11-15T06:34:40.592Z. Raw output: `docs/sprints/sprint-1/test-output/`.
 
 ## Commands and counts
 
 | Suite | Command | Result |
 |---|---|---|
-| Server (API integration and unit, real PostgreSQL) | `cd server && npx vitest run` | 7 files, 43 passed, 0 failed, 0 skipped |
-| Client (component) | `cd client && npx vitest run` | 2 files, 10 passed, 0 failed, 0 skipped |
-| End to end (browser, real API and database) | `npx playwright test` | 9 passed, 0 failed, 0 skipped |
+| Server (API integration and unit, real PostgreSQL) | `cd server && npx vitest run` | 11 files, 55 passed, 0 failed, 0 skipped |
+| Client (component) | `cd client && npx vitest run` | 3 files, 12 passed, 0 failed, 0 skipped |
+| End to end (browser, real API and database) | `npx playwright test` | 12 passed, 0 failed, 0 skipped |
 
 No test is skipped or disabled. Automated tests are listed in the table below; the one manual check is M-01.
 
@@ -69,10 +69,10 @@ Planned test IDs come from the feature contracts. The test file and name are the
 
 ## Tests that are not in the STS table
 
-Component tests CT-01 to CT-10 (client) and extra end-to-end checks (anonymous redirect, approver 2 cannot read another approver's request, validation messages in the UI) were added during implementation as supporting checks. They are in the raw output above.
+Component tests CT-01 to CT-10 (client), the one-line API test of HTML text kept as typed (AC-41 data side), the trim and total-ignored unit test, and extra end-to-end checks (anonymous redirect, approver 2 cannot read another approver's request, validation messages in the UI) were added during implementation as supporting checks. They are in the raw output above.
 
 ## Manual checks
 
 | ID | Check | Result |
 |---|---|---|
-| M-01 | NFR-05: a fresh clone and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, `npm run dev` started the API, health returned 200, a seeded approver could log in, and `npm test` passed in server (43) and client (10) | PASS (run on the Sprint 1 release branch, 2026-11-15, after two README defects were found and fixed: seed and dev did not read server/.env, and the test config did not load it) |
+| M-01 | NFR-05: a fresh clone (commit 57a0510) and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, `npm run dev` started the API, health returned 200, a seeded approver could log in, and `npm test` passed in server (55) and client (12) | PASS (run 2026-11-15; an earlier run of this check found the README defects DEF-01 and DEF-02 in the QA defect log) |
