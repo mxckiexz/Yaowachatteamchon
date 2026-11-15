@@ -1,7 +1,7 @@
 # Sprint 1 Results
 
-Tested commit: `fdbbf7aff21a3007dffd77f6a88bd621c03fb677` on branch `feature/UI-requests` (clean working tree).
-Run started: 2026-11-14T19:48:07.794Z. Raw output: `docs/sprints/sprint-1/test-output/`.
+Tested commit: `17ec2e3708a0aaff536e903c15479b9cf9a4c517` on branch `feature/UI-requests` (clean working tree).
+Run started: 2026-11-15T06:14:55.347Z. Raw output: `docs/sprints/sprint-1/test-output/`.
 
 ## Commands and counts
 
@@ -75,4 +75,4 @@ Component tests CT-01 to CT-10 (client) and extra end-to-end checks (anonymous r
 
 | ID | Check | Result |
 |---|---|---|
-| M-01 | NFR-05: a fresh clone, an empty database, then the README setup commands; migration applied, seed ran, the API started, health returned 200 and a seeded user could log in | PASS (run on the Sprint 1 release branch, 2026-11-15) |
+| M-01 | NFR-05: a fresh clone and an empty database, then exactly the 7 commands of the README setup (no variables exported by hand): migration applied, seed ran, `npm run dev` started the API, health returned 200, a seeded approver could log in, and `npm test` passed in server (43) and client (10) | PASS (run on the Sprint 1 release branch, 2026-11-15, after two README defects were found and fixed: seed and dev did not read server/.env, and the test config did not load it) |
