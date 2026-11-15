@@ -1,7 +1,7 @@
 # Sprint 1 Results
 
-Tested commit: `7995a3503fa6ea24775f7109a96b48f5885d7793` on branch `feature/quality-checks` (clean working tree).
-Run started: 2026-11-15T07:54:50.381Z. Raw output: `docs/sprints/sprint-1/test-output/`.
+Tested commit: `74ab71c091896273e532c2c0efdcd10237c7c94a` on branch `feature/quality-checks` (clean working tree).
+Run started: 2026-11-15T10:46:55.223Z. Raw output: `docs/sprints/sprint-1/test-output/`.
 
 ## Commands and counts
 
@@ -85,6 +85,19 @@ Planned test IDs come from the feature contracts. The test file and name are the
 | TEST-73 | AC-26, AC-32 | UI end to end plus API | e2e/requests/approver-journey.spec.ts: TEST-73 / AC-26, AC-32: a requester has no decision buttons and the API refuses them | PASS |
 | TEST-74 | AC-38 | UI end to end | e2e/requests/requester-journey.spec.ts: TEST-74 / AC-38: saved data is still there after reloading the detail page and the list | PASS |
 | TEST-75 | AC-44 | UI end to end | e2e/admin/users.spec.ts: TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected | PASS |
+| TEST-80 | AC-45 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-80 / AC-45: SQL metacharacters never log anyone in, never cause a 500, and are stored unchanged | PASS |
+| TEST-81 | AC-46 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-81 / AC-46: fields owned by the server cannot be set by the client | PASS |
+| TEST-82 | AC-47 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-82 / AC-47: forged session cookies get 401 on protected routes and never a 500 | PASS |
+| TEST-83 | AC-48 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-83 / AC-48: an oversized body gives 413 and a JSON error without a stack | PASS |
+| TEST-84 | AC-49 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-84 / AC-49: the session cookie is HttpOnly, SameSite=Lax, Path=/ and lasts 8 hours | PASS |
+| TEST-85 | AC-50 | API integration | server/tests/q/security.test.ts: NFR-09 input is data (penetration-style checks, automated) TEST-85 / AC-50: no technology header, and the basic protective headers are sent | PASS |
+| TEST-86 | AC-51 | UI end to end | server/tests/q/security.test.ts, e2e/quality/xss.spec.ts: AC-51 data side: HTML in text is stored as typed returns HTML text unchanged from the API (the UI escapes it, see TEST-86); TEST-86 / AC-51: HTML and script typed into text is shown as text and never executed | PASS |
+| TEST-87 | AC-52 | UI end to end (axe-core) | e2e/quality/accessibility.spec.ts: TEST-87 / AC-52: the main screens of the three roles have no serious or critical accessibility violations | PASS |
+| TEST-88 | AC-53 | UI end to end | e2e/quality/responsive-keyboard.spec.ts: TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone | PASS |
+| TEST-89 | AC-54 | API integration (timing) | server/tests/q/performance.test.ts: NFR-12 early smoke checks (this is not a load test) TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms | PASS |
+| TEST-90 | AC-55 | API integration | server/tests/q/performance.test.ts: NFR-12 early smoke checks (this is not a load test) TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored | PASS |
+| TEST-91 | AC-56 | API integration | server/tests/q/regression.test.ts: Regression: one journey through the features TEST-91 / AC-56: create, edit, submit, list, queue, approve, detail, second decision refused, outsider refused, administrator reads | PASS |
+| TEST-92 | AC-57 | Unit (client) | client/tests/q/format.test.ts: client helpers (unit) TEST-92 / AC-57: formatBaht always shows two decimals and a thousands separator; client helpers (unit) TEST-92 / AC-57: the estimate is quantity times price, and 0 when a value is empty or not a number | PASS |
 
 ## Tests that are not in the STS table
 
