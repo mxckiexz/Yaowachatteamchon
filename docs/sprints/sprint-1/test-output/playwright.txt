@@ -1,0 +1,18 @@
+$ npx playwright test
+# commit 1d8a590dab6ed2f220c49ce93cfe2e5a7de6fd12
+
+PASS  e2e/admin/users.spec.ts > TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected
+PASS  e2e/f01/login.spec.ts > TEST-70 / AC-12: wrong login shows an error, correct login reaches the role's first screen, logout returns to login
+PASS  e2e/f01/login.spec.ts > AC-12: an anonymous visit to a protected route is redirected to login
+PASS  e2e/f01/login.spec.ts > AC-12: an approver sees the review link and an administrator lands on the users screen
+PASS  e2e/quality/accessibility.spec.ts > TEST-87 / AC-52: the main screens of the three roles have no serious or critical accessibility violations
+PASS  e2e/quality/responsive-keyboard.spec.ts > TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone
+PASS  e2e/quality/xss.spec.ts > TEST-86 / AC-51: HTML and script typed into text is shown as text and never executed
+PASS  e2e/requests/approver-journey.spec.ts > TEST-72 / AC-32: an approver approves one request and rejects another (first without a reason); the requester sees both
+PASS  e2e/requests/approver-journey.spec.ts > TEST-73 / AC-26, AC-32: a requester has no decision buttons and the API refuses them
+PASS  e2e/requests/approver-journey.spec.ts > an approver cannot approve their own request, and another requester cannot open it
+PASS  e2e/requests/requester-journey.spec.ts > TEST-71 / AC-23: a requester creates a draft, edits it, is refused an incomplete submit, completes it and submits
+PASS  e2e/requests/requester-journey.spec.ts > TEST-71 / AC-14 in the UI: server validation messages appear beside the fields
+PASS  e2e/requests/requester-journey.spec.ts > TEST-74 / AC-38: saved data is still there after reloading the detail page and the list
+
+13 passed, 0 failed, 0 skipped
