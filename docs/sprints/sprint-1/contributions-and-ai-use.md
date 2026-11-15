@@ -6,18 +6,18 @@ Fill in from the real Issues and pull requests before submitting. Equal commit c
 
 | Item | Student 1 (name, ID, GitHub) | Student 2 (name, ID, GitHub) | Notes |
 |---|---|---|---|
-| SRS and decisions | | | |
-| Feature inventory and traceability | | | |
-| System SDS | | | |
-| Feature contracts and STS | | | |
-| F-01 implementation and review | | | |
-| F-02 implementation and review | | | |
-| F-03 implementation and review | | | |
-| F-04 implementation and review | | | |
-| F-05 implementation and review | | | |
-| UI | | | |
-| Browser tests | | | |
-| Quality checks | | | |
+| SRS and decisions | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | ร่วมกันกำหนดขอบเขต บทบาท และกติกาของระบบ แล้วตรวจทานการตัดสินใจร่วมกัน |
+| Feature inventory and traceability | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | ร่วมกันตรวจ mapping ระหว่าง requirements, features, acceptance criteria และ tests |
+| System SDS | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยจัดทำเอกสารหลัก ธัญวรัตน์ review ความสอดคล้องกับ SRS และ feature contracts |
+| Feature contracts and STS | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยเขียน contract และ test plan ธัญวรัตน์ตรวจ acceptance criteria, authorization และ edge cases |
+| F-01 implementation and review | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา authentication/session; ธัญวรัตน์ review PR และตรวจ test/security behavior |
+| F-02 implementation and review | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา create/edit/submit และ validation; ธัญวรัตน์ตรวจ ownership, totals และ boundaries |
+| F-03 implementation and review | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา approve/reject และ concurrency; ธัญวรัตน์ review transition, self-approval และ race tests |
+| F-04 implementation and review | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา lists/detail/history และ visibility; ธัญวรัตน์ตรวจ cross-user isolation และ history order |
+| F-05 implementation and review | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา administrator user management; ธัญวรัตน์ตรวจ role/activation/self-account rules |
+| UI | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยพัฒนา React screens; ธัญวรัตน์ตรวจ role visibility, validation messages และ responsive behavior |
+| Browser tests | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | ร่วมกันตรวจและรัน Playwright journeys สำหรับ requester, approver และ administrator |
+| Quality checks | ธัญวรัตน์ จันทะนะ (670701025, Thanwarat1303) | อภิสมัย (67070501077, mxckiexz) | อภิสมัยเพิ่ม security/accessibility/performance/regression checks; ธัญวรัตน์ review ผลและตรวจ traceability/PDF evidence |
 
 ## How the branches are organised
 

@@ -1,8 +1,8 @@
 {
-  "teamName": "",
+  "teamName": "Yaowachatteamchon",
   "students": [
-    { "name": "", "id": "", "github": "" },
-    { "name": "", "id": "", "github": "" }
+    { "name": "ธัญวรัตน์ จันทะนะ", "id": "670701025", "github": "Thanwarat1303" },
+    { "name": "อภิสมัย", "id": "67070501077", "github": "mxckiexz" }
   ],
   "repoUrl": "https://github.com/mxckiexz/Yaowachatteamchon",
   "releaseTag": "",
