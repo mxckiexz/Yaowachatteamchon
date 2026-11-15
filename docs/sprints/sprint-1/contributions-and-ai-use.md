@@ -17,6 +17,10 @@ Fill in from the real Issues and pull requests before submitting. Equal commit c
 | UI | | | |
 | End-to-end tests | | | |
 
+## How the branches are organised
+
+The four features depend on each other, so the feature branches were built one on top of the other (each starts from the previous one) instead of each starting from the staging tip. Every pull request targets `sprint-1/staging` and they are merged in order with merge commits, so after each merge the next pull request shows only its own commits.
+
 ## AI-use declaration
 
 An AI coding assistant (Claude Code) was used to help with: drafting the SRS, SDS and feature contracts from the group specification; writing the tests first and the implementation of F-01 to F-04; writing the React screens and the Playwright tests; running the suites and building the results table and the PDF. The students supplied the context and the decisions listed in the SRS, read the generated code and documents, and are responsible for them. Test results in this submission come from the commands recorded in `results.md`, not from a statement by the assistant.

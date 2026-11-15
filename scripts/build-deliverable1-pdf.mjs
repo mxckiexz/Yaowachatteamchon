@@ -129,7 +129,7 @@ const partE =
   md(read(`${S1}/definition-of-done.md`));
 
 const readme = read("README.md");
-const setupMd = ["Setup (a fresh clone, 8 commands)", "Demo accounts (synthetic, created by the seed)", "Demo sequence (about 3 minutes)", "Tests"]
+const setupMd = ["Setup (a fresh clone, 7 commands)", "Demo accounts (synthetic, created by the seed)", "Demo sequence (about 3 minutes)", "Tests"]
   .map((h) => section(readme, h.replace(/[()]/g, "\\$&")))
   .join("\n");
 

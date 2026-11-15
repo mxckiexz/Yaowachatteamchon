@@ -10,16 +10,18 @@ Status: Sprint 1 (Deliverable 1). Documents are in `docs/`: `srs.md`, `features.
 
 Node.js 24, Express, Prisma, PostgreSQL, React 18, Vite, TypeScript, Bootstrap, Vitest, Supertest, Playwright.
 
-## Setup (a fresh clone, 8 commands)
+## Setup (a fresh clone, 7 commands)
 
 Requirements: Node.js 24, a running PostgreSQL, and an empty database.
 
 ```bash
 createdb buyflow
 cp server/.env.example server/.env        # then edit DATABASE_URL (and keep the demo password or change it)
-cd server && npm install && npx prisma migrate deploy && npm run prisma:seed
-cd ../client && npm install
-cd .. && npm install                       # Playwright for the end-to-end tests
+npm --prefix server install
+npm --prefix server run prisma:deploy
+npm --prefix server run prisma:seed
+npm --prefix client install
+npm install                                # Playwright for the end-to-end tests
 ```
 
 Run the API and the client in two terminals:
