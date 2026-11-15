@@ -18,6 +18,15 @@ import { requestRouter } from "./requestRoutes.js";
 
 export const app = express();
 
+// NFR-08: do not announce the technology, and send basic protective headers on every response.
+app.disable("x-powered-by");
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  next();
+});
+
 app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(requireSameOrigin);
 app.use(express.json({ limit: "100kb" }));

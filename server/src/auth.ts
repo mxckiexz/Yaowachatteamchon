@@ -43,7 +43,8 @@ export interface AuthenticatedUser {
 
 // A missing, unknown or expired session, or an inactive user, are all "no session".
 export async function getSessionUser(sessionId: string | undefined): Promise<AuthenticatedUser | null> {
-  if (!sessionId) return null;
+  // Session ids are UUIDs. Anything else (empty, too long, null bytes, SQL text) is "no session" and never reaches the database.
+  if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) return null;
   const session = await getPrisma().session.findUnique({ where: { id: sessionId }, include: { user: true } });
   if (!session) return null;
   if (session.expiresAt.getTime() <= Date.now()) return null;
