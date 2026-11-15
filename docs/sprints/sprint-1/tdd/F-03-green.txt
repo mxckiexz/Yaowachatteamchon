@@ -1,0 +1,52 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ✓ tests/f02/create-edit-submit.test.ts (16 tests) 12042ms
+   ✓ F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total 508ms
+   ✓ F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure 468ms
+   ✓ F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass) 468ms
+   ✓ F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 473ms
+   ✓ F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 486ms
+   ✓ F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 494ms
+   ✓ F-02 create > TEST-31 / AC-22: the administrator cannot create a request 452ms
+   ✓ F-02 create > TEST-32 / AC-22: an approver can create a request of their own 453ms
+   ✓ F-02 edit > TEST-23 / AC-16: the owner edits a DRAFT; the total is recalculated and the number stays 465ms
+   ✓ F-02 edit > TEST-24 / AC-17: only a DRAFT can be edited (SUBMITTED, APPROVED, REJECTED, CANCELLED are refused) 470ms
+   ✓ F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 1801ms
+   ✓ F-02 submit > TEST-26 / AC-18: the owner submits a complete DRAFT 457ms
+   ✓ F-02 submit > TEST-27 / AC-19: a draft without a reason or a category cannot be submitted (INCOMPLETE) 476ms
+   ✓ F-02 submit > TEST-28 / AC-20: submitting a request that is not a DRAFT gives 409 and changes nothing 457ms
+   ✓ F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 1349ms
+   ✓ F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 914ms
+ ✓ tests/f03/approve-reject.test.ts (10 tests) 11905ms
+   ✓ F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 970ms
+   ✓ F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 915ms
+   ✓ F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 923ms
+   ✓ F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 1355ms
+   ✓ F-03 approve and reject > TEST-40 / AC-27: an approver cannot approve or reject their own request 462ms
+   ✓ F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 913ms
+   ✓ F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 913ms
+   ✓ F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 1362ms
+   ✓ F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 906ms
+   ✓ F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 1370ms
+ ✓ tests/f01/auth.test.ts (12 tests) 6077ms
+   ✓ F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash 484ms
+   ✓ F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message 449ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 892ms
+   ✓ F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session 458ms
+   ✓ F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent 455ms
+   ✓ F-01 authentication > TEST-07 / AC-05: an expired session gives 401 450ms
+   ✓ F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in 443ms
+   ✓ F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once 456ms
+   ✓ F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives 451ms
+ ✓ tests/f02/money-validation.unit.test.ts (4 tests) 4ms
+ ✓ tests/f01/password.test.ts (2 tests) 1834ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 1331ms
+   ✓ F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 496ms
+ ✓ tests/f03/transitions.test.ts (1 test) 2ms
+
+ Test Files  6 passed (6)
+      Tests  45 passed (45)
+   Start at  14:38:52
+   Duration  33.53s (transform 102ms, setup 0ms, collect 556ms, tests 31.86s, environment 1ms, prepare 262ms)
+

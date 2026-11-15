@@ -1,118 +1,167 @@
-# BuyFlow Software Requirements Specification (SRS)
+# PurchaseFlow Software Requirements Specification (SRS)
 
-Theme 5: Workflow and Approval System. Context: internal purchase requests in a small company.
-Document version 1.0, written before Sprint 1 implementation.
+PurchaseFlow: Equipment Purchase Approval System. Theme 5: Workflow and Approval System.
+Document version 2.0. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigns the whole baseline with the team's project proposal (see the change log).
 
 ## 1. Stakeholder problem and context
 
-A fictional company with about 30 employees buys office supplies and small equipment. Today employees ask for purchases by chat or by email. Nobody can tell which requests are waiting, who decided what, or why a request was refused. The finance contact asks the same questions again when a purchase is queried months later.
+An organisation (a company or a university) buys equipment through messages and paper forms in several channels. Nobody can tell which step a request is in, who is responsible for approving it, whether the data was changed afterwards, or why a request was refused. People without permission may see or change data, and rejected requests are hard to follow up.
 
-BuyFlow is a web application where an employee records a purchase request, sends it to one named approver, and the approver approves or rejects it with a recorded reason. Every request keeps a history of what happened, who did it, and when.
+PurchaseFlow is a web application in which a requester records a purchase request, sends it for review, and an approver approves or rejects it with a recorded reason. Roles control who can do what, and every status change is written to a history.
 
-The context is a company, not a university department. All data is synthetic. No real payment, no email sending and no external API are used.
+The project covers only the purchase request workflow, so that Sprint 1 fits the time. The structure can later be extended to other request types (budget, leave, travel). All data is synthetic. No real payment, e-mail sending or external API is used.
 
 ## 2. Actors
 
-| Actor | Role in the system | Responsibilities |
+| Actor | Role | Responsibilities in the product |
 |---|---|---|
-| Employee | Role `EMPLOYEE` | Creates purchase requests, submits them to an approver, tracks their own requests. |
-| Approver | Role `APPROVER` | Reviews requests assigned to them, approves or rejects with a reason. An approver is also an employee and can create their own requests. |
-
-An Approver can raise their own purchase requests. This is deliberate: it makes the rule "nobody approves their own request" a real rule that must be enforced and tested, not a rule that no one can break.
-
-Out of scope actors for Sprint 1: Finance viewer, Administrator (account administration).
+| Requester | `REQUESTER` | Logs in, creates a purchase request, edits it while it is a draft, submits it, follows its status, reads the reason for a rejection, cancels it before approval (Sprint 2). Cannot approve any request, cannot change a request after it is approved, cannot see other users' requests. |
+| Approver | `APPROVER` | Reviews submitted requests, approves, or rejects with a reason, reads the approval history. Cannot change the requester's original data, cannot approve their own request, cannot delete history. An approver is also a staff member and can raise requests of their own. |
+| Administrator | `ADMIN` | Manages user accounts: lists users, activates or deactivates them, sets their role, and reads all requests (read only). In Sprint 1 the Administrator is limited to user management and reading data. The Administrator cannot create or decide requests. |
 
 ## 3. Product scope
 
-In scope for the whole product:
+In scope for the whole product: login with seeded accounts and server-side permissions; purchase requests with item, quantity, price, reason and category; a controlled status lifecycle; approval and rejection with a reason; history of every change; user administration. Later sprints add cancel, return for editing, search and filter, dashboard, attachments, comments, in-app notifications, multi-step approval, approval by amount, departments, delegation, reports and export, audit log, hardening and deployment preparation.
 
-- Login with seeded accounts, two roles, server-side permission checks.
-- Purchase requests with line items, server-calculated totals and a controlled status lifecycle.
-- Assignment of a request to one approver, approve or reject with a reason, immutable decisions.
-- Return for revision and resubmission, withdrawal of a pending request, editing and deleting drafts.
-- Filtering requests by status, a decision summary report, in-app notifications.
-- Two-level approval for high-value requests.
-- Full history for every request.
+## 4. Explicit exclusions (Sprint 1)
 
-## 4. Explicit exclusions
+- E-mail or LINE notification, payment, digital signature, several request types.
+- Multi-level approval, export to Excel or PDF.
+- GCP deployment and CI/CD (Lab 5).
+- Self-registration, password recovery, e-mail verification.
+- Warehouse and stock management.
+- Attachments, comments, cancel, dashboard, filter (Sprint 2).
 
-- Real payment, real purchase ordering, supplier integration, invoices.
-- Sending e-mail, SMS or chat messages. Notifications are in-app only.
-- Self-registration, password recovery, e-mail verification, advanced account administration, multiple roles per account.
-- Budget accounting per department and currency conversion. All amounts are in Thai baht.
-- File attachments to requests.
-- Mobile native application.
+## 5. Status lifecycle
 
-## 5. Functional requirements (FR)
+```
+DRAFT
+  | Submit
+SUBMITTED
+  |-- Approve -> APPROVED
+  |-- Reject  -> REJECTED
+  |-- Cancel  -> CANCELLED   (Sprint 2)
+```
+
+| Status | Meaning |
+|---|---|
+| DRAFT | The requester is still filling in the data. |
+| SUBMITTED | Sent to the approvers for review. |
+| APPROVED | Approved by an approver. |
+| REJECTED | Rejected by an approver; a reason is stored. |
+| CANCELLED | Cancelled by the requester before approval (the status exists now, the action is built in Sprint 2). |
+
+## 6. Functional requirements (FR)
+
+FR-01 to FR-15 are those of the team's proposal. FR-16 was added because login is needed by every actor but was not numbered in the proposal. FR-17 to FR-28 come from the proposal's Sprint 2 and Sprint 3 lists.
 
 | ID | Requirement | Sprint |
 |---|---|---|
-| FR-01 | A user can log in with e-mail and password, log out, and retrieve their current identity (name, e-mail, role). | 1 |
-| FR-02 | An authenticated user can create a purchase request draft with a title, a justification and one or more line items (item name, quantity, unit price). The system stores the request with status DRAFT. | 1 |
-| FR-03 | The owner of a DRAFT request can submit it to one chosen approver. The status becomes PENDING. | 1 |
-| FR-04 | A user can list their own requests and open one to see its status, items, total and history. | 1 |
-| FR-05 | An approver can list the PENDING requests assigned to them and open one to see its details. | 1 |
-| FR-06 | The assigned approver can approve or reject a PENDING request. A rejection requires a reason. The decision is stored with the approver, time and comment. | 1 |
-| FR-07 | Each request shows an ordered history of events (created, submitted, approved, rejected, and later returned, resubmitted, withdrawn). | 1 |
-| FR-08 | The approver can return a PENDING request to the requester with a reason, and the requester can edit and resubmit it. | 2 |
-| FR-09 | The owner can withdraw a PENDING request before a decision. | 2 |
-| FR-10 | The owner can edit or delete a DRAFT request. | 2 |
-| FR-11 | A user can filter their requests, and an approver can filter their queue, by status and by text in the title. | 2 |
-| FR-12 | A request with total above the high-value threshold requires a second approver after the first approval. | 3 |
-| FR-13 | An approver can see a summary of decisions (counts by outcome, total approved amount, average decision time) for a date range. | 3 |
-| FR-14 | A user sees in-app notifications when a request they own is decided or returned, and when a request is assigned to them. | 3 |
+| FR-01 | A requester can create a purchase request. It is stored as a DRAFT with a request number. | 1 |
+| FR-02 | The owner can edit a request while it is a DRAFT. | 1 |
+| FR-03 | The owner can submit a request when its data is complete. | 1 |
+| FR-04 | A user can see their own requests. | 1 |
+| FR-05 | The owner can cancel a request before it is approved. | 2 |
+| FR-06 | An approver can see submitted requests. | 1 |
+| FR-07 | An approver can approve a submitted request. | 1 |
+| FR-08 | An approver can reject a submitted request. | 1 |
+| FR-09 | The system stores the reason when a request is rejected. | 1 |
+| FR-10 | The system shows the latest status of a request. | 1 |
+| FR-11 | The system records an approval history. | 1 |
+| FR-12 | A requester cannot see other users' requests. | 1 |
+| FR-13 | A requester cannot approve a request. | 1 |
+| FR-14 | An approver cannot change the original data of a requester. | 1 |
+| FR-15 | An administrator manages users: list, activate or deactivate, set the role. | 1 |
+| FR-16 | A user can log in with e-mail and password, log out, and read their own identity (name, e-mail, role). | 1 |
+| FR-17 | Users can search and filter requests (by status, text, category). | 2 |
+| FR-18 | A dashboard shows counts of requests by status for the user's role. | 2 |
+| FR-19 | A request can carry attachments. | 2 |
+| FR-20 | Users can write comments on a request. | 2 |
+| FR-21 | An approver can send a request back to the requester for editing. | 2 |
+| FR-22 | Users receive in-app notifications about their requests. | 2 |
+| FR-23 | A request can need several approval steps. | 3 |
+| FR-24 | The approval route depends on the total amount. | 3 |
+| FR-25 | Users belong to departments. | 3 |
+| FR-26 | An approver can delegate approval to another approver. | 3 |
+| FR-27 | Users can see reports and export them. | 3 |
+| FR-28 | The system keeps an audit log of important actions. | 3 |
 
-## 6. Business rules (BR)
+## 7. Business rules (BR)
+
+BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-18 were added by the team. BR-19 and BR-20 belong to Sprint 3.
 
 | ID | Rule | Sprint |
 |---|---|---|
-| BR-01 | Status lifecycle: DRAFT to PENDING (submit); PENDING to APPROVED or REJECTED (decision). No other transition is allowed in Sprint 1. An illegal transition is rejected and changes nothing. | 1 |
-| BR-02 | The server calculates the total as the sum of quantity times unit price over all items. A total sent by the client is ignored. A request needs at least one item. Quantity is a whole number from 1 to 1000. Unit price is greater than 0, at most 1,000,000 baht, with at most two decimals. The title is 3 to 120 characters. | 1 |
-| BR-03 | A user can see only the requests they own. An approver can additionally see requests assigned to them. A request that a user may not see is reported as not found. | 1 |
-| BR-04 | Nobody may approve or reject their own request. A request cannot be assigned to its own requester. | 1 |
-| BR-05 | Only the approver assigned to a request can decide it. The approver must be an active user with role APPROVER. | 1 |
-| BR-06 | A rejection must include a reason of at least 5 characters. | 1 |
-| BR-07 | A decision is final. APPROVED and REJECTED requests cannot be decided again. Two simultaneous decisions on the same request produce exactly one decision. | 1 |
-| BR-08 | Every status change writes exactly one history entry with actor, from status, to status, comment and time. History is never edited or deleted. | 1 |
-| BR-09 | Only the owner can submit their DRAFT. Only a DRAFT is submitted. Submitted content (title, justification, items) cannot be changed in Sprint 1. | 1 |
-| BR-10 | A returned request keeps its full history; resubmission goes to the same or a newly chosen approver. | 2 |
-| BR-11 | A request with total above 50,000 baht needs two different approvers, neither of whom is the requester. | 3 |
+| BR-01 | Item name must not be empty (after trimming, at most 100 characters). | 1 |
+| BR-02 | Description must not be empty (at most 1000 characters). | 1 |
+| BR-03 | Quantity must be a whole number from 1 to 1000. | 1 |
+| BR-04 | Estimated unit price must be more than 0, at most 1,000,000 baht, with at most two decimals. | 1 |
+| BR-05 | Total amount is calculated by the server as quantity times unit price. A total sent by the client is ignored. | 1 |
+| BR-06 | A request can be saved as a draft with the reason and the category still empty. To submit it, all data must be complete: item name, description, quantity, unit price, reason and category. | 1 |
+| BR-07 | A requester must not approve or reject their own request. | 1 |
+| BR-08 | Only a SUBMITTED request can be approved or rejected. | 1 |
+| BR-09 | A rejection must have a rejection reason of at least 5 characters. | 1 |
+| BR-10 | Only a DRAFT can be edited. A request that is SUBMITTED, APPROVED, REJECTED or CANCELLED cannot be edited. | 1 |
+| BR-11 | Every status change creates a new history entry (actor, from status, to status, comment, time). History is never edited or deleted. | 1 |
+| BR-12 | A user sees only the data they may access. A requester sees their own requests. An approver also sees every request that is not a draft. An administrator sees all requests, read only. A request a user may not see is reported as not found. | 1 |
+| BR-13 | A deactivated user cannot log in, and an existing session of that user stops working immediately. | 1 |
+| BR-14 | Request numbers are unique. | 1 |
+| BR-15 | The category must be one of: EQUIPMENT, SOFTWARE, FURNITURE, STATIONERY, OTHER. | 1 |
+| BR-16 | An administrator cannot change their own account (activation or role), so that the system is never left without an administrator by accident. | 1 |
+| BR-17 | Two simultaneous decisions on the same request produce exactly one decision. | 1 |
+| BR-18 | Only the owner can edit or submit a request. The administrator and approvers cannot. | 1 |
+| BR-19 | A request that needs several steps must be approved by different approvers at each step, none of whom is the requester. | 3 |
+| BR-20 | The approval route depends on the total amount; the thresholds are decided in the Sprint 3 contract. | 3 |
 
-## 7. Non-functional requirements (NFR)
+## 8. Non-functional requirements (NFR)
+
+NFR-01 to NFR-08 are those of the proposal, with measurable targets and a verification method added. NFR-09 to NFR-13 were added by the team.
 
 | ID | Requirement and measurable target | Verification method | Sprint |
 |---|---|---|---|
-| NFR-01 | An unauthenticated request to any protected endpoint is rejected with status 401 and a body that contains no request, item or user data. | API test over every protected route. | 1 |
-| NFR-02 | Passwords are stored only as bcrypt hashes with cost 10 or higher. No plaintext password in the database, logs or responses. | Unit test of the hash function and an API test that reads stored values. | 1 |
-| NFR-03 | A session expires after 8 hours and is destroyed on logout. After logout the old session cookie gives 401. | API tests with an expired and a logged-out session. | 1 |
-| NFR-04 | Errors return a JSON message without stack traces or database details. | API test with malformed input. | 1 |
-| NFR-05 | A new developer can run the product locally from a fresh clone by following the README in at most 8 commands. | Documented procedure run on a clean database. | 1 |
-| NFR-06 | The product reads all configuration (database URL, port, allowed origin) from environment variables, exposes `GET /api/health`, and keeps all durable data in the database so it can be packaged with Docker later. | API test for the health route; design review against the SDS. | 1 |
-| NFR-07 | The request list for one user with 200 requests responds in under 500 ms on a local machine (median of 20 calls). | Measured by a script in Sprint 2. | 2 |
+| NFR-01 | Every protected API checks the session and the role on the server. A call without a session gets 401 and a body with no data. A call with the wrong role gets 403. | API tests for every protected route, anonymous and wrong role. | 1 |
+| NFR-02 | The API never returns a request the user may not see. A request a user may not see gives 404 and a body with no request data. | API tests with other users, other roles and drafts. | 1 |
+| NFR-03 | Passwords are stored only as bcrypt hashes with cost 10 or higher, never in plain text, logs or responses. | Unit test of the hash function and an API test that reads stored values. | 1 |
+| NFR-04 | Errors return a clear JSON message, with a message per invalid field, and never a stack trace or database detail. | API tests with invalid input and malformed JSON. | 1 |
+| NFR-05 | The UI works on desktop, tablet and mobile: no horizontal page scrolling at 1280, 768 and 375 pixels width. | Browser tests at the three widths. | 1 |
+| NFR-06 | Every status change has an automated test, including the transitions that must be refused. | The transition unit test and the API tests of F-02 and F-03. | 1 |
+| NFR-07 | Data is stored in a real database and is returned after a page reload and after the API restarts. | Browser test with reload; API tests read the database. | 1 |
+| NFR-08 | Changing one user's data never overwrites another user's data. Editing a draft changes only that draft. | API tests that compare other users' rows before and after. | 1 |
+| NFR-09 | Text typed by users is data: SQL characters never change a query, HTML or script is shown as text and never run, fields owned by the server cannot be set by the client, and the API does not announce its technology and sends basic protective headers. | API tests and a browser test. | 1 |
+| NFR-10 | The main screens have no serious or critical automated accessibility violations (WCAG 2.1 A and AA rules of axe-core) and the login works by keyboard alone. | Browser tests. | 1 |
+| NFR-11 | A new developer can run the product from a fresh clone by following the README in at most 8 commands. All configuration comes from environment variables, and `GET /api/health` answers. | A documented clean run (manual check M-01) and an API test for health. | 1 |
+| NFR-12 | The request list of one user with 200 requests responds in under 500 ms on a local machine (median of 20 calls). | Early smoke check in Sprint 1; the formal measurement is Sprint 2. | 2 |
+| NFR-13 | A session expires after 8 hours and is destroyed at logout. Forged, empty or malformed session values are rejected with 401, never with a server error. | API tests with expired, logged-out and forged sessions. | 1 |
 
-## 8. Assumptions
+## 9. Assumptions
 
-- A1. One approver per request in Sprint 1. The requester chooses the approver from a list.
-- A2. Seeded demo accounts are enough. Users do not register.
-- A3. Money is in Thai baht, stored as integer satang to avoid rounding errors.
-- A4. Time is stored in UTC.
-- A5. The product runs as a modular monolith: one API process, one React client, one PostgreSQL database.
+- A1. Any approver can decide any submitted request. There is no assignment to one named approver in Sprint 1 (multi-step routes come in Sprint 3).
+- A2. One request has one item (the proposal's fields). Several items per request are not planned.
+- A3. Seeded demo accounts are enough. Users do not register.
+- A4. Money is in Thai baht and stored as integer satang to avoid rounding errors.
+- A5. Time is stored in UTC.
+- A6. The product is a modular monolith: one API process, one React client, one PostgreSQL database.
 
-## 9. Decisions and resolved questions
+## 10. Decisions and resolved questions
 
 | ID | Question | Decision and reason |
 |---|---|---|
-| D-01 | Which context for the Workflow and Approval theme? | Purchase requests in a small company. The lifecycle is clear and the amounts give natural business rules and a later high-value rule. |
-| D-02 | Can an approver raise their own requests? | Yes. This makes the self-approval rule meaningful and testable. |
-| D-03 | Who is the approver of a request? | The requester picks one approver at submission. The server checks the choice (BR-04, BR-05). |
-| D-04 | Is a rejection reason required? | Yes (BR-06). Rejections without a reason are hard to understand later. |
-| D-05 | Can a submitted request be edited? | No in Sprint 1 (BR-09). Return for revision arrives in Sprint 2 (FR-08). |
-| D-06 | How does a user learn that a request they cannot see exists? | They do not. It is reported as not found (BR-03). |
-| D-07 | Session design? | Opaque session id in an HttpOnly cookie, stored in the database, 8 hour expiry. Logout and deactivation take effect immediately. |
-| D-08 | Approach to rules taken from real systems? | Common practice in commercial approval tools was used as guidance (routing to a named approver, approve or reject with comment, history trail, return for change, withdraw). The self-approval rule and the reason rule are our own decisions. |
+| D-01 | Which context for the Workflow and Approval theme? | Equipment purchase requests, as in the team's proposal. The lifecycle is clear and amounts give natural rules. |
+| D-02 | Can an approver raise their own requests? | Yes. The proposal forbids approving one's own request, which only makes sense if approvers can have requests. |
+| D-03 | Who decides a request? | Any approver, because the proposal lets approvers see submitted requests without assignment. The requester's own approver rights are blocked by BR-07. |
+| D-04 | One item or several items per request? | One item, as in the proposal's fields. |
+| D-05 | Which part of the proposal's lists goes into Sprint 1? | The 11 items of the proposal's Sprint 1 list, plus editing a draft (FR-02) and a minimal administrator (FR-15), because the proposal also lists them under the actors. Cancel (FR-05) and attachments are Sprint 2, as the proposal's Sprint 2 list says. |
+| D-06 | Is login a requirement? | Yes: FR-16 was added. |
+| D-07 | May a draft be incomplete? | Reason and category may be empty in a draft and are required to submit (BR-06). Item name, description, quantity and price are always required (BR-01 to BR-04). |
+| D-08 | What can the administrator do? | List users, activate or deactivate, set the role, read all requests. Not create or decide requests, and not change their own account (BR-16). |
+| D-09 | How is the work split between the two students? | The proposal lists a split of areas per student. The course requires both students to take part in every area (requirements, design, tests, AI supervision, implementation, review, maintenance), so the split is only a starting point and each Issue and PR names both people. |
+| D-10 | Session design? | Opaque session id (UUID) in an HttpOnly cookie, stored in the database, 8-hour expiry. Logout and deactivation take effect at once. |
+| D-11 | Request number format? | `PR-YYYY-NNNN` from a database sequence (unique, race-safe). |
+| D-12 | Guidance from real approval systems? | Common practice in commercial tools was used as guidance (named statuses, approve or reject with comment, history trail, return for editing, cancel). Rules such as no self-approval and the minimum reason length are our own decisions. |
 
-## 10. Change log
+## 11. Change log
 
 | Version | Date | Change |
 |---|---|---|
-| 1.0 | Sprint 1 planning | First complete baseline. |
+| 1.0, 1.1 | Sprint 1 planning | Earlier design called BuyFlow (several items per request, one assigned approver, two roles). Kept in the repository under the tag `archive/buyflow-v1`. |
+| 2.0 | 2026-11-15, before any 2.0 code | The team's proposal (PurchaseFlow) became the baseline. Differences: one item per request; status names DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED; any approver decides; request numbers and categories; an administrator role; separate approve and reject endpoints. Added FR-16, BR-15 to BR-18, NFR-09 to NFR-13. Reason: the proposal is the agreed scope of the pair. Contracts and tests were rewritten for 2.0 before the new code. |

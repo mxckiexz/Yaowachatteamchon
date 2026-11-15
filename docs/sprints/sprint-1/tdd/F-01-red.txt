@@ -1,0 +1,307 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f01/auth.test.ts (12 tests | 12 failed) 953ms
+   × F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash 28ms
+     → expected 404 to be 200 // Object.is equality
+   × F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message 5ms
+     → expected 404 to be 401 // Object.is equality
+   × F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 3ms
+     → expected 404 to be 401 // Object.is equality
+   × F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session 4ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-01 authentication > TEST-05 / AC-03: me without a session gives 401 2ms
+     → expected 404 to be 401 // Object.is equality
+   × F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent 1ms
+     → expected 404 to be 200 // Object.is equality
+   × F-01 authentication > TEST-07 / AC-05: an expired session gives 401 1ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in 1ms
+     → expected 404 to be 401 // Object.is equality
+   × F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once 2ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives 1ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-01 authentication > TEST-14 / AC-10: malformed JSON gives 400 and no stack trace 1ms
+     → expected 404 to be 400 // Object.is equality
+   × F-01 authentication > TEST-15 / AC-11: health is public 1ms
+     → expected 404 to be 200 // Object.is equality
+ ❯ tests/f01/password.test.ts (2 tests | 2 failed) 29ms
+   × F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 5ms
+     → expected false to be true // Object.is equality
+   × F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 17ms
+     → expected [] to have a length of 5 but got +0
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f01/auth.test.ts:25:24
+     23|   it("TEST-01 / AC-01: correct credentials return the user and an Http…
+     24|     const res = await request(app).post("/api/auth/login").set("Origin…
+     25|     expect(res.status).toBe(200);
+       |                        ^
+     26|     expect(res.body.user).toMatchObject({ email: REQ, name: "Ploy", ro…
+     27|     expect(typeof res.body.user.id).toBe("number");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f01/auth.test.ts:36:24
+     34|   it("TEST-02 / AC-02: a wrong password gives 401 with the standard me…
+     35|     const res = await request(app).post("/api/auth/login").set("Origin…
+     36|     expect(res.status).toBe(401);
+       |                        ^
+     37|     expect(res.body).toEqual({ error: WRONG_MESSAGE });
+     38|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f01/auth.test.ts:43:28
+     41|     const wrong = await request(app).post("/api/auth/login").set("Orig…
+     42|     const unknown = await request(app).post("/api/auth/login").set("Or…
+     43|     expect(unknown.status).toBe(401);
+       |                            ^
+     44|     expect(unknown.body).toEqual(wrong.body);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ Module.loginAgent tests/helpers/fixtures.ts:32:87
+     30| export async function loginAgent(email: string, password: string = FIX…
+     31|   const agent = request.agent(app);
+     32|   await agent.post("/api/auth/login").set("Origin", ORIGIN).send({ ema…
+       |                                                                                       ^
+     33|   return agent;
+     34| }
+ ❯ tests/f01/auth.test.ts:48:25
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-05 / AC-03: me without a session gives 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f01/auth.test.ts:56:24
+     54|   it("TEST-05 / AC-03: me without a session gives 401", async () => {
+     55|     const res = await request(app).get("/api/auth/me");
+     56|     expect(res.status).toBe(401);
+       |                        ^
+     57|   });
+     58| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f01/auth.test.ts:61:26
+     59|   it("TEST-06 / AC-04: logout destroys the session and is idempotent",…
+     60|     const login = await request(app).post("/api/auth/login").set("Orig…
+     61|     expect(login.status).toBe(200);
+       |                          ^
+     62|     const cookie = String(login.headers["set-cookie"]).split(";")[0];
+     63|     expect((await request(app).get("/api/auth/me").set("Cookie", cooki…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-07 / AC-05: an expired session gives 401
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ Module.loginAgent tests/helpers/fixtures.ts:32:87
+     30| export async function loginAgent(email: string, password: string = FIX…
+     31|   const agent = request.agent(app);
+     32|   await agent.post("/api/auth/login").set("Origin", ORIGIN).send({ ema…
+       |                                                                                       ^
+     33|   return agent;
+     34| }
+ ❯ tests/f01/auth.test.ts:71:25
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f01/auth.test.ts:80:24
+     78|   it("TEST-10 / AC-07: a deactivated user cannot log in", async () => {
+     79|     const res = await request(app).post("/api/auth/login").set("Origin…
+     80|     expect(res.status).toBe(401);
+       |                        ^
+     81|     expect(res.body).toEqual({ error: WRONG_MESSAGE });
+     82|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ Module.loginAgent tests/helpers/fixtures.ts:32:87
+     30| export async function loginAgent(email: string, password: string = FIX…
+     31|   const agent = request.agent(app);
+     32|   await agent.post("/api/auth/login").set("Origin", ORIGIN).send({ ema…
+       |                                                                                       ^
+     33|   return agent;
+     34| }
+ ❯ tests/f01/auth.test.ts:86:25
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ Module.loginAgent tests/helpers/fixtures.ts:32:87
+     30| export async function loginAgent(email: string, password: string = FIX…
+     31|   const agent = request.agent(app);
+     32|   await agent.post("/api/auth/login").set("Origin", ORIGIN).send({ ema…
+       |                                                                                       ^
+     33|   return agent;
+     34| }
+ ❯ tests/f01/auth.test.ts:93:25
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-14 / AC-10: malformed JSON gives 400 and no stack trace
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/f01/auth.test.ts:105:24
+    103|       .set("Content-Type", "application/json")
+    104|       .send("{ not json");
+    105|     expect(res.status).toBe(400);
+       |                        ^
+    106|     expect(typeof res.body.error).toBe("string");
+    107|     expect(res.body.stack).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  tests/f01/auth.test.ts > F-01 authentication > TEST-15 / AC-11: health is public
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f01/auth.test.ts:113:24
+    111|   it("TEST-15 / AC-11: health is public", async () => {
+    112|     const res = await request(app).get("/api/health");
+    113|     expect(res.status).toBe(200);
+       |                        ^
+    114|     expect(res.body).toEqual({ status: "ok" });
+    115|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  tests/f01/password.test.ts > F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/f01/password.test.ts:13:35
+     11|   it("TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10…
+     12|     const hash = await hashPassword("Correct-Horse-1");
+     13|     expect(hash.startsWith("$2")).toBe(true);
+       |                                   ^
+     14|     expect(Number(hash.split("$")[2])).toBeGreaterThanOrEqual(10);
+     15|     expect(hash).not.toContain("Correct-Horse-1");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯
+
+ FAIL  tests/f01/password.test.ts > F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password
+AssertionError: expected [] to have a length of 5 but got +0
+
+- Expected
++ Received
+
+- 5
++ 0
+
+ ❯ tests/f01/password.test.ts:23:19
+     21|     await seedDemoData("Seed-Test-Pass1");
+     22|     const users = await getPrisma().user.findMany({ where: { email: { …
+     23|     expect(users).toHaveLength(DEMO_ACCOUNTS.length);
+       |                   ^
+     24|     for (const user of users) {
+     25|       expect(user.passwordHash.startsWith("$2")).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯
+
+ Test Files  2 failed (2)
+      Tests  14 failed (14)
+   Start at  14:31:51
+   Duration  1.58s (transform 62ms, setup 0ms, collect 214ms, tests 981ms, environment 0ms, prepare 105ms)
+

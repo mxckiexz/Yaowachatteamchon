@@ -1,0 +1,22 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ✓ tests/f01/auth.test.ts (12 tests) 6983ms
+   ✓ F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash 521ms
+   ✓ F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message 452ms
+   ✓ F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 899ms
+   ✓ F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session 457ms
+   ✓ F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent 458ms
+   ✓ F-01 authentication > TEST-07 / AC-05: an expired session gives 401 459ms
+   ✓ F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in 445ms
+   ✓ F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once 459ms
+   ✓ F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives 452ms
+ ✓ tests/f01/password.test.ts (2 tests) 1815ms
+   ✓ F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 1335ms
+   ✓ F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 474ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed (14)
+   Start at  14:32:06
+   Duration  9.43s (transform 62ms, setup 0ms, collect 216ms, tests 8.80s, environment 0ms, prepare 105ms)
+

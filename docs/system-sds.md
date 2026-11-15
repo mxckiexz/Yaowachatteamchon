@@ -1,75 +1,78 @@
-# BuyFlow System-Level Software Design Specification
+# PurchaseFlow System-Level Software Design Specification
 
-Version 1.0.
+Version 2.0.
 
 ## 1. Architecture and stack
 
-BuyFlow is a modular monolith with three logical layers. They run as two processes and one database.
+PurchaseFlow is a modular monolith with three logical layers, run as two processes and one database.
 
 | Layer | Technology | Responsibility |
 |---|---|---|
 | UI | React 18, Vite, TypeScript, Bootstrap 5 | Screens, forms, client-side hints. The UI never decides permissions. |
 | API and application layer | Node.js 24, Express 4, TypeScript | Authentication, role and ownership checks, validation, business rules, status transitions. All business rules are enforced here. |
-| Database | PostgreSQL, accessed through Prisma 5 | Durable data, constraints, migrations. |
-| Tests | Vitest and Supertest (server), Vitest and Testing Library (client), Playwright (end to end) | Automated verification. |
+| Database | PostgreSQL, accessed through Prisma 5 | Durable data, constraints, migrations, a sequence for request numbers. |
+| Tests | Vitest and Supertest (server), Vitest and Testing Library (client), Playwright with axe-core (end to end) | Automated verification. |
 
-Why this stack: it is the stack used in Labs 1 to 4, which the group specification recommends. The team already knows it, and the Lab 5 starter kit targets Node.js, PostgreSQL and Prisma.
+Why this stack: it is the stack of Labs 1 to 4, which the group specification recommends, and it matches the team's proposal. The Lab 5 starter kit targets Node.js, PostgreSQL and Prisma.
 
-Communication: the browser calls the API with `fetch` over JSON on `/api/*`. Requests carry an HttpOnly session cookie. The API calls the database through Prisma. In development Vite runs on port 5173 and the API on port 3000; the API allows only the configured client origin.
+Communication: the browser calls the API with `fetch` over JSON on `/api/*`, carrying an HttpOnly session cookie. The API calls the database through Prisma. In development Vite runs on port 5173 and forwards `/api` to the API on port 3000; the API accepts state-changing requests only from the configured client origin.
 
-Where rules are enforced: in the API only. The database adds a second safety net with constraints (unique e-mail, foreign keys, check on positive quantity and price).
+Where rules are enforced: in the API only. The database adds a second safety net: unique e-mail and request number, foreign keys, and checks on quantity and price.
 
 ## 2. Data model
 
 ```
 User 1 ---- * Session
-User 1 ---- * PurchaseRequest (as requester)
-User 1 ---- * PurchaseRequest (as approver, optional until submitted)
-PurchaseRequest 1 ---- * RequestItem
+User 1 ---- * PurchaseRequest   (as requester)
 PurchaseRequest 1 ---- * RequestHistory
-User 1 ---- * RequestHistory (actor)
+User 1 ---- * RequestHistory    (as actor)
+Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attachment (uploader)
 ```
 
 | Entity | Fields | Constraints and ownership |
 |---|---|---|
-| User | id, name, email, passwordHash, role (EMPLOYEE or APPROVER), isActive, createdAt | email unique and stored lower case; passwordHash is a bcrypt hash |
-| Session | id (random UUID), userId, expiresAt, createdAt | deleted on logout; invalid after expiresAt |
-| PurchaseRequest | id, requesterId, approverId (nullable), title, justification, status (DRAFT, PENDING, APPROVED, REJECTED), totalSatang, createdAt, submittedAt, decidedAt, decisionComment | requesterId is the owner; approverId must reference an active APPROVER different from requesterId (checked by the API); totalSatang is calculated by the server |
-| RequestItem | id, requestId, name, quantity, unitPriceSatang | quantity between 1 and 1000; unitPriceSatang greater than 0; deleted with the request |
-| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it |
+| User | id, name, email, passwordHash, role (REQUESTER, APPROVER, ADMIN), isActive, createdAt | email unique and stored in lower case; passwordHash is a bcrypt hash |
+| Session | id (random UUID), userId, expiresAt, createdAt | deleted at logout; invalid after expiresAt; invalid when the user is inactive |
+| PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints |
+| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, later CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it |
+| Attachment (Sprint 2) | id, requestId, fileName, fileType, filePath, uploadedById, createdAt | not created in Sprint 1 |
 
 Money is stored as integer satang (1 baht = 100 satang). The API sends and receives baht as decimal numbers and converts at the boundary.
 
-Database setup: `npx prisma migrate deploy` applies the migration under `server/prisma/migrations`. `npm run prisma:seed` creates the demo accounts and sample requests. Seed is idempotent (running it twice gives the same data).
+Database setup: `npm --prefix server run prisma:deploy` applies the migrations under `server/prisma/migrations`. `npm --prefix server run prisma:seed` creates the demo accounts. The seed is idempotent.
 
-Seed accounts (synthetic): `somchai@buyflow.test` (APPROVER), `malee@buyflow.test` (APPROVER), `ploy@buyflow.test` (EMPLOYEE), `nattapong@buyflow.test` (EMPLOYEE). The shared demo password comes from the environment variable `SEED_DEFAULT_PASSWORD`; it is a local development value and not a real secret.
+Seed accounts (synthetic): `ploy@purchaseflow.test` and `nattapong@purchaseflow.test` (REQUESTER), `somchai@purchaseflow.test` and `malee@purchaseflow.test` (APPROVER), `admin@purchaseflow.test` (ADMIN). They share a local demo password from the environment variable `SEED_DEFAULT_PASSWORD`; it is a development value and not a real secret.
 
 ## 3. UI structure and conventions
 
 | Screen | Route | Who |
 |---|---|---|
 | Login | `/login` | anyone |
-| My requests | `/requests` | any logged-in user |
-| New request | `/requests/new` | any logged-in user |
-| Request detail | `/requests/:id` | owner, or assigned approver |
-| Review queue | `/reviews` | role APPROVER |
+| My requests | `/requests` | requester, approver |
+| New request | `/requests/new` | requester, approver |
+| Request detail (edit and submit for a draft, decision panel for an approver) | `/requests/:id` | owner, approvers (not drafts), administrator |
+| Review queue | `/reviews` | approver |
+| All requests (read only) | `/all-requests` | administrator |
+| Users | `/admin/users` | administrator |
 
 Shared behavior:
 
-- Navigation bar shows the user name, role and a Logout button. The Review link appears only for approvers. This is a convenience; the API enforces the same rule.
+- The navigation bar shows the user name and role and a Logout button, and only the links the role may use. This is a convenience; the API enforces the same rules.
 - Every list and detail has a loading state, an empty state and an error state.
-- Forms show a message next to each invalid field. Server validation errors are shown in the same place.
+- Forms show a message next to each invalid field. Server validation errors appear in the same place.
 - Status is shown as a labelled badge (text and colour, never colour alone).
-- Destructive or final actions (approve, reject) show the request title and total before they are sent.
+- Approve and reject show the request number, item and total before they are sent.
+- Tables scroll inside their own box and the navigation bar wraps, so no page scrolls sideways at 375 pixels.
 
 ## 4. API approach
 
-- JSON over HTTP under `/api`. Plural nouns. Status codes: 200, 201, 204, 400 (bad JSON), 401, 403, 404, 409 (state conflict), 422 (validation or rule).
+- JSON over HTTP under `/api`. Status codes: 200, 201, 204, 400 (bad JSON), 401, 403, 404, 409 (state conflict), 413 (body too large), 422 (validation or rule).
 - Success bodies return the resource. Error bodies have the shape `{ "error": "message", "code": "CODE", "fields": { "field": "message" } }`; `code` and `fields` are optional.
 - Money fields are baht numbers (`unitPrice`, `total`).
 - Validation happens on the server for every write. The client's checks are hints.
 - Errors never include stack traces, SQL or file paths. Unexpected errors return 500 with a generic message.
 - A state-changing request (POST, PATCH, PUT, DELETE) must carry an `Origin` header equal to the configured client origin; otherwise 403.
+- Responses carry `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`, and never `X-Powered-By`.
 
 Endpoint list (details are in the feature contracts):
 
@@ -77,33 +80,34 @@ Endpoint list (details are in the feature contracts):
 |---|---|
 | `GET /api/health` | R-01 |
 | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | F-01 |
-| `GET /api/approvers` | F-02 |
-| `POST /api/requests`, `POST /api/requests/:id/submit` | F-02 |
-| `POST /api/requests/:id/decision` | F-03 |
-| `GET /api/requests`, `GET /api/requests/:id`, `GET /api/reviews` | F-04 |
+| `POST /api/requests`, `PATCH /api/requests/:id`, `POST /api/requests/:id/submit` | F-02 |
+| `POST /api/requests/:id/approve`, `POST /api/requests/:id/reject` | F-03 |
+| `GET /api/requests?scope=mine\|review\|all`, `GET /api/requests/:id`, `GET /api/requests/:id/history` | F-04 |
+| `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
 
-| Operation | Anonymous | EMPLOYEE | APPROVER |
-|---|---|---|---|
-| Log in | yes | yes | yes |
-| Read current user, log out | no (401) | yes | yes |
-| Create a request | no (401) | yes | yes |
-| Submit own DRAFT | no (401) | yes | yes |
-| List own requests | no (401) | own only | own only |
-| Read a request | no (401) | own only (other: 404) | own, or assigned to them (other: 404) |
-| List approvers | no (401) | yes | yes |
-| Review queue | no (401) | no (403) | yes, assigned to them only |
-| Approve or reject | no (401) | no (403) | only if assigned to them (otherwise 403) and not the requester (403) |
+| Operation | Anonymous | REQUESTER | APPROVER | ADMIN |
+|---|---|---|---|---|
+| Log in | yes | yes | yes | yes |
+| Read current user, log out | 401 | yes | yes | yes |
+| Create a request | 401 | yes | yes | 403 |
+| Edit or submit a request | 401 | own draft only | own draft only | 404 |
+| List own requests (`scope=mine`) | 401 | own | own | (none, no own requests) |
+| Review queue (`scope=review`) | 401 | 403 | submitted requests of others | 403 |
+| All requests (`scope=all`) | 401 | 403 | 403 | all, read only |
+| Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
+| Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
+| List users, change a user | 401 | 403 | 403 | yes, except one's own account (409) |
 
-Ownership links: PurchaseRequest.requesterId is the owner; PurchaseRequest.approverId is the assigned approver. A hidden button in the UI is not authorization. Every protected route checks session, role and ownership on the server.
+Ownership link: `PurchaseRequest.requesterId` is the owner. Owner-only operations treat everyone else as "not found". A hidden button in the UI is not authorization: every protected route checks session, role and ownership on the server.
 
 ## 6. Authentication and session
 
 - Passwords are hashed with bcrypt, cost 12. Plaintext passwords are never stored, logged or returned.
-- Login checks e-mail (case-insensitive) and password. A wrong password and an unknown e-mail give the same 401 message and run one bcrypt comparison each, so timing does not reveal which e-mails exist.
-- On success the server creates a Session row (random UUID, expires in 8 hours) and sets a cookie that is HttpOnly and SameSite=Lax, and Secure in production.
-- Every protected route looks the session up in the database. A missing, unknown, expired session, or an inactive user, gives 401.
+- Login checks e-mail (case-insensitive) and password. A wrong password, an unknown e-mail and a deactivated user give the same 401 message and run one bcrypt comparison each, so timing does not reveal which e-mails exist.
+- On success the server creates a Session row (random UUID, 8 hours) and sets a cookie that is HttpOnly and SameSite=Lax, and Secure in production.
+- Every protected route accepts only a session id that is a UUID, looks it up in the database, and refuses an unknown or expired session or an inactive user with 401.
 - `GET /api/auth/me` returns the current user. Logout deletes the Session row and clears the cookie. Logout is idempotent.
 
 ## 7. Configuration and secrets
@@ -112,7 +116,7 @@ Environment variables (see `server/.env.example`):
 
 | Variable | Purpose | Example |
 |---|---|---|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:password@localhost:5432/buyflow` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:password@localhost:5432/purchaseflow` |
 | `PORT` | API port | `3000` |
 | `CLIENT_ORIGIN` | Allowed browser origin | `http://localhost:5173` |
 | `SEED_DEFAULT_PASSWORD` | Demo password for seeded accounts (local only) | `ChangeMe123!` |
@@ -124,11 +128,11 @@ Real secrets are never committed. `.env` is ignored by Git; `.env.example` holds
 
 | Component | Plan |
 |---|---|
-| Container | One Dockerfile builds the client, then runs the API which serves the built client, listening on `PORT`. |
+| Container | One Dockerfile builds the client, then runs the API, which serves the built client and listens on `PORT`. |
 | Database | Managed PostgreSQL (Cloud SQL). Data survives restarts and redeployments because no state is kept in the container. |
 | Configuration | Environment variables and Secret Manager. |
 | Image registry | Artifact Registry. |
 | Runtime | Cloud Run. |
 | Pipeline | GitHub Actions: build and test on pull requests; deploy from `main` by image digest with a smoke test. |
 
-Design for this in Sprint 1: port from `PORT`, health route, configuration from environment, sessions in the database, no local file storage.
+Design for this in Sprint 1: port from `PORT`, health route, configuration from environment, sessions in the database, no local file storage (attachments in Sprint 2 will need object storage for the same reason).

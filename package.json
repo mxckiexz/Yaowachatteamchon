@@ -1,0 +1,14 @@
+{
+  "name": "purchaseflow-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:all": "npm --prefix server test && npm --prefix client test && playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "1.63.0",
+    "marked": "^18.2.0"
+  }
+}

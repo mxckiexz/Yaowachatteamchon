@@ -1,0 +1,386 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow/server
+
+ ❯ tests/f02/create-edit-submit.test.ts (16 tests | 16 failed) 9615ms
+   × F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total 508ms
+     → expected 404 to be 201 // Object.is equality
+   × F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure 469ms
+     → itemName 0: expected 404 to be 422 // Object.is equality
+   × F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass) 452ms
+     → quantity 0: expected 404 to be 422 // Object.is equality
+   × F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 450ms
+     → price 0: expected 404 to be 422 // Object.is equality
+   × F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 456ms
+     → FOOD: expected 404 to be 422 // Object.is equality
+   × F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 463ms
+     → expected false to be true // Object.is equality
+   × F-02 create > TEST-31 / AC-22: the administrator cannot create a request 452ms
+     → expected 404 to be 403 // Object.is equality
+   × F-02 create > TEST-32 / AC-22: an approver can create a request of their own 451ms
+     → expected 404 to be 201 // Object.is equality
+   × F-02 edit > TEST-23 / AC-16: the owner edits a DRAFT; the total is recalculated and the number stays 450ms
+     → createDraft failed: 404 {}
+   × F-02 edit > TEST-24 / AC-17: only a DRAFT can be edited (SUBMITTED, APPROVED, REJECTED, CANCELLED are refused) 449ms
+     → createDraft failed: 404 {}
+   × F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 450ms
+     → createDraft failed: 404 {}
+   × F-02 submit > TEST-26 / AC-18: the owner submits a complete DRAFT 451ms
+     → createDraft failed: 404 {}
+   × F-02 submit > TEST-27 / AC-19: a draft without a reason or a category cannot be submitted (INCOMPLETE) 450ms
+     → createDraft failed: 404 {}
+   × F-02 submit > TEST-28 / AC-20: submitting a request that is not a DRAFT gives 409 and changes nothing 450ms
+     → createDraft failed: 404 {}
+   × F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 452ms
+     → createDraft failed: 404 {}
+   × F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 893ms
+     → createDraft failed: 404 {}
+ ❯ tests/f02/money-validation.unit.test.ts (4 tests | 4 failed) 8ms
+   × F-02 money helpers (unit) > TEST-17 / AC-13: the total is the exact product in satang (0.1 baht x 3 = 30 satang) 6ms
+     → expected +0 to be 30 // Object.is equality
+   × F-02 money helpers (unit) > TEST-33 / AC-13, AC-14: bahtToSatang accepts numbers and numeric strings with at most 2 decimals 1ms
+     → expected null to be 25050 // Object.is equality
+   × F-02 validation (unit) > TEST-34 / AC-14: accepts exactly the valid boundaries and names every invalid field 1ms
+     → expected true to be false // Object.is equality
+   × F-02 validation (unit) > trims text, treats an empty category as none, and never reads a total sent by the client 0ms
+     → expected '' to be 'Pen' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:32:24
+     30|     const agent = await loginAgent(REQ);
+     31|     const res = await post(agent, createBody({ quantity: 2, unitPrice:…
+     32|     expect(res.status).toBe(201);
+       |                        ^
+     33|     const r = res.body.request;
+     34|     expect(r.status).toBe("DRAFT");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure
+AssertionError: itemName 0: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:50:57
+     48|     for (const itemName of ["", "   ", "x".repeat(101)]) {
+     49|       const res = await post(agent, createBody({ itemName }));
+     50|       expect(res.status, `itemName ${itemName.length}`).toBe(422);
+       |                                                         ^
+     51|       expect(res.body.code).toBe("VALIDATION_ERROR");
+     52|       expect(res.body.fields.itemName).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass)
+AssertionError: quantity 0: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:65:58
+     63|     for (const quantity of [0, 1001, 1.5, -1, "2"]) {
+     64|       const res = await post(agent, createBody({ quantity }));
+     65|       expect(res.status, `quantity ${String(quantity)}`).toBe(422);
+       |                                                          ^
+     66|       expect(res.body.fields.quantity).toBeTruthy();
+     67|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass)
+AssertionError: price 0: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:76:56
+     74|     for (const unitPrice of [0, -1, 10.505, 1000000.01, "abc", null]) {
+     75|       const res = await post(agent, createBody({ unitPrice }));
+     76|       expect(res.status, `price ${String(unitPrice)}`).toBe(422);
+       |                                                        ^
+     77|       expect(res.body.fields.unitPrice).toBeTruthy();
+     78|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit
+AssertionError: FOOD: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:91:36
+     89|     for (const category of ["FOOD", "equipment", "Equipment"]) {
+     90|       const res = await post(agent, createBody({ category }));
+     91|       expect(res.status, category).toBe(422);
+       |                                    ^
+     92|       expect(res.body.fields.category).toBeTruthy();
+     93|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/f02/create-edit-submit.test.ts:108:52
+    106|     const agent = await loginAgent(REQ);
+    107|     const results = await Promise.all(Array.from({ length: 20 }, () =>…
+    108|     expect(results.every((r) => r.status === 201)).toBe(true);
+       |                                                    ^
+    109|     const numbers = results.map((r) => r.body.request.requestNumber as…
+    110|     expect(new Set(numbers).size).toBe(20);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-31 / AC-22: the administrator cannot create a request
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:118:24
+    116|     const before = await getPrisma().purchaseRequest.count();
+    117|     const res = await post(agent, createBody());
+    118|     expect(res.status).toBe(403);
+       |                        ^
+    119|     expect(await getPrisma().purchaseRequest.count()).toBe(before);
+    120|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 create > TEST-32 / AC-22: an approver can create a request of their own
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f02/create-edit-submit.test.ts:125:24
+    123|     const agent = await loginAgent(APP);
+    124|     const res = await post(agent, createBody());
+    125|     expect(res.status).toBe(201);
+       |                        ^
+    126|     expect(res.body.request.requester.id).toBe(ids[APP]);
+    127|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-23 / AC-16: the owner edits a DRAFT; the total is recalculated and the number stays
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:133:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-24 / AC-17: only a DRAFT can be edited (SUBMITTED, APPROVED, REJECTED, CANCELLED are refused)
+Error: createDraft failed: 404 {}
+ ❯ createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ Module.createSubmitted tests/helpers/requests.ts:31:17
+ ❯ tests/f02/create-edit-submit.test.ts:146:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:161:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-26 / AC-18: the owner submits a complete DRAFT
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:173:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-27 / AC-19: a draft without a reason or a category cannot be submitted (INCOMPLETE)
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:185:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-28 / AC-20: submitting a request that is not a DRAFT gives 409 and changes nothing
+Error: createDraft failed: 404 {}
+ ❯ createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ Module.createSubmitted tests/helpers/requests.ts:31:17
+ ❯ tests/f02/create-edit-submit.test.ts:207:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:216:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯
+
+ FAIL  tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched
+Error: createDraft failed: 404 {}
+ ❯ Module.createDraft tests/helpers/requests.ts:22:33
+     20| export async function createDraft(agent: Agent, over: Record<string, u…
+     21|   const res = await agent.post("/api/requests").set("Origin", ORIGIN).…
+     22|   if (res.status !== 201) throw new Error(`createDraft failed: ${res.s…
+       |                                 ^
+     23|   return res.body.request as { id: number; requestNumber: string; stat…
+     24| }
+ ❯ tests/f02/create-edit-submit.test.ts:227:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯
+
+ FAIL  tests/f02/money-validation.unit.test.ts > F-02 money helpers (unit) > TEST-17 / AC-13: the total is the exact product in satang (0.1 baht x 3 = 30 satang)
+AssertionError: expected +0 to be 30 // Object.is equality
+
+- Expected
++ Received
+
+- 30
++ 0
+
+ ❯ tests/f02/money-validation.unit.test.ts:10:57
+      8| describe("F-02 money helpers (unit)", () => {
+      9|   it("TEST-17 / AC-13: the total is the exact product in satang (0.1 b…
+     10|     expect(calculateTotalSatang(3, bahtToSatang(0.1)!)).toBe(30);
+       |                                                         ^
+     11|     expect(calculateTotalSatang(2, 10050)).toBe(20100);
+     12|     expect(calculateTotalSatang(1000, 100000000)).toBe(100000000000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯
+
+ FAIL  tests/f02/money-validation.unit.test.ts > F-02 money helpers (unit) > TEST-33 / AC-13, AC-14: bahtToSatang accepts numbers and numeric strings with at most 2 decimals
+AssertionError: expected null to be 25050 // Object.is equality
+
+- Expected: 
+25050
+
++ Received: 
+null
+
+ ❯ tests/f02/money-validation.unit.test.ts:16:33
+     14| 
+     15|   it("TEST-33 / AC-13, AC-14: bahtToSatang accepts numbers and numeric…
+     16|     expect(bahtToSatang(250.5)).toBe(25050);
+       |                                 ^
+     17|     expect(bahtToSatang("12")).toBe(1200);
+     18|     expect(bahtToSatang(0.01)).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/20]⎯
+
+ FAIL  tests/f02/money-validation.unit.test.ts > F-02 validation (unit) > TEST-34 / AC-14: accepts exactly the valid boundaries and names every invalid field
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/f02/money-validation.unit.test.ts:30:47
+     28|     expect(ok()).toBe(true);
+     29|     expect(ok({ itemName: "x".repeat(100) })).toBe(true);
+     30|     expect(ok({ itemName: "x".repeat(101) })).toBe(false);
+       |                                               ^
+     31|     expect(ok({ itemName: "   " })).toBe(false);
+     32|     expect(ok({ description: "" })).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/20]⎯
+
+ FAIL  tests/f02/money-validation.unit.test.ts > F-02 validation (unit) > trims text, treats an empty category as none, and never reads a total sent by the client
+AssertionError: expected '' to be 'Pen' // Object.is equality
+
+- Expected
++ Received
+
+- Pen
+
+ ❯ tests/f02/money-validation.unit.test.ts:60:37
+     58|     expect(result.ok).toBe(true);
+     59|     if (result.ok) {
+     60|       expect(result.value.itemName).toBe("Pen");
+       |                                     ^
+     61|       expect(result.value.category).toBeNull();
+     62|       expect(JSON.stringify(result.value)).not.toContain("total");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/20]⎯
+
+ Test Files  2 failed (2)
+      Tests  20 failed (20)
+   Start at  14:35:42
+   Duration  10.22s (transform 67ms, setup 0ms, collect 207ms, tests 9.62s, environment 0ms, prepare 104ms)
+

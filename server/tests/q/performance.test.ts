@@ -1,0 +1,67 @@
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { getPrisma } from "../../src/prisma.js";
+import { cleanupUsers, createUser, loginAgent, ORIGIN } from "../helpers/fixtures.js";
+import { createBody } from "../helpers/requests.js";
+
+const PERF = "q-perf@test.local";
+const CONC = "q-conc@test.local";
+let perfId = 0;
+let concId = 0;
+
+beforeAll(async () => {
+  perfId = (await createUser(PERF, { role: "REQUESTER" })).id;
+  concId = (await createUser(CONC, { role: "REQUESTER" })).id;
+});
+afterAll(async () => {
+  await cleanupUsers([PERF, CONC]);
+  await getPrisma().$disconnect();
+});
+
+describe("NFR-12 early smoke checks (this is not a load test)", () => {
+  it("TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms", async () => {
+    const prisma = getPrisma();
+    for (let i = 0; i < 200; i++) {
+      await prisma.purchaseRequest.create({
+        data: {
+          requestNumber: `PERF-${perfId}-${i}`,
+          requesterId: perfId,
+          itemName: `Perf request ${i}`,
+          description: "Performance check",
+          quantity: 2,
+          unitPriceSatang: 10050,
+          totalSatang: 20100n,
+          reason: "Speed",
+          category: "OTHER",
+          status: "DRAFT",
+        },
+      });
+    }
+    const agent = await loginAgent(PERF);
+    const times: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const start = performance.now();
+      const res = await agent.get("/api/requests");
+      times.push(performance.now() - start);
+      expect(res.status).toBe(200);
+      expect(res.body.requests).toHaveLength(200);
+    }
+    times.sort((a, b) => a - b);
+    const median = times[Math.floor(times.length / 2)];
+    console.log(`TEST-89 measured median ${median.toFixed(1)} ms, max ${times[times.length - 1].toFixed(1)} ms over 20 calls, 200 requests`);
+    expect(median).toBeLessThan(500);
+  });
+
+  it("TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored", async () => {
+    const agent = await loginAgent(CONC);
+    const start = performance.now();
+    const reads = Array.from({ length: 50 }, () => agent.get("/api/requests"));
+    const writes = Array.from({ length: 20 }, (_, i) => agent.post("/api/requests").set("Origin", ORIGIN).send(createBody({ itemName: `Concurrent ${i}` })));
+    const results = await Promise.all([...reads, ...writes]);
+    const elapsed = performance.now() - start;
+    console.log(`TEST-90 70 simultaneous calls finished in ${elapsed.toFixed(0)} ms`);
+    expect(results.slice(0, 50).every((r) => r.status === 200)).toBe(true);
+    expect(results.slice(50).every((r) => r.status === 201)).toBe(true);
+    expect(results.some((r) => r.status >= 500)).toBe(false);
+    expect(await getPrisma().purchaseRequest.count({ where: { requesterId: concId } })).toBe(20);
+  });
+});
