@@ -52,4 +52,24 @@ describe("seed does not destroy data on a later run (production rule)", () => {
     expect(defaultSeedOverwrite("development")).toBe(true);
     expect(defaultSeedOverwrite(undefined)).toBe(true);
   });
+
+  it("seeds the administrator with its own password and skips the other accounts when there is no demo password", async () => {
+    const prisma = getPrisma();
+    await cleanupUsers(EMAILS);
+    await seedDemoData(undefined, { accounts: ACCOUNTS, overwrite: false, adminPassword: "only-admin-secret-4" });
+    const users = await prisma.user.findMany({ where: { email: { in: EMAILS } } });
+    expect(users.map((u) => u.email)).toEqual([ACCOUNTS[1].email]);
+    expect(await verifyPassword("only-admin-secret-4", users[0].passwordHash)).toBe(true);
+  });
+
+  it("gives the administrator a different password from the demo accounts when both are set", async () => {
+    const prisma = getPrisma();
+    await cleanupUsers(EMAILS);
+    await seedDemoData("demo-secret-value-5", { accounts: ACCOUNTS, overwrite: false, adminPassword: "admin-secret-value-5" });
+    const req = await prisma.user.findUniqueOrThrow({ where: { email: ACCOUNTS[0].email } });
+    const admin = await prisma.user.findUniqueOrThrow({ where: { email: ACCOUNTS[1].email } });
+    expect(await verifyPassword("demo-secret-value-5", req.passwordHash)).toBe(true);
+    expect(await verifyPassword("admin-secret-value-5", admin.passwordHash)).toBe(true);
+    expect(await verifyPassword("admin-secret-value-5", req.passwordHash)).toBe(false);
+  });
 });
