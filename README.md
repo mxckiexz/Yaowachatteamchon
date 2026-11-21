@@ -4,7 +4,7 @@ Equipment purchase approval system (CPE 334 group project, theme 5: Workflow and
 
 A requester creates a purchase request for an item, edits it while it is a draft, and submits it. An approver approves it, or rejects it with a recorded reason. Every status change is kept in a history. An administrator manages the user accounts. All data is synthetic.
 
-Status: Sprint 1 (Deliverable 1). Documents are in `docs/`: `srs.md`, `features.md`, `traceability.md`, `system-sds.md`, `sprints/plan.md`, `sprints/sprint-1/` (feature contracts F-01 to F-05 and Q-01, test strategy, definition of done, TDD evidence, results), `qa-defect-log.md`, `uat/uat-cases.md`.
+Status: Lab 5 deployment readiness is in progress (Docker, CI and deploy scripts are written and tested locally; nothing is deployed to GCP yet, see `docs/labs/lab-05/deployment.md`). Sprint 1 (Deliverable 1) remains the application baseline. Documents are in `docs/`: `srs.md`, `features.md`, `traceability.md`, `system-sds.md`, `sprints/plan.md`, `sprints/sprint-1/` (feature contracts F-01 to F-05 and Q-01, test strategy, definition of done, TDD evidence, results), `qa-defect-log.md`, `uat/uat-cases.md`.
 
 ## Stack
 
