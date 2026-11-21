@@ -1,0 +1,48 @@
+# Local production-mode run: PostgreSQL, a one-time migrate+seed job, and the app (API + built client) on one port.
+# It builds the same Dockerfile that Cloud Run runs.
+#   docker compose up --build        then open http://localhost:3000 (set APP_PORT in .env if 3000 is taken)
+# The values below are throw-away local ones. Copy .env.example to .env to change them. Never commit .env.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-purchaseflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-purchaseflow}
+      POSTGRES_DB: ${POSTGRES_DB:-purchaseflow}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-purchaseflow} -d ${POSTGRES_DB:-purchaseflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build: .
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-purchaseflow}:${POSTGRES_PASSWORD:-purchaseflow}@db:5432/${POSTGRES_DB:-purchaseflow}?schema=public
+      SEED_DEFAULT_PASSWORD: ${SEED_DEFAULT_PASSWORD:?Set SEED_DEFAULT_PASSWORD (12+ characters, not the example value) in .env}
+    command: ["sh", "-c", "npx prisma migrate deploy && npm run prisma:seed:container"]
+
+  app:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-purchaseflow}:${POSTGRES_PASSWORD:-purchaseflow}@db:5432/${POSTGRES_DB:-purchaseflow}?schema=public
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:${APP_PORT:-3000}}
+
+volumes:
+  postgres_data:

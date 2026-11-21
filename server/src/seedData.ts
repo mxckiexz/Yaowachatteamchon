@@ -9,15 +9,28 @@ export const DEMO_ACCOUNTS: { name: string; email: string; role: "REQUESTER" | "
   { name: "Admin", email: "admin@purchaseflow.test", role: "ADMIN" },
 ];
 
-// Idempotent: running it twice leaves the same five accounts. The password is a local demo value
-// from the environment (SEED_DEFAULT_PASSWORD), never a real secret.
-export async function seedDemoData(password: string): Promise<void> {
+type SeedAccount = (typeof DEMO_ACCOUNTS)[number];
+
+// Local development resets the demo accounts on every run. Production never does: a later release must not undo a role change,
+// a deactivation or a changed password, so there the seed only creates what is missing.
+export function defaultSeedOverwrite(nodeEnv: string | undefined): boolean {
+  return nodeEnv !== "production";
+}
+
+// Idempotent: running it twice leaves the same accounts. The password comes from the environment (SEED_DEFAULT_PASSWORD),
+// never from code and never a real secret.
+export async function seedDemoData(
+  password: string,
+  options: { accounts?: SeedAccount[]; overwrite?: boolean } = {}
+): Promise<void> {
+  const accounts = options.accounts ?? DEMO_ACCOUNTS;
+  const overwrite = options.overwrite ?? defaultSeedOverwrite(process.env.NODE_ENV);
   const prisma = getPrisma();
   const passwordHash = await hashPassword(password);
-  for (const account of DEMO_ACCOUNTS) {
+  for (const account of accounts) {
     await prisma.user.upsert({
       where: { email: account.email },
-      update: { name: account.name, role: account.role, isActive: true, passwordHash },
+      update: overwrite ? { name: account.name, role: account.role, isActive: true, passwordHash } : {},
       create: { ...account, passwordHash },
     });
   }
