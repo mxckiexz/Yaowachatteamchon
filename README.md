@@ -4,7 +4,7 @@ Equipment purchase approval system (CPE 334 group project, theme 5: Workflow and
 
 A requester creates a purchase request for an item, edits it while it is a draft, and submits it. An approver approves it, or rejects it with a recorded reason. Every status change is kept in a history. An administrator manages the user accounts. All data is synthetic.
 
-Status: Sprint 1 (Deliverable 1). Documents are in `docs/`: `srs.md`, `features.md`, `traceability.md`, `system-sds.md`, `sprints/plan.md`, `sprints/sprint-1/` (feature contracts F-01 to F-05 and Q-01, test strategy, definition of done, TDD evidence, results), `qa-defect-log.md`, `uat/uat-cases.md`.
+Status: Lab 5 deployment readiness is in progress (Docker, CI and deploy scripts are written and tested locally; nothing is deployed to GCP yet, see `docs/labs/lab-05/deployment.md`). Sprint 1 (Deliverable 1) remains the application baseline. Documents are in `docs/`: `srs.md`, `features.md`, `traceability.md`, `system-sds.md`, `sprints/plan.md`, `sprints/sprint-1/` (feature contracts F-01 to F-05 and Q-01, test strategy, definition of done, TDD evidence, results), `qa-defect-log.md`, `uat/uat-cases.md`.
 
 ## Stack
 
@@ -70,4 +70,4 @@ Environment variables are listed in `server/.env.example` and described in `docs
 
 ## Branches and workflow
 
-`main` holds accepted releases. `sprint-1/staging` is the Sprint 1 integration branch. Each feature is built on a `feature/...` branch, reviewed by the other student in a pull request, integrated in staging and then released to `main`. The earlier design (BuyFlow) is kept under the tag `archive/buyflow-v1`.
+`main` holds accepted releases and is the only branch that deploys. `staging` is the integration branch from Lab 5 onward: every pull request into `staging` and `main` must pass the `test-and-docker` check. `sprint-1/staging` was the Sprint 1 integration branch; it is kept unchanged as history and no new work goes into it. Each feature is built on a `feature/...`, `fix/...` or `chore/...` branch cut from `staging`, reviewed by the other student in a pull request, integrated in `staging` and then released to `main` by a release pull request. The earlier design (BuyFlow) is kept under the tag `archive/buyflow-v1`.

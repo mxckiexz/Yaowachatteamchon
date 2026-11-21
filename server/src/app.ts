@@ -16,6 +16,7 @@ import {
 import { getPrisma } from "./prisma.js";
 import { adminRouter } from "./adminRoutes.js";
 import { requestRouter } from "./requestRoutes.js";
+import { serveBuiltClient } from "./staticSite.js";
 
 export const app = express();
 
@@ -36,6 +37,23 @@ app.use(cookieParser());
 // R-01: health route, public, no data.
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
+});
+
+// Deployment: ready only when the database answers. Public, no data. The smoke test calls it after every deploy.
+app.get("/api/ready", async (_req, res) => {
+  try {
+    await getPrisma().$queryRaw`SELECT 1`;
+    res.json({ status: "ready", db: "connected" });
+  } catch {
+    res.status(503).json({ status: "not_ready" });
+  }
+});
+
+// Deployment: which commit is running. deploy/release.sh sets APP_COMMIT to the full commit SHA of the image.
+// Anything that is not a hex SHA is reported as "unknown", so the route never echoes arbitrary text.
+app.get("/api/version", (_req, res) => {
+  const value = process.env.APP_COMMIT ?? "";
+  res.json({ commit: /^[0-9a-f]{7,40}$/.test(value) ? value : "unknown" });
 });
 
 // F-01: authentication.
@@ -84,6 +102,9 @@ app.get("/api/auth/me", requireAuth, (req: AuthedRequest, res) => {
 
 app.use("/api", requestRouter);
 app.use("/api", adminRouter);
+
+// Deployment: in the container STATIC_DIR points at the built client. Locally it is unset and Vite serves the client.
+if (process.env.STATIC_DIR) serveBuiltClient(app, process.env.STATIC_DIR);
 
 // R-02: safe error handling. No stack traces, SQL or file paths reach the client.
 app.use((error: Error & { type?: string; status?: number }, _req: Request, res: Response, _next: NextFunction) => {
