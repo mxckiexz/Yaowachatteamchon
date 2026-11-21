@@ -2,7 +2,7 @@
 
 Team Yaowachatteamchon, PurchaseFlow (equipment purchase approval). Version 0.1, draft written before the first cloud deployment.
 
-Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. **The release pipeline must not run yet:** the resource names in `deploy/release.sh` and `.github/workflows/deploy.yml` are still the starter names and have to be replaced with the course portal values (TO FILL). `deploy.yml` stops on purpose while they are unchanged. Every "Evidence" row below stays empty until the step has been run and recorded.
+Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. The service, migration job and image path in `deploy/release.sh` and `.github/workflows/deploy.yml` now hold the portal values for prefix `sad61263d`. **The pipeline still cannot deploy:** the GitHub variables from the portal are not set (TO FILL), the portal links GitHub Actions only after its repository review of `main`, and the seed password secret is not wired yet (TO FILL). Every "not yet" row in section 7 stays until it has been run.
 
 ## 1. Stack and differences from the reference kit
 
@@ -18,7 +18,7 @@ Changes from the Lab 5 starter kit (written for TokTickIT):
 
 | Change | Reason |
 |---|---|
-| Starter names renamed from `toktickit` to `purchaseflow` (service, job, registry, secrets, scripts) | Our application. These are not the names of the course environment, see section 5 |
+| Starter names renamed from `toktickit` to `purchaseflow`, then the pipeline files (`release.sh`, `deploy.yml`) set to the portal values `sad61263d` | The course portal creates and names the resources, see sections 4 and 5 |
 | One seed secret, `purchaseflow-seed-password`, instead of an administrator and a demo secret | PurchaseFlow seeds five synthetic accounts that share one password from the environment |
 | `/api/ready` (503 when the database does not answer) and `/api/version` (running commit) added to the API | The smoke test and the guide use them. The app had neither |
 | `server/src/staticSite.ts` serves the built client | One container, one port, no separate web server |
@@ -77,17 +77,22 @@ python3 -m unittest discover -s deploy/tests -p 'test_smoke.py'
 
 ## 4. GCP resources
 
-Course environment (created by the portal, not by this repository):
+Course environment (created by the portal, not by this repository). Values copied from the portal's team resources tab on 2026-11-22; none of them is a secret:
 
 | Item | Value |
 |---|---|
-| Project | TO FILL: project id shown on the portal (do not paste the billing account) |
+| Project | `cpe-se-course-2026` |
 | Team prefix | `sad61263d` (every resource name starts with it) |
 | Region | `asia-southeast1` |
-| Artifact Registry repository and image | TO FILL: from the portal's group resources tab |
-| Cloud SQL instance, database | TO FILL: one small instance per team, created by the portal |
-| Cloud Run service and migration job | TO FILL: expected `sad61263d` and `sad61263d-migrate`, confirm on the tab (minimum instances 0) |
+| Cloud Run service | `sad61263d`, URL `https://sad61263d-4d7hbszvwq-as.a.run.app` |
+| Migration job | `sad61263d-migrate` |
+| Cloud SQL instance, tier, database, user | `sad61263d-pg`, `db-f1-micro`, `sad61263d`, `sad61263d` (the user's password is not shown and not needed) |
+| SQL connection name | `cpe-se-course-2026:asia-southeast1:sad61263d-pg` |
+| Artifact Registry repository | `sad61263d`; image repository `asia-southeast1-docker.pkg.dev/cpe-se-course-2026/sad61263d/sad61263d` (a tag or digest is appended) |
+| Runtime service account | `sad61263d-runner@cpe-se-course-2026.iam.gserviceaccount.com` |
+| Deployer service account | `sad61263d-deployer@cpe-se-course-2026.iam.gserviceaccount.com`, not linked to GitHub Actions until the repository review |
 | Secrets | TO FILL: names from the tab (database URL, and the slots `sad61263d-app-secret-1` to `5` for our own secrets such as the seed password) |
+| GitHub variables | TO FILL: `GCP_PROJECT_ID`, `GCP_REGION`, `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT` as the portal shows them after the repository review |
 
 The starter names used by the scripts in this repository (`purchaseflow`, `purchaseflow-pg`, `purchaseflow-migrate`, `purchaseflow-runner`, `purchaseflow-database-url`, `purchaseflow-seed-password`) belong to `deploy/deploy.sh`, which is for a project of your own and is not run in the course environment.
 
@@ -97,7 +102,7 @@ Cost: the credit is shared by all teams and the portal creates one small Cloud S
 
 The course portal creates the resources for the team, so `deploy/deploy.sh` and `deploy/teardown.sh` are **not run**: `deploy.sh` would create a second Cloud SQL instance, which the rules forbid. They stay in the repository as the Lab 5 file layout (the portal's repository review expects `deploy/deploy.sh`) and for a project that a team pays for itself. The team prefix is `sad61263d`.
 
-**The names in `deploy/release.sh` and `.github/workflows/deploy.yml` are still the starter names. TO FILL: replace them with the values on the portal's group resources tab.** Until then the first step of the deploy job fails on purpose, so a merge into `main` cannot deploy to the wrong place. The GitHub environment `demo` also needs the variables the portal shows (TO FILL).
+**The service, migration job and image path in `deploy/release.sh` and `.github/workflows/deploy.yml` are the portal values.** The first step of the deploy job still fails if the names go back to the starter names. Two things are missing before the pipeline can deploy (TO FILL): the GitHub environment `demo` variables, which the portal shows after the repository review, and the secret that gives the seed its password (the migration job reads `SEED_DEFAULT_PASSWORD`; the secret names are TO FILL). `release.sh` sets `CLIENT_ORIGIN` from the service's own URL on every release. A browser that opens the service through its other Cloud Run URL (the one with the project number) is refused on POST, so use the portal URL.
 
 Order: sign in to the portal, Activate resources, merge the Lab 5 files into `main` through reviewed pull requests, run the repository review again, replace the names, set the GitHub environment variables, release through the pipeline.
 

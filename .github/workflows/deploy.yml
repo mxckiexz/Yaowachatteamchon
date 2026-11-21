@@ -33,11 +33,11 @@
 #   - The course portal creates every resource under the team prefix (sad61263d).
 #     Do NOT run deploy/deploy.sh or deploy/teardown.sh there: deploy.sh would create a
 #     second Cloud SQL instance, which the course rules forbid.
-#   - The names below (SERVICE_NAME, MIGRATE_JOB_NAME, and the image path in step 4 and
-#     in deploy/release.sh) are still the STARTER names. TO FILL: replace them with the
-#     values on the portal's "group resources" tab. Until then the first step of the
-#     deploy job stops the run on purpose, so a merge into main cannot deploy to the
-#     wrong place. Replace all of them together.
+#   - SERVICE_NAME, MIGRATE_JOB_NAME and the image path (step 4 and deploy/release.sh) now hold
+#     the portal's values for prefix sad61263d. The first step of the deploy job still stops
+#     the run if SERVICE_NAME or MIGRATE_JOB_NAME go back to the starter names. The GitHub
+#     variables (GCP_PROJECT_ID, GCP_REGION, WIF_PROVIDER, WIF_SERVICE_ACCOUNT) still have to be
+#     set in the environment demo; the portal links GitHub Actions after the repository review.
 #
 # REFERENCES
 #   - Workflow syntax / reusable workflows:
@@ -54,7 +54,7 @@
 #   - Concurrency: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs
 #
 # ⭐ CHANGE ME — groups using another tech stack must edit (marked below):
-#   # CHANGE ME: SERVICE_NAME / MIGRATE_JOB_NAME / image path (purchaseflow)
+#   # CHANGE ME: SERVICE_NAME / MIGRATE_JOB_NAME / image path (now the portal values, sad61263d)
 #   # CHANGE ME: build step if your image is not built from the root Dockerfile
 #   # CHANGE ME: Python setup + smoke test if you use another smoke test
 # ##############################################################################
@@ -116,9 +116,9 @@ jobs:
       # ⚠️ Variable names GCP_PROJECT_ID / GCP_REGION must not change.
       PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
       REGION: ${{ vars.GCP_REGION }}
-      # TO FILL: the portal's service and migration job names (prefix sad61263d). These are the starter names.
-      SERVICE_NAME: purchaseflow
-      MIGRATE_JOB_NAME: purchaseflow-migrate
+      # Team values from the CPE334 course portal (prefix sad61263d).
+      SERVICE_NAME: sad61263d
+      MIGRATE_JOB_NAME: sad61263d-migrate
       # Image tag = commit SHA (or the rollback SHA that was typed in).
       IMAGE_TAG: ${{ inputs.image_tag || github.sha }}
       ROLLBACK: ${{ inputs.image_tag != '' }}
@@ -164,14 +164,14 @@ jobs:
 
       # ------------------------------------------------------------------------
       # 4. Build and push the image (skipped for rollbacks)
-      #    CHANGE ME: image path `.../purchaseflow/purchaseflow` must match the
+      #    The image path `.../sad61263d/sad61263d` is the portal's image repository URI; it must match the
       #    Artifact Registry repo and service names (see deploy/release.sh).
       # ------------------------------------------------------------------------
       - name: Build and push image
         if: env.ROLLBACK != 'true'
         run: |
           gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
-          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/purchaseflow/purchaseflow:$IMAGE_TAG"
+          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/sad61263d/sad61263d:$IMAGE_TAG"
           docker build --tag "$IMAGE" .
           docker push "$IMAGE"
 
