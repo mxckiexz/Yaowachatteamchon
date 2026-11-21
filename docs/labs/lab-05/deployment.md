@@ -92,10 +92,12 @@ Cost: Cloud SQL is billed every hour it exists. Create the budget alert (alerts 
 ## 5. First deployment (once, from Cloud Shell)
 
 1. Read the plan: `DRY_RUN=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`.
-2. Run it without `DRY_RUN`. It stops before the service if the migration job fails.
+2. Run it for real with `ALLOW_PAID_RESOURCES=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`. Without that flag the script prints the cost warning and stops before any `gcloud` call, so billable resources (Cloud SQL above all) are never created by accident. It also stops before the service if the migration job fails.
 3. Open the printed service URL and sign in with a seeded account. The password is in Secret Manager (`purchaseflow-seed-password`) and is shared privately, never in the repository or the PDF.
 
 ## 6. Release procedure
+
+Branches: `staging` is the integration branch from Lab 5 on (the name the Lab 5 handout and the CI trigger use). `sprint-1/staging` is the Sprint 1 integration branch; it stays as history (R-10, nothing is deleted or rewritten) and receives no new work. `main` is the only branch that deploys.
 
 1. Open an Issue labelled `lab5` and a branch from `staging`.
 2. Pull Request into `staging`. CI (`test-and-docker`) runs. The teammate reviews with a specific finding or reason.

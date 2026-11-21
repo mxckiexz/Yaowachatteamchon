@@ -93,6 +93,20 @@ export PATH="$TEST_STATE_DIR/bin:$PATH"
 export PROJECT_ID=stub-gcp-project
 export REGION=asia-southeast1
 export DRY_RUN=0
+export ALLOW_PAID_RESOURCES=1
+
+# --- Without ALLOW_PAID_RESOURCES the script must stop before any gcloud call ---------
+export GCLOUD_LOG="$TEST_STATE_DIR/gcloud-gate.log"
+export STUB_MODE=first_run
+gate_result=0
+env -u ALLOW_PAID_RESOURCES bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/gate-output" 2>&1 || gate_result=$?
+if [ "$gate_result" -eq 0 ]; then echo 'FAIL gate: ran without ALLOW_PAID_RESOURCES'; exit 1; fi
+if [ -s "$GCLOUD_LOG" ]; then echo 'FAIL gate: gcloud was called without ALLOW_PAID_RESOURCES'; exit 1; fi
+grep -q 'ALLOW_PAID_RESOURCES=1' "$TEST_STATE_DIR/gate-output"
+grep -q 'Cloud SQL' "$TEST_STATE_DIR/gate-output"
+echo 'PASS: gate stops before any gcloud call without ALLOW_PAID_RESOURCES'
+ALLOW_PAID_RESOURCES=0 bash "$DEPLOY_SCRIPT" > /dev/null 2>&1 && { echo 'FAIL gate: ALLOW_PAID_RESOURCES=0 was accepted'; exit 1; }
+echo 'PASS: ALLOW_PAID_RESOURCES=0 is refused'
 
 # --- Run every scenario and assert on what deploy.sh did ------------------------
 for MODE in first_run rerun partial job-fail; do
@@ -159,8 +173,8 @@ for MODE in first_run rerun partial job-fail; do
 done
 # --- Dry run must not call gcloud at all ------------------------------------------
 export GCLOUD_LOG="$TEST_STATE_DIR/dry-run-calls"
-DRY_RUN=1 bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/dry-run-output"
+env -u ALLOW_PAID_RESOURCES DRY_RUN=1 bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/dry-run-output"
 if [ -f "$GCLOUD_LOG" ]; then
   echo 'FAIL: dry run called gcloud'; exit 1
 fi
-echo 'PASS: dry run makes no gcloud calls'
+echo 'PASS: dry run makes no gcloud calls (and needs no ALLOW_PAID_RESOURCES)'

@@ -11,6 +11,7 @@ set -euo pipefail
 #   PROJECT_ID   GCP Project ID (defaults to active gcloud config project)
 #   REGION       GCP Region (default: asia-southeast1)
 #   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
+#   ALLOW_PAID_RESOURCES  Must be 1 to run for real. Without it the script stops before any gcloud call.
 #
 # WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
 #   Creates every cloud resource the app needs and does the first deployment:
@@ -121,6 +122,32 @@ echo "Project : ${PROJECT_ID}"
 echo "Region  : ${REGION}"
 echo "Dry Run : ${DRY_RUN}"
 echo "=================================================================="
+
+# ------------------------------------------------------------------------------
+# Paid-resource gate
+# ⭐ IMPORTANT: this script creates billable resources. Without DRY_RUN=1 it refuses to start until
+#    ALLOW_PAID_RESOURCES=1 is set, so nobody creates them by running it by accident. The offline test
+#    asserts that no gcloud command is called without the flag.
+# ------------------------------------------------------------------------------
+if [ "$DRY_RUN" != "1" ] && [ "${ALLOW_PAID_RESOURCES:-0}" != "1" ]; then
+  cat >&2 <<'MSG'
+Stopped before creating anything.
+
+This script creates resources that cost money on the free trial credit:
+  - Cloud SQL for PostgreSQL (db-f1-micro): billed for every hour it exists, even when nobody uses the app.
+    The TA team estimated about USD 14 to 18 per month with light use.
+  - Cloud Run, Cloud Build and Artifact Registry: small, but not free.
+
+Before you continue:
+  1. Preview first:  DRY_RUN=1 bash deploy/deploy.sh   (prints every command, runs none)
+  2. Make sure the alerts-only budget exists and you did NOT click Upgrade on the trial account.
+  3. Know how to remove everything:  bash deploy/teardown.sh
+
+If you accept the cost, run:
+  ALLOW_PAID_RESOURCES=1 bash deploy/deploy.sh
+MSG
+  exit 2
+fi
 
 # ==============================================================================
 # 1. Enable required GCP APIs

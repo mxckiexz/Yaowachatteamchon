@@ -70,4 +70,4 @@ Environment variables are listed in `server/.env.example` and described in `docs
 
 ## Branches and workflow
 
-`main` holds accepted releases. `sprint-1/staging` is the Sprint 1 integration branch. Each feature is built on a `feature/...` branch, reviewed by the other student in a pull request, integrated in staging and then released to `main`. The earlier design (BuyFlow) is kept under the tag `archive/buyflow-v1`.
+`main` holds accepted releases and is the only branch that deploys. `staging` is the integration branch from Lab 5 onward: every pull request into `staging` and `main` must pass the `test-and-docker` check. `sprint-1/staging` was the Sprint 1 integration branch; it is kept unchanged as history and no new work goes into it. Each feature is built on a `feature/...`, `fix/...` or `chore/...` branch cut from `staging`, reviewed by the other student in a pull request, integrated in `staging` and then released to `main` by a release pull request. The earlier design (BuyFlow) is kept under the tag `archive/buyflow-v1`.
