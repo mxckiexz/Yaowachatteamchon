@@ -49,6 +49,13 @@ app.get("/api/ready", async (_req, res) => {
   }
 });
 
+// Deployment: which commit is running. deploy/release.sh sets APP_COMMIT to the full commit SHA of the image.
+// Anything that is not a hex SHA is reported as "unknown", so the route never echoes arbitrary text.
+app.get("/api/version", (_req, res) => {
+  const value = process.env.APP_COMMIT ?? "";
+  res.json({ commit: /^[0-9a-f]{7,40}$/.test(value) ? value : "unknown" });
+});
+
 // F-01: authentication.
 const INVALID_LOGIN = { error: "Invalid email or password." };
 

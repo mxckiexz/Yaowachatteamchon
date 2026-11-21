@@ -37,6 +37,8 @@ export ROLLBACK=false
 bash "$ROOT/deploy/release.sh"
 grep -q 'run jobs execute .*--wait' "$CALL_LOG"
 grep -q 'run services update .*@sha256:abcdef' "$CALL_LOG"
+# The running commit is published through APP_COMMIT, so /api/version can show it.
+grep -q 'run services update .*--update-env-vars=APP_COMMIT=' "$CALL_LOG"
 grep -q 'SERVICE_URL=https://demo.example.test' "$GITHUB_ENV"
 echo 'PASS normal release uses digest and waits for migration'
 

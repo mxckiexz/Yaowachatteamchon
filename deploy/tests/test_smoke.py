@@ -23,6 +23,7 @@ class SmokeTests(unittest.TestCase):
             '/api/health': b'{"status":"ok"}',
             '/api/ready': b'{"status":"ready","db":"connected"}',
             '/': b'<html></html>',
+            '/api/version': b'{"commit":"abc1234"}',
             '/api/auth/me': b'{"user":{"id":1}}',
             '/api/auth/logout': b'',
         }[path]
@@ -48,6 +49,18 @@ class SmokeTests(unittest.TestCase):
         with patch.object(smoke, 'request', side_effect=self.response), \
                 patch.object(smoke, 'status_of', return_value=200), patch.object(smoke.time, 'sleep'):
             with self.assertRaisesRegex(RuntimeError, 'auth/me'):
+                smoke.check('https://demo.test')
+
+    @patch.dict('os.environ', {'EXPECTED_COMMIT': 'abc1234'}, clear=True)
+    def test_matching_commit_passes(self):
+        with patch.object(smoke, 'request', side_effect=self.response), patch.object(smoke, 'status_of', return_value=401):
+            smoke.check('https://demo.test')
+
+    @patch.dict('os.environ', {'EXPECTED_COMMIT': 'fffffff'}, clear=True)
+    def test_a_different_running_commit_fails(self):
+        with patch.object(smoke, 'request', side_effect=self.response), \
+                patch.object(smoke, 'status_of', return_value=401), patch.object(smoke.time, 'sleep'):
+            with self.assertRaisesRegex(RuntimeError, '/api/version'):
                 smoke.check('https://demo.test')
 
     @patch.dict('os.environ', {'SMOKE_EMAIL': 'smoke@example.test', 'SMOKE_PASSWORD': 'test-only'}, clear=True)

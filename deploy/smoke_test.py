@@ -12,7 +12,9 @@ WHAT THIS SCRIPT DOES
       2. GET /api/ready    -> {"status": "ready", "db": "connected"}  (proves the DB works)
       3. GET /             -> HTML page (the built React app is served)
       4. GET /api/auth/me without a session -> 401 (the API is up and protected)
-      5. OPTIONAL login test -> login, /api/auth/me, logout. Runs only if BOTH
+      5. OPTIONAL commit check -> /api/version equals EXPECTED_COMMIT (deploy.yml passes the commit it
+         just deployed), so a green run proves the right version is serving.
+      6. OPTIONAL login test -> login, /api/auth/me, logout. Runs only if BOTH
          env vars SMOKE_EMAIL and SMOKE_PASSWORD are set (set both or neither).
          PurchaseFlow signs in with a session cookie, so the script keeps the cookie
          from the login response. Use a requester account, never the administrator.
@@ -93,6 +95,12 @@ def check(base):
         print('PASS ' + path)
     with_retries('/api/auth/me (anonymous)', lambda: status_of(base, '/api/auth/me') == 401)
     print('PASS /api/auth/me is protected (401 without a session)')
+
+    # --- Optional commit check: the running version is the one that was just released ---
+    expected = os.getenv('EXPECTED_COMMIT')
+    if expected:
+        with_retries('/api/version', lambda: json.loads(request(base, '/api/version')).get('commit') == expected)
+        print('PASS /api/version matches the released commit')
 
     # --- Optional login check (only when both credentials are provided) -------
     email, password = os.getenv('SMOKE_EMAIL'), os.getenv('SMOKE_PASSWORD')

@@ -179,6 +179,8 @@ jobs:
           # Optional login check: set BOTH (variable + secret) or neither.
           SMOKE_EMAIL: ${{ vars.SMOKE_EMAIL }}
           SMOKE_PASSWORD: ${{ secrets.SMOKE_PASSWORD }}
+          # The smoke test fails unless /api/version reports the commit that was just released.
+          EXPECTED_COMMIT: ${{ env.IMAGE_TAG }}
         run: python3 deploy/smoke_test.py "$SERVICE_URL"
 
       # ------------------------------------------------------------------------
@@ -192,6 +194,6 @@ jobs:
             echo "- Digest: \`$DEPLOYED_IMAGE\`"
             echo "- Rollback: $ROLLBACK"
             echo "- URL: $SERVICE_URL"
-            echo '- Smoke test: passed (health, readiness/DB, HTML, sign-in required).'
+            echo '- Smoke test: passed (health, readiness/DB, HTML, sign-in required, running commit matches).'
             echo '- See smoke step for optional login check status.'
           } >> "$GITHUB_STEP_SUMMARY"

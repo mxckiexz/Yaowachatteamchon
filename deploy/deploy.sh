@@ -345,9 +345,11 @@ fi
 #     and the API share one URL. That URL is only known now, so set it and let Cloud Run start a new revision.
 #     release.sh later updates only the image, so this value stays.
 # ==============================================================================
+# The image above was built from this checkout, so its commit is the running one. /api/version shows it.
+APP_COMMIT_VALUE="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 run_cmd gcloud run services update "$SERVICE_NAME" \
   --region "$REGION" \
-  --update-env-vars "CLIENT_ORIGIN=${SERVICE_URL}" \
+  --update-env-vars "CLIENT_ORIGIN=${SERVICE_URL},APP_COMMIT=${APP_COMMIT_VALUE}" \
   --project "$PROJECT_ID"
 
 # ------------------------------------------------------------------------------
