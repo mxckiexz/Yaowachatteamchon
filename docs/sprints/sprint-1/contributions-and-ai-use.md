@@ -4,7 +4,7 @@
 
 Built from the real Issues and pull requests. Both students took part in every area: one led the work and the other took part in the decisions and reviewed, tested and verified it. Commit counts are not equal; the review history is in the pull requests.
 
-| Item | Student 1: Thanwarat Chantana, 670701025, Thanwarat1303 | Student 2: Aphisaimai, 67070501077, mxckiexz | Evidence |
+| Item | Student 1: Thanwarat Chanthana, 67070501025, Thanwarat1303 | Student 2: Aphisaimai, 67070501077, mxckiexz | Evidence |
 |---|---|---|---|
 | SRS and decisions | Took part in the requirements and design decisions; reviewed the SRS and decision log in PR #21. | Led and wrote the SRS and the decision log (D-01 to D-12). | PR #21 |
 | Feature inventory and traceability | Took part in the scope decisions; checked the features, acceptance criteria and traceability in PR #21. | Led and wrote the feature inventory and the traceability table. | PR #21 |
