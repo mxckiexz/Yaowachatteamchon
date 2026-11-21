@@ -26,8 +26,18 @@
 #   - Optional login smoke test: variable SMOKE_EMAIL + secret SMOKE_PASSWORD
 #     (set both or neither).
 #   - The cloud resources (Cloud SQL, secrets, service account, Artifact
-#     Registry, Cloud Run service/job) must already exist: create them once with
-#     deploy/deploy.sh. This workflow only UPDATES them.
+#     Registry, Cloud Run service/job) must already exist. This workflow only
+#     UPDATES them.
+#
+# ⚠️ CPE334 COURSE ENVIRONMENT
+#   - The course portal creates every resource under the team prefix (sad61263d).
+#     Do NOT run deploy/deploy.sh or deploy/teardown.sh there: deploy.sh would create a
+#     second Cloud SQL instance, which the course rules forbid.
+#   - The names below (SERVICE_NAME, MIGRATE_JOB_NAME, and the image path in step 4 and
+#     in deploy/release.sh) are still the STARTER names. TO FILL: replace them with the
+#     values on the portal's "group resources" tab. Until then the first step of the
+#     deploy job stops the run on purpose, so a merge into main cannot deploy to the
+#     wrong place. Replace all of them together.
 #
 # REFERENCES
 #   - Workflow syntax / reusable workflows:
@@ -106,7 +116,7 @@ jobs:
       # ⚠️ Variable names GCP_PROJECT_ID / GCP_REGION must not change.
       PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
       REGION: ${{ vars.GCP_REGION }}
-      # CHANGE ME: names of your Cloud Run service and migration job.
+      # TO FILL: the portal's service and migration job names (prefix sad61263d). These are the starter names.
       SERVICE_NAME: purchaseflow
       MIGRATE_JOB_NAME: purchaseflow-migrate
       # Image tag = commit SHA (or the rollback SHA that was typed in).
@@ -124,6 +134,14 @@ jobs:
       # 2. Fail early if settings are missing or the tag is not a full SHA
       #    ⚠️ Variable names WIF_PROVIDER / WIF_SERVICE_ACCOUNT must not change.
       # ------------------------------------------------------------------------
+      - name: Refuse to deploy with the starter names
+        run: |
+          if [ "$SERVICE_NAME" = "purchaseflow" ] || [ "$MIGRATE_JOB_NAME" = "purchaseflow-migrate" ]; then
+            echo "SERVICE_NAME and MIGRATE_JOB_NAME are still the starter names." >&2
+            echo "Replace them (and the image path in step 4 and in deploy/release.sh) with the values on the course portal." >&2
+            exit 1
+          fi
+
       - name: Validate deployment settings
         env:
           WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}

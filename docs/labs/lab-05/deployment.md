@@ -2,7 +2,7 @@
 
 Team Yaowachatteamchon, PurchaseFlow (equipment purchase approval). Version 0.1, draft written before the first cloud deployment.
 
-Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. Every "Evidence" row below stays empty until the step has been run and recorded.
+Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. **The release pipeline must not run yet:** the resource names in `deploy/release.sh` and `.github/workflows/deploy.yml` are still the starter names and have to be replaced with the course portal values (TO FILL). `deploy.yml` stops on purpose while they are unchanged. Every "Evidence" row below stays empty until the step has been run and recorded.
 
 ## 1. Stack and differences from the reference kit
 
@@ -18,7 +18,7 @@ Changes from the Lab 5 starter kit (written for TokTickIT):
 
 | Change | Reason |
 |---|---|
-| Names are `purchaseflow`, `purchaseflow-pg`, `purchaseflow-migrate`, `purchaseflow-runner` | Our application |
+| Starter names renamed from `toktickit` to `purchaseflow` (service, job, registry, secrets, scripts) | Our application. These are not the names of the course environment, see section 5 |
 | One seed secret, `purchaseflow-seed-password`, instead of an administrator and a demo secret | PurchaseFlow seeds five synthetic accounts that share one password from the environment |
 | `/api/ready` (503 when the database does not answer) and `/api/version` (running commit) added to the API | The smoke test and the guide use them. The app had neither |
 | `server/src/staticSite.ts` serves the built client | One container, one port, no separate web server |
@@ -77,29 +77,35 @@ python3 -m unittest discover -s deploy/tests -p 'test_smoke.py'
 
 ## 4. GCP resources
 
+Course environment (created by the portal, not by this repository):
+
 | Item | Value |
 |---|---|
-| Project | `YOUR_PROJECT_ID` (one project for Labs 5 to 7 and the final project; fill in after creation, do not paste the billing account) |
+| Project | TO FILL: project id shown on the portal (do not paste the billing account) |
+| Team prefix | `sad61263d` (every resource name starts with it) |
 | Region | `asia-southeast1` |
-| Artifact Registry repository and image | `purchaseflow` / `purchaseflow` |
-| Cloud SQL instance, database, user | `purchaseflow-pg` (PostgreSQL 16, `db-f1-micro`, `--edition=enterprise`, 10 GB), `purchaseflow`, `purchaseflow` |
-| Cloud Run service and job | `purchaseflow`, `purchaseflow-migrate` (minimum instances 0, maximum 3) |
-| Runtime service account | `purchaseflow-runner`, with `cloudsql.client` and access to its own two secrets only |
-| Secrets | `purchaseflow-database-url`, `purchaseflow-seed-password` |
+| Artifact Registry repository and image | TO FILL: from the portal's group resources tab |
+| Cloud SQL instance, database | TO FILL: one small instance per team, created by the portal |
+| Cloud Run service and migration job | TO FILL: expected `sad61263d` and `sad61263d-migrate`, confirm on the tab (minimum instances 0) |
+| Secrets | TO FILL: names from the tab (database URL, and the slots `sad61263d-app-secret-1` to `5` for our own secrets such as the seed password) |
 
-Cost: Cloud SQL is billed every hour it exists. Create the budget alert (alerts only) before any resource. Pause or delete it when nobody needs the system, and run `deploy/teardown.sh` after the course. Nobody clicks Upgrade on the free trial account.
+The starter names used by the scripts in this repository (`purchaseflow`, `purchaseflow-pg`, `purchaseflow-migrate`, `purchaseflow-runner`, `purchaseflow-database-url`, `purchaseflow-seed-password`) belong to `deploy/deploy.sh`, which is for a project of your own and is not run in the course environment.
+
+Cost: the credit is shared by all teams and the portal creates one small Cloud SQL instance per team. Do not create more. Do not run `deploy/teardown.sh` (it refuses without `ALLOW_TEARDOWN_OF_OWN_PROJECT=1`). Nobody clicks Upgrade or pays a prepayment.
 
 ## 5. Course environment (CPE334 portal)
 
-The course portal creates the resources for the team, so `deploy/deploy.sh` and `deploy/teardown.sh` are **not run**: they would create a second Cloud SQL instance, which the rules forbid. They stay in the repository as the Lab 5 file layout (the portal's repository review expects `deploy/deploy.sh`) and for a project that a team pays for itself. The team prefix is `sad61263d`; every resource name starts with it. The names in `release.sh`, `deploy.yml` and this document follow the values on the portal's "group resources" tab, and the GitHub environment `demo` holds the variables the portal shows.
+The course portal creates the resources for the team, so `deploy/deploy.sh` and `deploy/teardown.sh` are **not run**: `deploy.sh` would create a second Cloud SQL instance, which the rules forbid. They stay in the repository as the Lab 5 file layout (the portal's repository review expects `deploy/deploy.sh`) and for a project that a team pays for itself. The team prefix is `sad61263d`.
 
-Order used: sign in to the portal, Activate resources, merge the Lab 5 files into `main` through reviewed pull requests, run the repository review again, set the GitHub environment variables, release through the pipeline.
+**The names in `deploy/release.sh` and `.github/workflows/deploy.yml` are still the starter names. TO FILL: replace them with the values on the portal's group resources tab.** Until then the first step of the deploy job fails on purpose, so a merge into `main` cannot deploy to the wrong place. The GitHub environment `demo` also needs the variables the portal shows (TO FILL).
+
+Order: sign in to the portal, Activate resources, merge the Lab 5 files into `main` through reviewed pull requests, run the repository review again, replace the names, set the GitHub environment variables, release through the pipeline.
 
 ## 5b. First deployment without the portal (own project only, from Cloud Shell)
 
 1. Read the plan: `DRY_RUN=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`.
-2. Run it for real with `ALLOW_PAID_RESOURCES=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`. Without that flag the script prints the cost warning and stops before any `gcloud` call, so billable resources (Cloud SQL above all) are never created by accident. It also stops before the service if the migration job fails.
-3. Open the printed service URL and sign in with a seeded account. The password is in Secret Manager (`purchaseflow-seed-password`) and is shared privately, never in the repository or the PDF.
+2. Run it for real with `ALLOW_PAID_RESOURCES=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`. Without that flag the script prints the cost warning and stops before any `gcloud` call. It also stops before the service if the migration job fails.
+3. Open the printed service URL and sign in with a seeded account. The password is in Secret Manager and is shared privately, never in the repository or the PDF.
 
 ## 6. Release procedure
 

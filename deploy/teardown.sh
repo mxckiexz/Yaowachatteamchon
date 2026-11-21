@@ -12,6 +12,10 @@ set -euo pipefail
 #   REGION       GCP Region (default: asia-southeast1)
 #   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
 #
+# ⚠️ DO NOT USE IN THE CPE334 COURSE ENVIRONMENT. The course portal owns the team's resources (prefix sad61263d) and the
+#    credit is shared by all teams. This script deletes resources with the starter names created by deploy/deploy.sh, which
+#    is also not used there. It refuses to run for real unless ALLOW_TEARDOWN_OF_OWN_PROJECT=1 is set.
+#
 # WHAT THIS SCRIPT DOES
 #   Deletes everything deploy/deploy.sh created (Cloud Run service + job, Cloud
 #   SQL, Artifact Registry, secrets, service account) to stop billing.
@@ -29,6 +33,13 @@ set -euo pipefail
 # ==============================================================================
 
 DRY_RUN="${DRY_RUN:-0}"
+
+if [ "$DRY_RUN" != "1" ] && [ "${ALLOW_TEARDOWN_OF_OWN_PROJECT:-0}" != "1" ]; then
+  echo "Stopped. Do not run this in the CPE334 course environment: the portal owns the resources." >&2
+  echo "Only for a project of your own that was created with deploy/deploy.sh:" >&2
+  echo "  ALLOW_TEARDOWN_OF_OWN_PROJECT=1 bash deploy/teardown.sh" >&2
+  exit 2
+fi
 # CHANGE ME: keep identical to REGION in deploy/deploy.sh.
 REGION="${REGION:-asia-southeast1}"
 
