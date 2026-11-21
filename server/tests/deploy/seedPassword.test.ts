@@ -27,3 +27,34 @@ describe("seed password guard", () => {
     }
   });
 });
+
+describe("which environment variables hold the seed passwords (managed environment names)", () => {
+  it("uses SEED_DEFAULT_PASSWORD for every account when it is the only one set", async () => {
+    const { resolveSeedPasswords } = await import("../../src/seedData.js");
+    expect(resolveSeedPasswords({ SEED_DEFAULT_PASSWORD: "one-shared-secret-1" })).toEqual({ demo: "one-shared-secret-1", admin: "one-shared-secret-1" });
+  });
+
+  it("uses DEMO_USER_PASSWORD for the demo accounts and ADMIN_PASSWORD for the administrator", async () => {
+    const { resolveSeedPasswords } = await import("../../src/seedData.js");
+    expect(resolveSeedPasswords({ DEMO_USER_PASSWORD: "demo-secret-value-1", ADMIN_PASSWORD: "admin-secret-value-1" })).toEqual({
+      demo: "demo-secret-value-1",
+      admin: "admin-secret-value-1",
+    });
+  });
+
+  it("SEED_DEFAULT_PASSWORD wins over DEMO_USER_PASSWORD for the demo accounts", async () => {
+    const { resolveSeedPasswords } = await import("../../src/seedData.js");
+    const r = resolveSeedPasswords({ SEED_DEFAULT_PASSWORD: "explicit-secret-1", DEMO_USER_PASSWORD: "demo-secret-value-1" });
+    expect(r.demo).toBe("explicit-secret-1");
+  });
+
+  it("never gives the administrator password to the demo accounts: with only ADMIN_PASSWORD, no demo accounts are seeded", async () => {
+    const { resolveSeedPasswords } = await import("../../src/seedData.js");
+    expect(resolveSeedPasswords({ ADMIN_PASSWORD: "admin-secret-value-1" })).toEqual({ demo: undefined, admin: "admin-secret-value-1" });
+  });
+
+  it("fails with the variable names, and without any value, when no password is set", async () => {
+    const { resolveSeedPasswords } = await import("../../src/seedData.js");
+    expect(() => resolveSeedPasswords({})).toThrow(/SEED_DEFAULT_PASSWORD|DEMO_USER_PASSWORD|ADMIN_PASSWORD/);
+  });
+});

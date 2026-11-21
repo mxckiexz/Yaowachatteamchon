@@ -17,17 +17,37 @@ export function defaultSeedOverwrite(nodeEnv: string | undefined): boolean {
   return nodeEnv !== "production";
 }
 
-// Idempotent: running it twice leaves the same accounts. The password comes from the environment (SEED_DEFAULT_PASSWORD),
-// never from code and never a real secret.
+// Which environment variables hold the passwords. SEED_DEFAULT_PASSWORD is ours; DEMO_USER_PASSWORD and ADMIN_PASSWORD are the
+// names a managed environment (the CPE334 portal) hands to the migration job. The administrator never receives the demo
+// password by accident and the demo accounts never receive the administrator password: with only ADMIN_PASSWORD set, only the
+// administrator is seeded.
+export function resolveSeedPasswords(env: Record<string, string | undefined>): { demo: string | undefined; admin: string | undefined } {
+  const demo = env.SEED_DEFAULT_PASSWORD || env.DEMO_USER_PASSWORD || undefined;
+  const admin = env.ADMIN_PASSWORD || demo;
+  if (!demo && !admin) {
+    throw new Error("No seed password is set. Set SEED_DEFAULT_PASSWORD (or DEMO_USER_PASSWORD and ADMIN_PASSWORD). See server/.env.example.");
+  }
+  return { demo, admin };
+}
+
+// Idempotent: running it twice leaves the same accounts. Passwords come from the environment, never from code.
+// The administrator uses options.adminPassword when given, else the demo password. An account without a password is skipped.
 export async function seedDemoData(
-  password: string,
-  options: { accounts?: SeedAccount[]; overwrite?: boolean } = {}
+  password: string | undefined,
+  options: { accounts?: SeedAccount[]; overwrite?: boolean; adminPassword?: string } = {}
 ): Promise<void> {
   const accounts = options.accounts ?? DEMO_ACCOUNTS;
   const overwrite = options.overwrite ?? defaultSeedOverwrite(process.env.NODE_ENV);
   const prisma = getPrisma();
-  const passwordHash = await hashPassword(password);
+  const hashes = new Map<string, string>();
+  const hashOf = async (value: string) => {
+    if (!hashes.has(value)) hashes.set(value, await hashPassword(value));
+    return hashes.get(value)!;
+  };
   for (const account of accounts) {
+    const own = account.role === "ADMIN" ? options.adminPassword ?? password : password;
+    if (!own) continue;
+    const passwordHash = await hashOf(own);
     await prisma.user.upsert({
       where: { email: account.email },
       update: overwrite ? { name: account.name, role: account.role, isActive: true, passwordHash } : {},

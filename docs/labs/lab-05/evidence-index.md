@@ -9,7 +9,7 @@ Source of the Lab 5 PDF. Items marked TO FILL are not done yet and must be compl
 | Student 2 | Aphisaimai, 67070501077, GitHub mxckiexz |
 | Repository (public) | https://github.com/mxckiexz/Yaowachatteamchon |
 | Submitted tag or commit | TO FILL: the release commit on main after the release pull request |
-| Public URL | TO FILL: the Cloud Run URL of team prefix sad61263d |
+| Public URL | https://sad61263d-4d7hbszvwq-as.a.run.app (answers application-not-deployed until the first release) |
 | Commit served by the URL | TO FILL: the commit shown by /api/version |
 | Platform | CPE334 course portal (team prefix sad61263d), Cloud Run, Cloud SQL for PostgreSQL, Secret Manager, GitHub Actions |
 

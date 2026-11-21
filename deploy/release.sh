@@ -10,7 +10,7 @@
 #
 # INPUT (environment variables)
 #   PROJECT_ID, REGION, IMAGE_TAG   required (IMAGE_TAG = full 40-char commit SHA)
-#   SERVICE_NAME, MIGRATE_JOB_NAME  optional (default: purchaseflow, purchaseflow-migrate)
+#   SERVICE_NAME, MIGRATE_JOB_NAME  optional (default: sad61263d, sad61263d-migrate, the team values from the course portal)
 #   ROLLBACK                        true | false (default false)
 #   GITHUB_ENV                      when set, SERVICE_URL / DEPLOYED_IMAGE are
 #                                   appended so later workflow steps can use them
@@ -30,7 +30,7 @@
 #
 # ⭐ CHANGE ME — groups using another tech stack must review:
 #   # CHANGE ME: default SERVICE_NAME / MIGRATE_JOB_NAME and the image path
-#   #            `purchaseflow/purchaseflow` (Artifact Registry repo / image name)
+#   #            `sad61263d/sad61263d` (Artifact Registry repo / image name)
 #   # CHANGE ME: how the migration is run (the Cloud Run job is created by
 #   #            deploy/deploy.sh step 10 — change the command there)
 # ==============================================================================
@@ -40,22 +40,22 @@ set -euo pipefail
 # 1. Read and validate inputs (fail before any GCP call)
 # ------------------------------------------------------------------------------
 : "${PROJECT_ID:?Required}" "${REGION:?Required}" "${IMAGE_TAG:?Required}"
-# TO FILL: these defaults and the image path below are the STARTER names. In the CPE334 course environment use the
-# portal's values (prefix sad61263d); deploy.yml refuses to run until its names are replaced. Replace them together.
-SERVICE_NAME="${SERVICE_NAME:-purchaseflow}"
-MIGRATE_JOB_NAME="${MIGRATE_JOB_NAME:-purchaseflow-migrate}"
+# Team values from the CPE334 course portal (prefix sad61263d). Keep these defaults, the image path below and the names in
+# deploy.yml in step; deploy.yml refuses to run while they are still the starter names.
+SERVICE_NAME="${SERVICE_NAME:-sad61263d}"
+MIGRATE_JOB_NAME="${MIGRATE_JOB_NAME:-sad61263d-migrate}"
 ROLLBACK="${ROLLBACK:-false}"
 [[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid image tag.' >&2; exit 1; }
 [[ "$ROLLBACK" == true || "$ROLLBACK" == false ]] || { echo 'Invalid rollback mode.' >&2; exit 1; }
 
 # ------------------------------------------------------------------------------
 # 2. Find the image and pin it by digest
-#    CHANGE ME: `purchaseflow/purchaseflow` = <Artifact Registry repo>/<image name>.
+#    CHANGE ME: `sad61263d/sad61263d` = <Artifact Registry repo>/<image name> (the portal's image repository URI).
 # ------------------------------------------------------------------------------
-IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/purchaseflow/purchaseflow:$IMAGE_TAG"
+IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/sad61263d/sad61263d:$IMAGE_TAG"
 # Resolve to a digest so the job and service run the exact same immutable image.
 DIGEST_IMAGE="$(gcloud artifacts docker images describe "$IMAGE" --project="$PROJECT_ID" --format='value(image_summary.fully_qualified_digest)')"
-[[ "$DIGEST_IMAGE" == "$REGION-docker.pkg.dev/$PROJECT_ID/purchaseflow/purchaseflow@sha256:"* ]] || { echo 'Image digest not found.' >&2; exit 1; }
+[[ "$DIGEST_IMAGE" == "$REGION-docker.pkg.dev/$PROJECT_ID/sad61263d/sad61263d@sha256:"* ]] || { echo 'Image digest not found.' >&2; exit 1; }
 
 # ------------------------------------------------------------------------------
 # 3. Database migration (normal release only; `--wait` blocks until it finishes)
@@ -71,7 +71,11 @@ fi
 # ------------------------------------------------------------------------------
 # 4. Point the Cloud Run service at the image and send it 100% of traffic
 # ------------------------------------------------------------------------------
-gcloud run services update "$SERVICE_NAME" --image="$DIGEST_IMAGE" --update-env-vars="APP_COMMIT=$IMAGE_TAG" --project="$PROJECT_ID" --region="$REGION" --quiet
+# The API accepts state-changing requests only from CLIENT_ORIGIN, and in the cloud the page and the API share the service URL.
+# Read the URL from the service itself and set it on every release, so no manual step can leave it wrong.
+SERVICE_URL_NOW="$(gcloud run services describe "$SERVICE_NAME" --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')"
+[[ "$SERVICE_URL_NOW" == https://* ]] || { echo 'Service URL not found.' >&2; exit 1; }
+gcloud run services update "$SERVICE_NAME" --image="$DIGEST_IMAGE" --update-env-vars="APP_COMMIT=$IMAGE_TAG,CLIENT_ORIGIN=$SERVICE_URL_NOW" --project="$PROJECT_ID" --region="$REGION" --quiet
 # Restore 100% traffic to the new latest revision even if it was previously pinned.
 gcloud run services update-traffic "$SERVICE_NAME" --to-latest --project="$PROJECT_ID" --region="$REGION" --quiet
 
