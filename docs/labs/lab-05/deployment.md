@@ -89,7 +89,13 @@ python3 -m unittest discover -s deploy/tests -p 'test_smoke.py'
 
 Cost: Cloud SQL is billed every hour it exists. Create the budget alert (alerts only) before any resource. Pause or delete it when nobody needs the system, and run `deploy/teardown.sh` after the course. Nobody clicks Upgrade on the free trial account.
 
-## 5. First deployment (once, from Cloud Shell)
+## 5. Course environment (CPE334 portal)
+
+The course portal creates the resources for the team, so `deploy/deploy.sh` and `deploy/teardown.sh` are **not run**: they would create a second Cloud SQL instance, which the rules forbid. They stay in the repository as the Lab 5 file layout (the portal's repository review expects `deploy/deploy.sh`) and for a project that a team pays for itself. The team prefix is `sad61263d`; every resource name starts with it. The names in `release.sh`, `deploy.yml` and this document follow the values on the portal's "group resources" tab, and the GitHub environment `demo` holds the variables the portal shows.
+
+Order used: sign in to the portal, Activate resources, merge the Lab 5 files into `main` through reviewed pull requests, run the repository review again, set the GitHub environment variables, release through the pipeline.
+
+## 5b. First deployment without the portal (own project only, from Cloud Shell)
 
 1. Read the plan: `DRY_RUN=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`.
 2. Run it for real with `ALLOW_PAID_RESOURCES=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`. Without that flag the script prints the cost warning and stops before any `gcloud` call, so billable resources (Cloud SQL above all) are never created by accident. It also stops before the service if the migration job fails.
