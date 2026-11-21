@@ -40,7 +40,8 @@ set -euo pipefail
 # 1. Read and validate inputs (fail before any GCP call)
 # ------------------------------------------------------------------------------
 : "${PROJECT_ID:?Required}" "${REGION:?Required}" "${IMAGE_TAG:?Required}"
-# CHANGE ME: default resource names.
+# TO FILL: these defaults and the image path below are the STARTER names. In the CPE334 course environment use the
+# portal's values (prefix sad61263d); deploy.yml refuses to run until its names are replaced. Replace them together.
 SERVICE_NAME="${SERVICE_NAME:-purchaseflow}"
 MIGRATE_JOB_NAME="${MIGRATE_JOB_NAME:-purchaseflow-migrate}"
 ROLLBACK="${ROLLBACK:-false}"

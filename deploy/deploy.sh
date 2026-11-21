@@ -13,6 +13,10 @@ set -euo pipefail
 #   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
 #   ALLOW_PAID_RESOURCES  Must be 1 to run for real. Without it the script stops before any gcloud call.
 #
+# ⚠️ NOT FOR THE CPE334 COURSE ENVIRONMENT. There the course portal creates every resource (Cloud SQL, service, migration job,
+#    registry, secrets) under the team prefix. Running this script there would create a SECOND Cloud SQL instance, which the
+#    rules forbid. It is kept for the Lab 5 file layout and for a project of your own that you pay for yourself.
+#
 # WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
 #   Creates every cloud resource the app needs and does the first deployment:
 #   1 enable APIs     2 Artifact Registry  3 Cloud SQL instance  4 database
@@ -133,7 +137,10 @@ if [ "$DRY_RUN" != "1" ] && [ "${ALLOW_PAID_RESOURCES:-0}" != "1" ]; then
   cat >&2 <<'MSG'
 Stopped before creating anything.
 
-This script creates resources that cost money on the free trial credit:
+In the CPE334 course environment the course portal creates all resources. Do NOT run this script there:
+it would create a second Cloud SQL instance, which the course rules forbid.
+
+Only if you deliberately use a project of your own, this script creates resources that cost money:
   - Cloud SQL for PostgreSQL (db-f1-micro): billed for every hour it exists, even when nobody uses the app.
     The TA team estimated about USD 14 to 18 per month with light use.
   - Cloud Run, Cloud Build and Artifact Registry: small, but not free.

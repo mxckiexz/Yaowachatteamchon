@@ -1,0 +1,33 @@
+C-03: a fresh clone builds and runs with only .env.example values
+Date: 2026-11-21 23:09 +07
+
+$ git clone --branch chore/lab5-deploy-readiness https://github.com/mxckiexz/Yaowachatteamchon.git repo
+$ git rev-parse HEAD
+8ebc83bb2852694b854c331c8dbcb239c7a9bb4f
+$ cp .env.example .env     # no edit: the example value is a placeholder of 34 characters
+$ APP_PORT=3001 docker compose up -d --build   # port 3000 was taken on this computer
+Container repo-db-1 Started 
+Container repo-db-1 Waiting 
+Container repo-db-1 Healthy 
+Container repo-migrate-1 Starting 
+Container repo-migrate-1 Started 
+Container repo-migrate-1 Waiting 
+Container repo-migrate-1 Exited 
+Container repo-app-1 Starting 
+Container repo-app-1 Started 
+
+$ curl http://localhost:3001/api/health
+{"status":"ok"}
+$ curl http://localhost:3001/api/ready
+{"status":"ready","db":"connected"}
+$ curl http://localhost:3001/api/version
+{"commit":"unknown"}
+$ curl -o /dev/null -w '%{http_code} %{content_type}' http://localhost:3001/
+200 text/html; charset=UTF-8
+$ sign in as ploy@purchaseflow.test with the .env.example password
+signed in: ploy@purchaseflow.test REQUESTER
+$ docker compose ps --format '{{.Service}} {{.Status}}'
+app Up 3 seconds
+db Up 13 seconds (healthy)
+migrate Exited (0) 4 seconds ago
+$ docker compose down -v   # cleaned up
