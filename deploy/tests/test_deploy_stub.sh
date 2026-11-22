@@ -1,180 +1,106 @@
 #!/usr/bin/env bash
-# Offline regression checks: every gcloud and openssl call is a local stub.
-# ==============================================================================
-# WHAT THIS TEST DOES (no real GCP calls, no cost)
-#   Puts fake `gcloud` / `openssl` first on PATH and runs deploy/deploy.sh in
-#   these scenarios, asserting on the recorded commands:
-#     first_run : nothing exists      -> everything is created
-#     rerun     : everything exists   -> nothing replaced (credentials kept)
-#     partial   : DB secret missing   -> DB user password reset + secret created
-#     job-fail  : migration fails     -> script exits 1, service NOT deployed
-#   It also checks: `--edition=enterprise`, no project-wide secretAccessor role,
-#   DB password == password inside DATABASE_URL, and that no password/secret
-#   value leaks into the output. Finally DRY_RUN=1 must make zero gcloud calls.
+# Offline checks for deploy/deploy.sh (the first manual deployment in the CPE334 course environment).
+# Fake `gcloud`, `docker` and a throw-away git repository are used: no real cloud or Docker call, no cost.
 #
-# HOW TO RUN (repo root, needs bash):  bash deploy/tests/test_deploy_stub.sh
-#   Prints `PASS: <scenario>` per scenario; any `FAIL ...` exits non-zero.
-#   CI runs it too (.github/workflows/ci-docker.yml).
+#   bash deploy/tests/test_deploy_stub.sh      (CI runs it too)
 #
-# ⭐ CHANGE ME: if you rename resources in deploy/deploy.sh (e.g. the secret
-#    names purchaseflow-database-url / -seed-password, the DB
-#    user `purchaseflow`), update the matching strings below.
-# ==============================================================================
+# What it asserts
+#   dry run (the default)   -> prints, calls neither gcloud nor docker
+#   real run with --demo    -> builds for linux/amd64, pushes, gives the migration job the database, admin and demo
+#                              secrets, runs it, updates the service, then sets CLIENT_ORIGIN and APP_COMMIT
+#   real run without --demo -> the demo secret is not given to the job (only the administrator is seeded)
+#   migration job fails     -> exit 1 and the service is never updated
+#   branch other than main  -> exit 1 before any docker or gcloud call
+#   wrong project           -> exit 1
+#   never                   -> creates Cloud SQL, secrets, service accounts or any IAM binding (the portal owns them)
 set -euo pipefail
+trap 'echo "FAILED at line $LINENO of test_deploy_stub.sh" >&2' ERR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOY_SCRIPT="${SCRIPT_DIR}/../deploy.sh"
-export TEST_STATE_DIR
-TEST_STATE_DIR="$(mktemp -d)"
+export TEST_STATE_DIR; TEST_STATE_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_STATE_DIR"' EXIT
-mkdir -p "$TEST_STATE_DIR/bin"
+mkdir -p "$TEST_STATE_DIR/bin" "$TEST_STATE_DIR/repo"
 
-# --- Fake `openssl` (deterministic "random" values) ---------------------------
-cat > "$TEST_STATE_DIR/bin/openssl" <<'STUB'
-#!/usr/bin/env bash
-if [ "$2" = "-hex" ]; then
-  printf '%s\n' '0123456789abcdef0123456789abcdef0123456789abcdef'
-else
-  printf '%s\n' 'TESTONLYGENERATEDPASSWORD'
-fi
-STUB
-
-# --- Fake `gcloud`: logs each call (password redacted), answers per $STUB_MODE
 cat > "$TEST_STATE_DIR/bin/gcloud" <<'STUB'
 #!/usr/bin/env bash
-set -euo pipefail
-redacted=()
-for arg in "$@"; do
-  case "$arg" in
-    --password=*)
-      printf '%s' "${arg#--password=}" > "$TEST_STATE_DIR/sql-pass"
-      redacted+=("--password=<REDACTED>") ;;
-    *) redacted+=("$arg") ;;
-  esac
-done
-printf '%s\n' "${redacted[*]}" >> "$GCLOUD_LOG"
-if [ "${1:-} ${2:-}" = 'config get-value' ]; then
-  echo stub-gcp-project
-  exit 0
-fi
-if [ "${1:-} ${2:-} ${3:-}" = 'run services describe' ]; then
-  echo https://purchaseflow-stub.example.invalid
-  exit 0
-fi
-if [ "${1:-} ${2:-} ${3:-}" = 'run jobs execute' ]; then
-  [ "$STUB_MODE" != job-fail ]
-  exit $?
-fi
-if [ "${1:-} ${2:-} ${3:-}" = 'secrets versions add' ]; then
-  cat > "$TEST_STATE_DIR/payload-${4}"
-  exit 0
-fi
-if [ "${1:-} ${2:-} ${3:-}" = 'sql users list' ]; then
-  if [ "$STUB_MODE" = first_run ]; then
-    echo postgres
-  else
-    printf 'postgres\npurchaseflow\n'
-  fi
-  exit 0
-fi
-for word in "$@"; do
-  if [ "$word" = describe ]; then
-    case "$STUB_MODE" in
-      first_run) exit 1 ;;
-      partial)
-        if [ "${1:-} ${3:-}" = 'secrets purchaseflow-database-url' ]; then
-          exit 1
-        fi ;;
-    esac
-  fi
-done
+printf '%s\n' "gcloud $*" >> "$CALL_LOG"
+case "${1:-} ${2:-} ${3:-} ${4:-}" in
+  "artifacts docker images describe") echo "asia-southeast1-docker.pkg.dev/cpe-se-course-2026/sad61263d/sad61263d@sha256:abcdef" ;;
+  "run jobs execute "*) [ "${STUB_MODE:-ok}" != job-fail ] || exit 1 ;;
+esac
+case "${1:-} ${2:-} ${3:-}" in
+  "run services describe") for a in "$@"; do case "$a" in --format*) echo "https://sad61263d-test.a.run.app" ;; esac; done ;;
+  "run jobs execute") [ "${STUB_MODE:-ok}" != job-fail ] || exit 1 ;;
+esac
+exit 0
 STUB
-chmod +x "$TEST_STATE_DIR/bin/openssl" "$TEST_STATE_DIR/bin/gcloud"
+cat > "$TEST_STATE_DIR/bin/docker" <<'STUB'
+#!/usr/bin/env bash
+printf '%s\n' "docker $*" >> "$CALL_LOG"
+STUB
+chmod +x "$TEST_STATE_DIR/bin/gcloud" "$TEST_STATE_DIR/bin/docker"
 export PATH="$TEST_STATE_DIR/bin:$PATH"
-export PROJECT_ID=stub-gcp-project
-export REGION=asia-southeast1
-export DRY_RUN=0
-export ALLOW_PAID_RESOURCES=1
 
-# --- Without ALLOW_PAID_RESOURCES the script must stop before any gcloud call ---------
-export GCLOUD_LOG="$TEST_STATE_DIR/gcloud-gate.log"
-export STUB_MODE=first_run
-gate_result=0
-env -u ALLOW_PAID_RESOURCES bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/gate-output" 2>&1 || gate_result=$?
-if [ "$gate_result" -eq 0 ]; then echo 'FAIL gate: ran without ALLOW_PAID_RESOURCES'; exit 1; fi
-if [ -s "$GCLOUD_LOG" ]; then echo 'FAIL gate: gcloud was called without ALLOW_PAID_RESOURCES'; exit 1; fi
-grep -q 'ALLOW_PAID_RESOURCES=1' "$TEST_STATE_DIR/gate-output"
-grep -q 'Cloud SQL' "$TEST_STATE_DIR/gate-output"
-echo 'PASS: gate stops before any gcloud call without ALLOW_PAID_RESOURCES'
-ALLOW_PAID_RESOURCES=0 bash "$DEPLOY_SCRIPT" > /dev/null 2>&1 && { echo 'FAIL gate: ALLOW_PAID_RESOURCES=0 was accepted'; exit 1; }
-echo 'PASS: ALLOW_PAID_RESOURCES=0 is refused'
+cd "$TEST_STATE_DIR/repo"
+git init -q -b main . && git config user.email t@example.test && git config user.name test
+echo x > file && git add file && git commit -q -m init
+SHA="$(git rev-parse HEAD)"
 
-# --- Run every scenario and assert on what deploy.sh did ------------------------
-for MODE in first_run rerun partial job-fail; do
-  export STUB_MODE="$MODE"
-  export GCLOUD_LOG="$TEST_STATE_DIR/gcloud-$MODE.log"
-  rm -f "$TEST_STATE_DIR/sql-pass" "$TEST_STATE_DIR"/payload-*
-  result=0
-  bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/output" 2>&1 || result=$?
-  expected=0
-  if [ "$MODE" = job-fail ]; then expected=1; fi
-  if [ "$result" -ne "$expected" ]; then
-    echo "FAIL $MODE: unexpected exit $result (wanted $expected)"
-    exit 1
+run() { # name, expected exit, env assignments..., then script args after --
+  local name="$1" want="$2"; shift 2
+  export CALL_LOG="$TEST_STATE_DIR/calls-$name.log"; : > "$CALL_LOG"
+  local got=0
+  env "$@" > "$TEST_STATE_DIR/out-$name.txt" 2>&1 || got=$?
+  if [ "$got" -ne "$want" ]; then echo "FAIL $name: exit $got, wanted $want"; cat "$TEST_STATE_DIR/out-$name.txt"; exit 1; fi
+}
+calls() { cat "$TEST_STATE_DIR/calls-$1.log"; }
+
+# 1. dry run is the default and calls nothing
+run dry 0 bash "$DEPLOY_SCRIPT" --demo
+[ ! -s "$TEST_STATE_DIR/calls-dry.log" ] || { echo 'FAIL dry: gcloud or docker was called'; exit 1; }
+grep -q 'DRY_RUN' "$TEST_STATE_DIR/out-dry.txt"
+echo 'PASS: dry run is the default and calls neither gcloud nor docker'
+
+# 2. real run with --demo
+run demo 0 DRY_RUN=0 bash "$DEPLOY_SCRIPT" --demo
+calls demo | grep -q '^docker build --platform linux/amd64 --tag asia-southeast1-docker.pkg.dev/cpe-se-course-2026/sad61263d/sad61263d:'"$SHA"' \.$'
+calls demo | grep -q '^docker push .*:'"$SHA"
+calls demo | grep -q '^gcloud run jobs update sad61263d-migrate .*DATABASE_URL=sad61263d-database-url:latest,ADMIN_PASSWORD=sad61263d-admin-password:latest,DEMO_USER_PASSWORD=sad61263d-demo-password:latest'
+calls demo | grep -q 'prisma migrate deploy && npm run prisma:seed'
+calls demo | grep -q '^gcloud run jobs execute sad61263d-migrate .*--wait'
+calls demo | grep -q '^gcloud run services update sad61263d --image asia-southeast1-docker.pkg.dev/cpe-se-course-2026/sad61263d/sad61263d@sha256:abcdef'
+calls demo | grep -q '^gcloud run services update sad61263d --update-env-vars CLIENT_ORIGIN=https://sad61263d-test.a.run.app,APP_COMMIT='"$SHA"
+# order: migration before the service
+[ "$(calls demo | grep -n 'jobs execute' | cut -d: -f1)" -lt "$(calls demo | grep -n 'services update sad61263d --image' | cut -d: -f1)" ]
+echo 'PASS: real run with --demo builds for amd64, migrates first, deploys, then sets CLIENT_ORIGIN and APP_COMMIT'
+
+# 3. without --demo the demo secret is not given to the job
+run nodemo 0 DRY_RUN=0 bash "$DEPLOY_SCRIPT"
+if calls nodemo | grep -q 'DEMO_USER_PASSWORD'; then echo 'FAIL nodemo: demo secret given without --demo'; exit 1; fi
+calls nodemo | grep -q 'ADMIN_PASSWORD=sad61263d-admin-password:latest'
+echo 'PASS: without --demo only the administrator secret is given to the job'
+
+# 4. migration failure stops before the service
+run jobfail 1 DRY_RUN=0 STUB_MODE=job-fail bash "$DEPLOY_SCRIPT" --demo
+if calls jobfail | grep -q '^gcloud run services update'; then echo 'FAIL jobfail: service updated after a failed migration'; exit 1; fi
+echo 'PASS: a failed migration stops before the service is touched'
+
+# 5. branch other than main
+git switch -q -c feature/x
+run branch 1 DRY_RUN=0 bash "$DEPLOY_SCRIPT" --demo
+[ ! -s "$TEST_STATE_DIR/calls-branch.log" ] || { echo 'FAIL branch: a call was made from a non main branch'; exit 1; }
+git switch -q main
+echo 'PASS: refuses a branch other than main before any call'
+
+# 6. wrong project
+run project 1 DRY_RUN=0 PROJECT_ID=someone-else bash "$DEPLOY_SCRIPT" --demo
+[ ! -s "$TEST_STATE_DIR/calls-project.log" ] || { echo 'FAIL project: a call was made for another project'; exit 1; }
+echo 'PASS: refuses any project other than the course project'
+
+# 7. the script never creates what the portal owns
+for n in demo nodemo; do
+  if calls $n | grep -Eq 'sql instances|secrets create|secrets versions|iam |add-iam-policy-binding|services enable|artifacts repositories create'; then
+    echo "FAIL $n: the script created infrastructure or changed IAM"; exit 1
   fi
-  if [ "$MODE" = job-fail ]; then
-    if grep -q '^run deploy ' "$GCLOUD_LOG"; then
-      echo 'FAIL: service deployed after migration failure'; exit 1
-    fi
-  else
-    grep -q '^run deploy ' "$GCLOUD_LOG"
-  fi
-  if grep -q '^projects add-iam-policy-binding .*roles/secretmanager.secretAccessor' "$GCLOUD_LOG"; then
-    echo 'FAIL: runtime has project-wide secret access'; exit 1
-  fi
-  for secret in purchaseflow-database-url purchaseflow-seed-password; do
-    grep -q "^secrets add-iam-policy-binding $secret .*roles/secretmanager.secretAccessor" "$GCLOUD_LOG"
-  done
-  if [ "$MODE" != job-fail ]; then
-    # The migration job runs the migrations and the container seed, with the seed password from Secret Manager.
-    grep -q '^run jobs deploy .*SEED_DEFAULT_PASSWORD=purchaseflow-seed-password:latest' "$GCLOUD_LOG"
-    grep -q '^run jobs deploy .*prisma migrate deploy && npm run prisma:seed:container' "$GCLOUD_LOG"
-    # The service must accept its own origin: CLIENT_ORIGIN is set after the URL is known.
-    grep -q '^run services update purchaseflow .*CLIENT_ORIGIN=https://purchaseflow-stub.example.invalid' "$GCLOUD_LOG"
-  fi
-  case "$MODE" in
-    first_run)
-      grep -q -- '--edition=enterprise' "$GCLOUD_LOG"
-      grep -q '^sql users create ' "$GCLOUD_LOG" ;;
-    partial) grep -q '^sql users set-password ' "$GCLOUD_LOG" ;;
-    rerun)
-      if grep -Eq '^(secrets create|sql users (create|set-password)) ' "$GCLOUD_LOG"; then
-        echo 'FAIL: rerun replaced existing credentials'; exit 1
-      fi ;;
-  esac
-  if [ -f "$TEST_STATE_DIR/sql-pass" ]; then
-    db_pass="$(cat "$TEST_STATE_DIR/sql-pass")"
-    db_url="$(cat "$TEST_STATE_DIR/payload-purchaseflow-database-url")"
-    case "$db_url" in
-      "postgresql://purchaseflow:${db_pass}@"*) ;;
-      *) echo 'FAIL: DB password differs from secret'; exit 1 ;;
-    esac
-    if grep -Fq "$db_pass" "$TEST_STATE_DIR/output"; then
-      echo 'FAIL: DB password leaked to output'; exit 1
-    fi
-  fi
-  for secret_file in "$TEST_STATE_DIR"/payload-*; do
-    [ -f "$secret_file" ] || continue
-    secret_value="$(cat "$secret_file")"
-    if [ -n "$secret_value" ] && grep -Fq "$secret_value" "$TEST_STATE_DIR/output"; then
-      echo 'FAIL: secret payload leaked to output'; exit 1
-    fi
-  done
-  echo "PASS: $MODE (exit, migration gate, credential handling, secret redaction)"
 done
-# --- Dry run must not call gcloud at all ------------------------------------------
-export GCLOUD_LOG="$TEST_STATE_DIR/dry-run-calls"
-env -u ALLOW_PAID_RESOURCES DRY_RUN=1 bash "$DEPLOY_SCRIPT" > "$TEST_STATE_DIR/dry-run-output"
-if [ -f "$GCLOUD_LOG" ]; then
-  echo 'FAIL: dry run called gcloud'; exit 1
-fi
-echo 'PASS: dry run makes no gcloud calls (and needs no ALLOW_PAID_RESOURCES)'
+echo 'PASS: never creates Cloud SQL, secrets, service accounts, repositories or IAM bindings'
