@@ -19,7 +19,7 @@ Changes from the Lab 5 starter kit (written for TokTickIT):
 | Change | Reason |
 |---|---|
 | Starter names renamed from `toktickit` to `purchaseflow`, then the pipeline files set to the portal values `sad61263d`; `deploy/deploy.sh` is the portal's script, and `deploy/teardown.sh` was removed | The course portal creates and names the resources, see sections 4 and 5 |
-| One seed secret, `purchaseflow-seed-password`, instead of an administrator and a demo secret | PurchaseFlow seeds five synthetic accounts that share one password from the environment |
+| The portal's two secrets are used, `sad61263d-admin-password` (administrator) and `sad61263d-demo-password` (requester and approver demo accounts), read as `ADMIN_PASSWORD` and `DEMO_USER_PASSWORD`; `SEED_DEFAULT_PASSWORD` is only our own name for local and own-project use | The course portal creates these secrets; the seed accepts either name and is create-only in production |
 | `/api/ready` (503 when the database does not answer) and `/api/version` (running commit) added to the API | The smoke test and the guide use them. The app had neither |
 | `server/src/staticSite.ts` serves the built client | One container, one port, no separate web server |
 | The production seed only creates missing accounts | A later release must not undo a role change, a deactivation or a changed password. Local development still resets them |
@@ -35,10 +35,10 @@ No real value is in the repository. `server/.env.example` and `.env.example` hol
 
 | Variable | Purpose | Secret | Where the value comes from |
 |---|---|---|---|
-| `DATABASE_URL` | PostgreSQL connection string | Yes | Local: `server/.env`. Cloud: Secret Manager `purchaseflow-database-url`, created by `deploy.sh` |
+| `DATABASE_URL` | PostgreSQL connection string | Yes | Local: `server/.env`. Cloud: Secret Manager `sad61263d-database-url`, created by the course portal |
 | `PORT` | Port the API listens on | No | Cloud Run sets it. Default 3000 |
 | `CLIENT_ORIGIN` | The one origin allowed to send POST, PATCH and DELETE | No | Local: `http://localhost:5173`. Cloud: the service URL, set by `deploy.sh` |
-| `SEED_DEFAULT_PASSWORD` | Password of the five seeded demo accounts (our own name) | Yes | Local: any value in `server/.env`. Own project: Secret Manager `purchaseflow-seed-password` made by `deploy.sh` |
+| `SEED_DEFAULT_PASSWORD` | Password of the five seeded demo accounts (our own name) | Yes | Local: any value in `server/.env`. Not used in the course environment, where the portal's `sad61263d-demo-password` and `sad61263d-admin-password` are used instead (see the two rows below) |
 | `DEMO_USER_PASSWORD` | Password of the requester and approver demo accounts (the portal's name; used when `SEED_DEFAULT_PASSWORD` is not set) | Yes | Course environment: Secret Manager `sad61263d-demo-password` |
 | `ADMIN_PASSWORD` | Password of the administrator account (the portal's name). With only this one set, only the administrator is seeded | Yes | Course environment: Secret Manager `sad61263d-admin-password` |
 | `NODE_ENV` | `production` in the cloud and in compose: secure cookies, create-only seed | No | Dockerfile and `deploy.sh` |
@@ -96,13 +96,11 @@ Course environment (created by the portal, not by this repository). Values copie
 | Secrets (names only) | `sad61263d-database-url` (DATABASE_URL), `sad61263d-admin-password` (ADMIN_PASSWORD), `sad61263d-demo-password` (DEMO_USER_PASSWORD). Which of them the portal already attached to the migration job is TO FILL (check with `gcloud run jobs describe`, which shows names and not values) |
 | GitHub variables | TO FILL: `GCP_PROJECT_ID`, `GCP_REGION`, `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT` as the portal shows them after the repository review |
 
-The starter names used by the scripts in this repository (`purchaseflow`, `purchaseflow-pg`, `purchaseflow-migrate`, `purchaseflow-runner`, `purchaseflow-database-url`, `purchaseflow-seed-password`) belong to `deploy/deploy.sh`, which is for a project of your own and is not run in the course environment.
-
 Cost: the credit is shared by all teams and the portal creates one small Cloud SQL instance per team. Do not create more. There is no teardown script in the repository (the portal says not to use the old one): ask a TA for pause or cleanup. Nobody clicks Upgrade or pays a prepayment.
 
 ## 5. First deployment (once, by hand, from Cloud Shell)
 
-The course portal creates the resources for the team (prefix `sad61263d`). `deploy/deploy.sh` is the portal's own script for the team, adapted by us in three places only: the application name in the messages, the summary lines (our accounts instead of the kit's example administrator), and a last step that sets `CLIENT_ORIGIN` and `APP_COMMIT` (the service update above it uses `--set-env-vars`, which replaces every variable, and the API accepts POST, PATCH and DELETE only from `CLIENT_ORIGIN`). The script never creates Cloud SQL, secrets, service accounts, repositories or IAM bindings; the offline test `deploy/tests/test_deploy_stub.sh` asserts that.
+The course portal creates the resources for the team (prefix `sad61263d`). `deploy/deploy.sh` is the portal's own script for the team, adapted by us in four places only: the application name in the messages, the summary lines (our accounts instead of the kit's example administrator), a last step that sets `CLIENT_ORIGIN` and `APP_COMMIT`, and a warning with the fix command when Cloud Run's `status.url` differs from the portal URL (the service update above it uses `--set-env-vars`, which replaces every variable, and the API accepts POST, PATCH and DELETE only from `CLIENT_ORIGIN`). The script never creates Cloud SQL, secrets, service accounts, repositories or IAM bindings; the offline test `deploy/tests/test_deploy_stub.sh` asserts that.
 
 What it does, in order: build the image for `linux/amd64`, push it tagged with the full commit SHA, set the migration job's image, secrets and command (`npx prisma migrate deploy && npm run prisma:seed`), run the job and stop if it fails, update the service, send traffic to it, then set `CLIENT_ORIGIN` and `APP_COMMIT`. It refuses any project other than `cpe-se-course-2026`, any branch other than `main`, and a tag that is not the commit at `HEAD`. `DRY_RUN=1` is the default.
 
