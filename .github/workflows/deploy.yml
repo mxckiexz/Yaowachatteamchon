@@ -30,14 +30,14 @@
 #     UPDATES them.
 #
 # ⚠️ CPE334 COURSE ENVIRONMENT
-#   - The course portal creates every resource under the team prefix (sad61263d).
-#     Do NOT run deploy/deploy.sh or deploy/teardown.sh there: deploy.sh would create a
-#     second Cloud SQL instance, which the course rules forbid.
-#   - SERVICE_NAME, MIGRATE_JOB_NAME and the image path (step 4 and deploy/release.sh) now hold
-#     the portal's values for prefix sad61263d. The first step of the deploy job still stops
-#     the run if SERVICE_NAME or MIGRATE_JOB_NAME go back to the starter names. The GitHub
-#     variables (GCP_PROJECT_ID, GCP_REGION, WIF_PROVIDER, WIF_SERVICE_ACCOUNT) still have to be
-#     set in the environment demo; the portal links GitHub Actions after the repository review.
+#   - The course portal creates every resource under the team prefix (sad61263d). deploy/deploy.sh is the portal's own
+#     script: it builds and pushes the image, gives the migration job its secrets and command, and updates the service. It
+#     never creates infrastructure or IAM. Run it once by hand (DRY_RUN=1 first) before this workflow; this workflow only
+#     updates the migration job's image and the service's image. There is no teardown script: ask a TA for pause or cleanup.
+#   - SERVICE_NAME, MIGRATE_JOB_NAME and the image path (step 4 and deploy/release.sh) hold the portal's values. The first
+#     step of the deploy job stops the run if SERVICE_NAME or MIGRATE_JOB_NAME go back to the starter names.
+#   - The GitHub variables (GCP_PROJECT_ID, GCP_REGION, WIF_PROVIDER, WIF_SERVICE_ACCOUNT) are set in the environment demo.
+#     The portal links GitHub Actions to the deployer service account only after its repository review of main.
 #
 # REFERENCES
 #   - Workflow syntax / reusable workflows:
@@ -147,8 +147,11 @@ jobs:
           WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
           WIF_SERVICE_ACCOUNT: ${{ vars.WIF_SERVICE_ACCOUNT }}
         run: |
-          test -n "$PROJECT_ID" && test -n "$REGION"
-          test -n "$WIF_PROVIDER" && test -n "$WIF_SERVICE_ACCOUNT"
+          # Each check fails the step on its own. (A line of test A && test B does not stop a step that runs with bash -e when A fails.)
+          [ -n "$PROJECT_ID" ] || { echo 'GitHub variable GCP_PROJECT_ID is not set in the environment demo.' >&2; exit 1; }
+          [ -n "$REGION" ] || { echo 'GitHub variable GCP_REGION is not set in the environment demo.' >&2; exit 1; }
+          [ -n "$WIF_PROVIDER" ] || { echo 'GitHub variable WIF_PROVIDER is not set in the environment demo.' >&2; exit 1; }
+          [ -n "$WIF_SERVICE_ACCOUNT" ] || { echo 'GitHub variable WIF_SERVICE_ACCOUNT is not set in the environment demo.' >&2; exit 1; }
           [[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]] || { echo 'Image tag must be a full 40-character commit SHA.'; exit 1; }
 
       # ------------------------------------------------------------------------
