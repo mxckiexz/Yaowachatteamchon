@@ -1,12 +1,17 @@
 import { getPrisma } from "../src/prisma.js";
-import { seedDemoData } from "../src/seedData.js";
+import { assertSeedPasswordAllowed, resolveSeedPasswords, seedDemoData } from "../src/seedData.js";
 
-const password = process.env.SEED_DEFAULT_PASSWORD;
-if (!password) {
-  console.error("SEED_DEFAULT_PASSWORD is not set. Copy server/.env.example to server/.env first.");
+let passwords: ReturnType<typeof resolveSeedPasswords>;
+try {
+  passwords = resolveSeedPasswords(process.env);
+  for (const value of new Set([passwords.demo, passwords.admin])) {
+    if (value) assertSeedPasswordAllowed(value, process.env.NODE_ENV);
+  }
+} catch (error) {
+  console.error(error instanceof Error ? error.message : "Seed password check failed.");
   process.exit(1);
 }
 
-seedDemoData(password)
-  .then(() => console.log("Seeded demo accounts."))
+seedDemoData(passwords.demo, { adminPassword: passwords.admin })
+  .then(() => console.log(passwords.demo ? "Seeded demo accounts." : "Seeded the administrator only (no demo password is set)."))
   .finally(() => getPrisma().$disconnect());

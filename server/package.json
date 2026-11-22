@@ -5,15 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "tsx --env-file=.env prisma/seed.ts",
+    "prisma:seed": "tsx --env-file-if-exists=.env prisma/seed.ts",
+    "prisma:seed:container": "tsx prisma/seed.ts",
     "test": "vitest run"
   },
   "prisma": {
-    "seed": "tsx --env-file=.env prisma/seed.ts"
+    "seed": "tsx --env-file-if-exists=.env prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
