@@ -2,7 +2,7 @@
 
 Team Yaowachatteamchon, PurchaseFlow (equipment purchase approval). Version 0.1, draft written before the first cloud deployment.
 
-Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. The service, migration job and image path in `deploy/release.sh` and `.github/workflows/deploy.yml` now hold the portal values for prefix `sad61263d`. **The pipeline still cannot deploy:** the GitHub variables from the portal are not set (TO FILL), the portal links GitHub Actions only after its repository review of `main`, and it is not yet confirmed which password secrets the portal attached to the migration job (TO FILL; the seed now accepts the portal names `DEMO_USER_PASSWORD` and `ADMIN_PASSWORD`). Every "not yet" row in section 7 stays until it has been run.
+Status: the Docker, compose, CI and deploy files are written and checked offline (deploy script tests, smoke test unit tests, local image build). Nothing is deployed yet. `deploy/deploy.sh` is now the portal's script (it gives the migration job its secrets and command), and the service, job and image names in `deploy/release.sh` and `.github/workflows/deploy.yml` hold the portal values for prefix `sad61263d`. **The GitHub pipeline still cannot deploy:** the first deployment has not been run by hand and the GitHub variables from the portal are not set (TO FILL; the portal links GitHub Actions only after its repository review of `main`). Every "not yet" row in section 7 stays until it has been run.
 
 ## 1. Stack and differences from the reference kit
 
@@ -18,8 +18,8 @@ Changes from the Lab 5 starter kit (written for TokTickIT):
 
 | Change | Reason |
 |---|---|
-| Starter names renamed from `toktickit` to `purchaseflow`, then the pipeline files (`release.sh`, `deploy.yml`) set to the portal values `sad61263d` | The course portal creates and names the resources, see sections 4 and 5 |
-| One seed secret, `purchaseflow-seed-password`, instead of an administrator and a demo secret | PurchaseFlow seeds five synthetic accounts that share one password from the environment |
+| Starter names renamed from `toktickit` to `purchaseflow`, then the pipeline files set to the portal values `sad61263d`; `deploy/deploy.sh` is the portal's script, and `deploy/teardown.sh` was removed | The course portal creates and names the resources, see sections 4 and 5 |
+| The portal's two secrets are used, `sad61263d-admin-password` (administrator) and `sad61263d-demo-password` (requester and approver demo accounts), read as `ADMIN_PASSWORD` and `DEMO_USER_PASSWORD`; `SEED_DEFAULT_PASSWORD` is only our own name for local and own-project use | The course portal creates these secrets; the seed accepts either name and is create-only in production |
 | `/api/ready` (503 when the database does not answer) and `/api/version` (running commit) added to the API | The smoke test and the guide use them. The app had neither |
 | `server/src/staticSite.ts` serves the built client | One container, one port, no separate web server |
 | The production seed only creates missing accounts | A later release must not undo a role change, a deactivation or a changed password. Local development still resets them |
@@ -35,10 +35,10 @@ No real value is in the repository. `server/.env.example` and `.env.example` hol
 
 | Variable | Purpose | Secret | Where the value comes from |
 |---|---|---|---|
-| `DATABASE_URL` | PostgreSQL connection string | Yes | Local: `server/.env`. Cloud: Secret Manager `purchaseflow-database-url`, created by `deploy.sh` |
+| `DATABASE_URL` | PostgreSQL connection string | Yes | Local: `server/.env`. Cloud: Secret Manager `sad61263d-database-url`, created by the course portal |
 | `PORT` | Port the API listens on | No | Cloud Run sets it. Default 3000 |
 | `CLIENT_ORIGIN` | The one origin allowed to send POST, PATCH and DELETE | No | Local: `http://localhost:5173`. Cloud: the service URL, set by `deploy.sh` |
-| `SEED_DEFAULT_PASSWORD` | Password of the five seeded demo accounts (our own name) | Yes | Local: any value in `server/.env`. Own project: Secret Manager `purchaseflow-seed-password` made by `deploy.sh` |
+| `SEED_DEFAULT_PASSWORD` | Password of the five seeded demo accounts (our own name) | Yes | Local: any value in `server/.env`. Not used in the course environment, where the portal's `sad61263d-demo-password` and `sad61263d-admin-password` are used instead (see the two rows below) |
 | `DEMO_USER_PASSWORD` | Password of the requester and approver demo accounts (the portal's name; used when `SEED_DEFAULT_PASSWORD` is not set) | Yes | Course environment: Secret Manager `sad61263d-demo-password` |
 | `ADMIN_PASSWORD` | Password of the administrator account (the portal's name). With only this one set, only the administrator is seeded | Yes | Course environment: Secret Manager `sad61263d-admin-password` |
 | `NODE_ENV` | `production` in the cloud and in compose: secure cookies, create-only seed | No | Dockerfile and `deploy.sh` |
@@ -96,23 +96,25 @@ Course environment (created by the portal, not by this repository). Values copie
 | Secrets (names only) | `sad61263d-database-url` (DATABASE_URL), `sad61263d-admin-password` (ADMIN_PASSWORD), `sad61263d-demo-password` (DEMO_USER_PASSWORD). Which of them the portal already attached to the migration job is TO FILL (check with `gcloud run jobs describe`, which shows names and not values) |
 | GitHub variables | TO FILL: `GCP_PROJECT_ID`, `GCP_REGION`, `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT` as the portal shows them after the repository review |
 
-The starter names used by the scripts in this repository (`purchaseflow`, `purchaseflow-pg`, `purchaseflow-migrate`, `purchaseflow-runner`, `purchaseflow-database-url`, `purchaseflow-seed-password`) belong to `deploy/deploy.sh`, which is for a project of your own and is not run in the course environment.
+Cost: the credit is shared by all teams and the portal creates one small Cloud SQL instance per team. Do not create more. There is no teardown script in the repository (the portal says not to use the old one): ask a TA for pause or cleanup. Nobody clicks Upgrade or pays a prepayment.
 
-Cost: the credit is shared by all teams and the portal creates one small Cloud SQL instance per team. Do not create more. Do not run `deploy/teardown.sh` (it refuses without `ALLOW_TEARDOWN_OF_OWN_PROJECT=1`). Nobody clicks Upgrade or pays a prepayment.
+## 5. First deployment (once, by hand, from Cloud Shell)
 
-## 5. Course environment (CPE334 portal)
+The course portal creates the resources for the team (prefix `sad61263d`). `deploy/deploy.sh` is the portal's own script for the team, adapted by us in four places only: the application name in the messages, the summary lines (our accounts instead of the kit's example administrator), a last step that sets `CLIENT_ORIGIN` and `APP_COMMIT`, and a warning with the fix command when Cloud Run's `status.url` differs from the portal URL (the service update above it uses `--set-env-vars`, which replaces every variable, and the API accepts POST, PATCH and DELETE only from `CLIENT_ORIGIN`). The script never creates Cloud SQL, secrets, service accounts, repositories or IAM bindings; the offline test `deploy/tests/test_deploy_stub.sh` asserts that.
 
-The course portal creates the resources for the team, so `deploy/deploy.sh` and `deploy/teardown.sh` are **not run**: `deploy.sh` would create a second Cloud SQL instance, which the rules forbid. They stay in the repository as the Lab 5 file layout (the portal's repository review expects `deploy/deploy.sh`) and for a project that a team pays for itself. The team prefix is `sad61263d`.
+What it does, in order: build the image for `linux/amd64`, push it tagged with the full commit SHA, set the migration job's image, secrets and command (`npx prisma migrate deploy && npm run prisma:seed`), run the job and stop if it fails, update the service, send traffic to it, then set `CLIENT_ORIGIN` and `APP_COMMIT`. It refuses any project other than `cpe-se-course-2026`, any branch other than `main`, and a tag that is not the commit at `HEAD`. `DRY_RUN=1` is the default.
 
-**The service, migration job and image path in `deploy/release.sh` and `.github/workflows/deploy.yml` are the portal values.** The first step of the deploy job still fails if the names go back to the starter names. Two things are missing before the pipeline can deploy (TO FILL): the GitHub environment `demo` variables, which the portal shows after the repository review, and confirmation of which password secrets the portal attached to the migration job (TO FILL). The seed reads `SEED_DEFAULT_PASSWORD`, or the portal names `DEMO_USER_PASSWORD` for the demo accounts and `ADMIN_PASSWORD` for the administrator; with none set it stops, so the migration job fails before anything is deployed. `release.sh` sets `CLIENT_ORIGIN` from the service's own URL on every release. A browser that opens the service through its other Cloud Run URL (the one with the project number) is refused on POST, so use the portal URL.
+```bash
+git clone https://github.com/mxckiexz/Yaowachatteamchon.git && cd Yaowachatteamchon
+DRY_RUN=1 bash deploy/deploy.sh --demo     # prints the commands, changes nothing
+DRY_RUN=0 bash deploy/deploy.sh --demo     # the real first deployment
+```
 
-Order: sign in to the portal, Activate resources, merge the Lab 5 files into `main` through reviewed pull requests, run the repository review again, replace the names, set the GitHub environment variables, release through the pipeline.
+`--demo` gives the migration job the demo password secret, so the requester and approver accounts are created for UAT; without it only the administrator is seeded. The passwords stay in Secret Manager (`sad61263d-admin-password`, `sad61263d-demo-password`) and are shared privately, never in the repository or the PDF.
 
-## 5b. First deployment without the portal (own project only, from Cloud Shell)
+After this run, `.github/workflows/deploy.yml` and `deploy/release.sh` take over: they only update the image of the migration job and of the service. They rely on the job's secrets and command that this first run set.
 
-1. Read the plan: `DRY_RUN=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`.
-2. Run it for real with `ALLOW_PAID_RESOURCES=1 PROJECT_ID=YOUR_PROJECT_ID bash deploy/deploy.sh`. Without that flag the script prints the cost warning and stops before any `gcloud` call. It also stops before the service if the migration job fails.
-3. Open the printed service URL and sign in with a seeded account. The password is in Secret Manager and is shared privately, never in the repository or the PDF.
+Repository review by the portal: it expects `deploy/deploy.sh` to match the Starter Kit structure. The earlier version in this repository created the infrastructure itself and did not match, so the portal's script replaced it. `deploy/teardown.sh` was removed because the portal says not to use the old one.
 
 ## 6. Release procedure
 

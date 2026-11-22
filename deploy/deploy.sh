@@ -5,33 +5,32 @@ set -euo pipefail
 # PurchaseFlow — Idempotent Google Cloud Run Deployment Script
 # ==============================================================================
 # Usage:
-#   ./deploy/deploy.sh
+#   ./deploy/deploy.sh [--demo]
 #
 # Environment Variables (Optional):
 #   PROJECT_ID   GCP Project ID (defaults to active gcloud config project)
 #   REGION       GCP Region (default: asia-southeast1)
 #   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
-#   ALLOW_PAID_RESOURCES  Must be 1 to run for real. Without it the script stops before any gcloud call.
 #
-# ⚠️ NOT FOR THE CPE334 COURSE ENVIRONMENT. There the course portal creates every resource (Cloud SQL, service, migration job,
-#    registry, secrets) under the team prefix. Running this script there would create a SECOND Cloud SQL instance, which the
-#    rules forbid. It is kept for the Lab 5 file layout and for a project of your own that you pay for yourself.
-#
-# WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
-#   Creates every cloud resource the app needs and does the first deployment:
-#   1 enable APIs     2 Artifact Registry  3 Cloud SQL instance  4 database
-#   5 runtime SA+IAM  6 DB user + secret   7 demo-account password
-#   (secret access)   9 build image        10 migrate+seed job   11 Cloud Run service   12 CLIENT_ORIGIN
+# WHAT THIS SCRIPT DOES  (first manual deployment; safe to re-run)
+#   The course portal has ALREADY created Cloud SQL, Artifact Registry, the runtime service
+#   account, its IAM roles, the secrets and the Cloud Run service. This script creates none of
+#   them and changes no IAM. It only:
+#   9 builds the image (linux/amd64) and pushes it tagged with the commit SHA
+#   10 updates and runs the migration + seed Cloud Run job (stops here if it fails)
+#   11 updates the Cloud Run service to the new image, then sets CLIENT_ORIGIN and APP_COMMIT
 #   After this, routine releases are done by GitHub Actions (deploy.yml ->
-#   deploy/release.sh), which only UPDATES these resources.
+#   deploy/release.sh), which only UPDATES the image.
 #
 # ⭐ IMPORTANT
-#   - Idempotent: existing resources/secrets are reused, never overwritten
-#     (a re-run does not replace credentials).
-#   - Passwords are generated with openssl and live only in Secret Manager;
-#     they are never printed (run_cmd redacts --password=...).
+#   - Run from the REPO ROOT on the main branch (step 9 builds the root Dockerfile); the script
+#     refuses any other branch and any project other than the course project.
+#   - Passwords already live in Secret Manager (created by the portal); they are never printed
+#     (run_cmd redacts --password=...).
 #   - Preview first with:  DRY_RUN=1 ./deploy/deploy.sh   (no gcloud calls)
-#   - Run from the REPO ROOT (step 9 builds the root Dockerfile).
+#   - PORTAL_URL (default https://sad61263d-4d7hbszvwq-as.a.run.app) is the URL the portal
+#     gives the team. If Cloud Run reports a different status.url the script warns and prints
+#     the command that sets CLIENT_ORIGIN to the portal URL.
 #   - Offline test: deploy/tests/test_deploy_stub.sh
 #
 # REFERENCES
@@ -43,7 +42,6 @@ set -euo pipefail
 #
 # ⭐ CHANGE ME — groups using another tech stack must review (marked below):
 #   # CHANGE ME: resource names (REPO_NAME, SQL_INSTANCE, SERVICE_NAME, ...)
-#   # CHANGE ME: database engine/version (steps 3, 4, 6)
 #   # CHANGE ME: migrate/seed command of the Cloud Run job (step 10)
 #   # CHANGE ME: port / memory / scaling flags (step 11)
 # ==============================================================================
@@ -51,14 +49,22 @@ set -euo pipefail
 # ------------------------------------------------------------------------------
 # Settings & argument parsing
 # ------------------------------------------------------------------------------
-DRY_RUN="${DRY_RUN:-0}"
+DRY_RUN="${DRY_RUN:-1}"
 # CHANGE ME: default region if your group uses another one.
 REGION="${REGION:-asia-southeast1}"
+SEED_DEMO_DATA="false"
 
 for arg in "$@"; do
-  echo "Unknown argument: $arg" >&2
-  echo "Usage: $0   (set DRY_RUN=1 to print the commands without running them)" >&2
-  exit 1
+  case "$arg" in
+    --demo)
+      SEED_DEMO_DATA="true"
+      ;;
+    *)
+      echo "Unknown argument: $arg" >&2
+      echo "Usage: $0 [--demo]" >&2
+      exit 1
+      ;;
+  esac
 done
 
 # Helper: prints the command (DRY_RUN=1) or prints then executes it.
@@ -84,253 +90,86 @@ run_cmd() {
 }
 
 # Resolve the GCP project: $PROJECT_ID, else the active gcloud project.
-if [ "$DRY_RUN" = "1" ]; then
-  PROJECT_ID="${PROJECT_ID:-example-gcp-project}"
-else
-  PROJECT_ID="${PROJECT_ID:-$(gcloud config get-value project 2>/dev/null || true)}"
-  if [ -z "$PROJECT_ID" ]; then
-    echo "Error: PROJECT_ID is not set and no active gcloud project was found." >&2
-    echo "Run: gcloud config set project YOUR_PROJECT_ID" >&2
-    exit 1
-  fi
-fi
-
-# ------------------------------------------------------------------------------
-# Resource names
-# ⚠️ The lab guide refers to these names (purchaseflow, purchaseflow-pg,
-#    purchaseflow-runner, ...) and deploy.yml / release.sh / teardown.sh use the
-#    same ones. Keep them unless the guide says otherwise.
-# CHANGE ME: rename only if your group uses its own naming (then rename it in
-#            deploy.yml, release.sh, teardown.sh and the tests too).
-# ------------------------------------------------------------------------------
-REPO_NAME="purchaseflow"
-SQL_INSTANCE="purchaseflow-pg"
-DB_NAME="purchaseflow"
-DB_USER="purchaseflow"
-SERVICE_NAME="purchaseflow"
-MIGRATE_JOB_NAME="purchaseflow-migrate"
-SA_NAME="purchaseflow-runner"
+# Shared course project: no project discovery or project IAM changes.
+PROJECT_ID="${PROJECT_ID:-cpe-se-course-2026}"
+[[ "$PROJECT_ID" == "cpe-se-course-2026" ]] || { echo 'Wrong course project' >&2; exit 1; }
+REGION="${REGION:-asia-southeast1}"
+[[ "$REGION" == "asia-southeast1" ]] || { echo 'Wrong assigned region' >&2; exit 1; }
+REPO_NAME="sad61263d"
+SQL_INSTANCE="sad61263d-pg"
+DB_NAME="sad61263d"
+DB_USER="sad61263d"
+SERVICE_NAME="sad61263d"
+MIGRATE_JOB_NAME="sad61263d-migrate"
+SA_NAME="sad61263d-runner"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SQL_CONN_NAME="${PROJECT_ID}:${REGION}:${SQL_INSTANCE}"
-IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:latest"
+if [ "$DRY_RUN" = "1" ]; then
+  IMAGE_TAG="${IMAGE_TAG:-0000000000000000000000000000000000000000}"
+else
+  IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse HEAD)}"
+  [[ "$(git branch --show-current)" == "main" ]] || { echo 'Deploy reviewed main only' >&2; exit 1; }
+  [[ "$IMAGE_TAG" == "$(git rev-parse HEAD)" ]] || { echo 'IMAGE_TAG must match HEAD' >&2; exit 1; }
+fi
+[[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]] || { echo 'Use full commit SHA' >&2; exit 1; }
+IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:${IMAGE_TAG}"
 
 # Secret Manager secret names (values are never stored in this repo).
-SECRET_DB_URL="purchaseflow-database-url"
-SECRET_SEED_PASS="purchaseflow-seed-password"
+SECRET_DB_URL="sad61263d-database-url"
+SECRET_ADMIN_PASS="sad61263d-admin-password"
+SECRET_DEMO_PASS="sad61263d-demo-password"
 
-GENERATED_SEED_PASSWORD=""
+GENERATED_ADMIN_PASSWORD=""
+GENERATED_DEMO_PASSWORD=""
 
 echo "=================================================================="
 echo "PurchaseFlow Cloud Run Deployment"
 echo "Project : ${PROJECT_ID}"
 echo "Region  : ${REGION}"
+echo "Demo    : ${SEED_DEMO_DATA}"
 echo "Dry Run : ${DRY_RUN}"
 echo "=================================================================="
 
-# ------------------------------------------------------------------------------
-# Paid-resource gate
-# ⭐ IMPORTANT: this script creates billable resources. Without DRY_RUN=1 it refuses to start until
-#    ALLOW_PAID_RESOURCES=1 is set, so nobody creates them by running it by accident. The offline test
-#    asserts that no gcloud command is called without the flag.
-# ------------------------------------------------------------------------------
-if [ "$DRY_RUN" != "1" ] && [ "${ALLOW_PAID_RESOURCES:-0}" != "1" ]; then
-  cat >&2 <<'MSG'
-Stopped before creating anything.
-
-In the CPE334 course environment the course portal creates all resources. Do NOT run this script there:
-it would create a second Cloud SQL instance, which the course rules forbid.
-
-Only if you deliberately use a project of your own, this script creates resources that cost money:
-  - Cloud SQL for PostgreSQL (db-f1-micro): billed for every hour it exists, even when nobody uses the app.
-    The TA team estimated about USD 14 to 18 per month with light use.
-  - Cloud Run, Cloud Build and Artifact Registry: small, but not free.
-
-Before you continue:
-  1. Preview first:  DRY_RUN=1 bash deploy/deploy.sh   (prints every command, runs none)
-  2. Make sure the alerts-only budget exists and you did NOT click Upgrade on the trial account.
-  3. Know how to remove everything:  bash deploy/teardown.sh
-
-If you accept the cost, run:
-  ALLOW_PAID_RESOURCES=1 bash deploy/deploy.sh
-MSG
-  exit 2
+# ==============================================================================
+# Portal/TA pre-provisions infrastructure and public service IAM (Guide 5.3 steps 1–8, 5.4).
+# These names must exist. Never create or modify project-level IAM here.
+JOB_SECRETS="DATABASE_URL=${SECRET_DB_URL}:latest,ADMIN_PASSWORD=${SECRET_ADMIN_PASS}:latest"
+if [ "$SEED_DEMO_DATA" = "true" ]; then
+  JOB_SECRETS="${JOB_SECRETS},DEMO_USER_PASSWORD=${SECRET_DEMO_PASS}:latest"
 fi
-
-# ==============================================================================
-# 1. Enable required GCP APIs
-# ==============================================================================
-run_cmd gcloud services enable \
-  run.googleapis.com \
-  sqladmin.googleapis.com \
-  artifactregistry.googleapis.com \
-  cloudbuild.googleapis.com \
-  secretmanager.googleapis.com \
-  iam.googleapis.com \
-  --project "$PROJECT_ID"
-
-# ==============================================================================
-# 2. Create Artifact Registry repository (idempotent)
-#    Stores the container images (deploy.yml pushes one per commit SHA).
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud artifacts repositories describe "$REPO_NAME" --location "$REGION" --project "$PROJECT_ID"
-  run_cmd gcloud artifacts repositories create "$REPO_NAME" --repository-format=docker --location "$REGION" --description="PurchaseFlow container repository" --project "$PROJECT_ID"
-else
-  if ! gcloud artifacts repositories describe "$REPO_NAME" --location "$REGION" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    run_cmd gcloud artifacts repositories create "$REPO_NAME" \
-      --repository-format=docker \
-      --location "$REGION" \
-      --description="PurchaseFlow container repository" \
-      --project "$PROJECT_ID"
-  fi
+if [ "$DRY_RUN" != "1" ]; then
+  gcloud run services describe "$SERVICE_NAME" --project "$PROJECT_ID" --region "$REGION" >/dev/null
+  gcloud run jobs describe "$MIGRATE_JOB_NAME" --project "$PROJECT_ID" --region "$REGION" >/dev/null
 fi
-
-# ==============================================================================
-# 3. Create Cloud SQL for PostgreSQL instance (idempotent, db-f1-micro requires --edition=enterprise on POSTGRES_16)
-#    ⭐ IMPORTANT: keep `--edition=enterprise` (lowercase) — required by
-#       db-f1-micro and asserted by deploy/tests/test_deploy_stub.sh.
-#       Creating the instance takes several minutes and costs money until
-#       deploy/teardown.sh is run.
-#    CHANGE ME: --database-version / --tier for a different database.
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud sql instances describe "$SQL_INSTANCE" --project "$PROJECT_ID"
-  run_cmd gcloud sql instances create "$SQL_INSTANCE" --database-version=POSTGRES_16 --edition=enterprise --tier=db-f1-micro --region="$REGION" --storage-size=10GB --storage-type=SSD --backup-start-time=03:00 --project "$PROJECT_ID"
-else
-  if ! gcloud sql instances describe "$SQL_INSTANCE" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    run_cmd gcloud sql instances create "$SQL_INSTANCE" \
-      --database-version=POSTGRES_16 \
-      --edition=enterprise \
-      --tier=db-f1-micro \
-      --region="$REGION" \
-      --storage-size=10GB \
-      --storage-type=SSD \
-      --backup-start-time=03:00 \
-      --project "$PROJECT_ID"
-  fi
-fi
-
-# ==============================================================================
-# 4. Create Database (idempotent)
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud sql databases describe "$DB_NAME" --instance="$SQL_INSTANCE" --project "$PROJECT_ID"
-  run_cmd gcloud sql databases create "$DB_NAME" --instance="$SQL_INSTANCE" --project "$PROJECT_ID"
-else
-  if ! gcloud sql databases describe "$DB_NAME" --instance="$SQL_INSTANCE" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    run_cmd gcloud sql databases create "$DB_NAME" --instance="$SQL_INSTANCE" --project "$PROJECT_ID"
-  fi
-fi
-
-# ==============================================================================
-# 5. Create Dedicated Runtime Service Account & IAM bindings (idempotent)
-#    The app runs as this account with least privilege. Here it only gets
-#    cloudsql.client (connect to the DB); access to individual secrets is
-#    granted later, per secret, after they exist.
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud iam service-accounts describe "$SA_EMAIL" --project "$PROJECT_ID"
-  run_cmd gcloud iam service-accounts create "$SA_NAME" --display-name="PurchaseFlow Cloud Run Service Account" --project "$PROJECT_ID"
-else
-  if ! gcloud iam service-accounts describe "$SA_EMAIL" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    run_cmd gcloud iam service-accounts create "$SA_NAME" \
-      --display-name="PurchaseFlow Cloud Run Service Account" \
-      --project "$PROJECT_ID"
-  fi
-fi
-
-run_cmd gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/cloudsql.client" \
-  --condition=None \
-  --quiet
-
-# ==============================================================================
-# 6. Create DB User & Store DATABASE_URL in Secret Manager (only if secret does not exist yet)
-#    ⭐ IMPORTANT: the DB user's password and the password inside DATABASE_URL
-#       must be the same value (checked by test_deploy_stub.sh). Never echo it.
-#    CHANGE ME: the URL format below is PostgreSQL + Prisma specific
-#       (host=/cloudsql/... unix socket, schema=public, connection_limit=3).
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud secrets describe "$SECRET_DB_URL" --project "$PROJECT_ID"
-  run_cmd gcloud sql users list --instance="$SQL_INSTANCE" --project "$PROJECT_ID" --format="value(name)"
-  run_cmd gcloud sql users create "$DB_USER" --instance="$SQL_INSTANCE" --password="<GENERATED_HEX_PASSWORD>" --project "$PROJECT_ID"
-  run_cmd gcloud secrets create "$SECRET_DB_URL" --replication-policy="automatic" --project "$PROJECT_ID"
-  run_cmd gcloud secrets versions add "$SECRET_DB_URL" --data-file=- --project "$PROJECT_ID"
-else
-  if ! gcloud secrets describe "$SECRET_DB_URL" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    DB_PASS="$(openssl rand -hex 24)"
-    if gcloud sql users list --instance="$SQL_INSTANCE" --project "$PROJECT_ID" --format="value(name)" | grep -qx "$DB_USER"; then
-      run_cmd gcloud sql users set-password "$DB_USER" --instance="$SQL_INSTANCE" --password="$DB_PASS" --project "$PROJECT_ID"
-    else
-      run_cmd gcloud sql users create "$DB_USER" --instance="$SQL_INSTANCE" --password="$DB_PASS" --project "$PROJECT_ID"
-    fi
-    DB_URL_VALUE="postgresql://${DB_USER}:${DB_PASS}@localhost/${DB_NAME}?host=/cloudsql/${SQL_CONN_NAME}&schema=public&connection_limit=3"
-    run_cmd gcloud secrets create "$SECRET_DB_URL" --replication-policy="automatic" --project "$PROJECT_ID"
-    printf "%s" "$DB_URL_VALUE" | gcloud secrets versions add "$SECRET_DB_URL" --data-file=- --project "$PROJECT_ID"
-  fi
-fi
-
-# ==============================================================================
-# 7. Create SEED_DEFAULT_PASSWORD in Secret Manager (only if the secret does not exist yet)
-#    One password shared by the five synthetic demo accounts (needed for UAT in Lab 6).
-#    The seed refuses the published example value and anything shorter than 12 characters
-#    in production. Read it later with: gcloud secrets versions access latest --secret=<name>
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud secrets describe "$SECRET_SEED_PASS" --project "$PROJECT_ID"
-  run_cmd gcloud secrets create "$SECRET_SEED_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-  run_cmd gcloud secrets versions add "$SECRET_SEED_PASS" --data-file=- --project "$PROJECT_ID"
-else
-  if ! gcloud secrets describe "$SECRET_SEED_PASS" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    GENERATED_SEED_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=' | cut -c1-20)"
-    run_cmd gcloud secrets create "$SECRET_SEED_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-    printf "%s" "$GENERATED_SEED_PASSWORD" | gcloud secrets versions add "$SECRET_SEED_PASS" --data-file=- --project "$PROJECT_ID"
-  fi
-fi
-JOB_SECRETS="DATABASE_URL=${SECRET_DB_URL}:latest,SEED_DEFAULT_PASSWORD=${SECRET_SEED_PASS}:latest"
-
-# ------------------------------------------------------------------------------
-# Secret access (per secret, NOT project-wide)
-# ⭐ IMPORTANT: test_deploy_stub.sh fails if a project-wide secretAccessor
-#    binding is added — keep access limited to this app's own secrets.
-# ------------------------------------------------------------------------------
-# Grant access only to this app's secrets, after they exist.
-RUNTIME_SECRETS=("$SECRET_DB_URL" "$SECRET_SEED_PASS")
-for secret in "${RUNTIME_SECRETS[@]}"; do
-  run_cmd gcloud secrets add-iam-policy-binding "$secret" \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="roles/secretmanager.secretAccessor" \
-    --project "$PROJECT_ID" --quiet
-done
-
-# ==============================================================================
 # 9. Build & Push Unified Container Image via Cloud Build
 #    Builds the root Dockerfile (run this script from the repo root).
 #    Tag `latest` is only for this first manual setup; deploy.yml uses commit SHAs.
 # ==============================================================================
-run_cmd gcloud builds submit \
-  --tag "$IMAGE_URI" \
-  --project "$PROJECT_ID"
+run_cmd gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+run_cmd docker build --platform linux/amd64 --tag "$IMAGE_URI" .
+run_cmd docker push "$IMAGE_URI"
+if [ "$DRY_RUN" != "1" ]; then
+  IMAGE_URI="$(gcloud artifacts docker images describe "$IMAGE_URI" --project "$PROJECT_ID" --format='value(image_summary.fully_qualified_digest)')"
+  [[ "$IMAGE_URI" == "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}@sha256:"* ]] || { echo 'Missing image digest' >&2; exit 1; }
+fi
 
 # ==============================================================================
 # 10. Create/Update & Execute Cloud Run Job for Migration + Non-destructive Seed
 #     ⭐ IMPORTANT: if this job fails the script stops BEFORE deploying the
 #        service, so a broken migration never reaches users.
-#     CHANGE ME: `--args` (prisma migrate deploy && npm run prisma:seed:container) is
+#     CHANGE ME: `--args` (prisma migrate deploy && npm run prisma:seed) is
 #        Prisma/npm specific — use your stack's migrate/seed command.
-#     deploy.yml / release.sh later re-run this same job (name: purchaseflow-migrate).
+#     deploy.yml / release.sh later re-run this same job (name: sad61263d-migrate).
 # ==============================================================================
-run_cmd gcloud run jobs deploy "$MIGRATE_JOB_NAME" \
+run_cmd gcloud run jobs update "$MIGRATE_JOB_NAME" \
   --image "$IMAGE_URI" \
   --region "$REGION" \
   --service-account "$SA_EMAIL" \
   --set-cloudsql-instances "$SQL_CONN_NAME" \
   --set-secrets "$JOB_SECRETS" \
-  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok" \
+  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok,SEED_DEMO_DATA=${SEED_DEMO_DATA}" \
   --command "sh" \
-  --args "-c,npx prisma migrate deploy && npm run prisma:seed:container" \
+  --args "-c,npx prisma migrate deploy && npm run prisma:seed" \
   --max-retries 1 \
   --task-timeout 300s \
   --project "$PROJECT_ID"
@@ -351,42 +190,41 @@ fi
 #                --memory / --cpu / --max-instances for your app.
 #     ⚠️ --allow-unauthenticated makes the service public (needed for the demo).
 # ==============================================================================
-run_cmd gcloud run deploy "$SERVICE_NAME" \
+run_cmd gcloud run services update "$SERVICE_NAME" \
   --image "$IMAGE_URI" \
   --region "$REGION" \
-  --platform managed \
-  --allow-unauthenticated \
   --service-account "$SA_EMAIL" \
   --add-cloudsql-instances "$SQL_CONN_NAME" \
   --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest" \
   --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok" \
   --min-instances 0 \
-  --max-instances 3 \
+  --max-instances 1 \
   --memory 512Mi \
   --cpu 1 \
   --port 3000 \
   --project "$PROJECT_ID"
 
+run_cmd gcloud run services update-traffic "$SERVICE_NAME" --to-latest --project "$PROJECT_ID" --region "$REGION" --quiet
 if [ "$DRY_RUN" = "1" ]; then
   SERVICE_URL="https://${SERVICE_NAME}-<hash>-as.a.run.app"
 else
   SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --project "$PROJECT_ID" --format='value(status.url)')"
 fi
 
-# ==============================================================================
-# 12. Allow the service's own origin
-#     The API only accepts state-changing requests whose Origin equals CLIENT_ORIGIN, and in the cloud the page
-#     and the API share one URL. That URL is only known now, so set it and let Cloud Run start a new revision.
-#     release.sh later updates only the image, so this value stays.
-# ==============================================================================
-# The image above was built from this checkout, so its commit is the running one. /api/version shows it.
-APP_COMMIT_VALUE="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
-run_cmd gcloud run services update "$SERVICE_NAME" \
-  --region "$REGION" \
-  --update-env-vars "CLIENT_ORIGIN=${SERVICE_URL},APP_COMMIT=${APP_COMMIT_VALUE}" \
-  --project "$PROJECT_ID"
-
 # ------------------------------------------------------------------------------
+# PurchaseFlow addition: the API accepts POST, PATCH and DELETE only from CLIENT_ORIGIN, and in the cloud the page and the API
+# share the service URL. The service update above uses --set-env-vars, which replaced all variables, so set these two now.
+# --update-env-vars changes only the variables it names.
+run_cmd gcloud run services update "$SERVICE_NAME"   --update-env-vars "CLIENT_ORIGIN=${SERVICE_URL},APP_COMMIT=${IMAGE_TAG}"   --region "$REGION"   --project "$PROJECT_ID"
+
+# Cloud Run can report a different status.url than the portal URL; the API refuses sign-in from any other origin.
+PORTAL_URL="${PORTAL_URL:-https://sad61263d-4d7hbszvwq-as.a.run.app}"
+if [ "$DRY_RUN" != "1" ] && [ "$SERVICE_URL" != "$PORTAL_URL" ]; then
+  printf '%s\n' "WARNING: Cloud Run status.url is ${SERVICE_URL}, the portal URL is ${PORTAL_URL}."
+  printf '%s\n' "If people open the portal URL, set CLIENT_ORIGIN to it:"
+  printf '%s\n' "gcloud run services update ${SERVICE_NAME} --update-env-vars CLIENT_ORIGIN=${PORTAL_URL} --region ${REGION} --project ${PROJECT_ID}"
+fi
+
 # Summary output (URLs; passwords stay in Secret Manager and are not printed)
 # ------------------------------------------------------------------------------
 printf '\n'
@@ -395,6 +233,11 @@ printf '%s\n' "Deployment Completed!"
 printf '%s\n' "Service URL    : ${SERVICE_URL}"
 printf '%s\n' "Health Check   : ${SERVICE_URL}/api/health"
 printf '%s\n' "Readiness Check: ${SERVICE_URL}/api/ready"
-printf '%s\n' "Demo accounts  : ploy, nattapong (requesters), somchai, malee (approvers), admin, all @purchaseflow.test"
-printf '%s\n' "Demo password  : Stored in Secret Manager: ${SECRET_SEED_PASS} (not printed). Share it privately."
+printf '%s\n' "Accounts       : admin@purchaseflow.test (administrator, password in ${SECRET_ADMIN_PASS})"
+if [ "$SEED_DEMO_DATA" = "true" ]; then
+  printf '%s\n' "Demo accounts  : ploy, nattapong (requesters), somchai, malee (approvers), all @purchaseflow.test"
+  printf '%s\n' "Demo Password  : Stored in Secret Manager: ${SECRET_DEMO_PASS} (not printed). Share it privately."
+else
+  printf '%s\n' "Only the administrator was seeded. Run again with --demo to create the requester and approver accounts."
+fi
 printf '%s\n' "=================================================================="
