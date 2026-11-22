@@ -12,6 +12,7 @@
 #   migration job fails     -> exit 1 and the service is never updated
 #   branch other than main  -> exit 1 before any docker or gcloud call
 #   wrong project           -> exit 1
+#   status.url differs from the portal URL -> a warning with the exact command to set CLIENT_ORIGIN; no warning when equal
 #   never                   -> creates Cloud SQL, secrets, service accounts or any IAM binding (the portal owns them)
 set -euo pipefail
 trap 'echo "FAILED at line $LINENO of test_deploy_stub.sh" >&2' ERR
@@ -29,7 +30,7 @@ case "${1:-} ${2:-} ${3:-} ${4:-}" in
   "run jobs execute "*) [ "${STUB_MODE:-ok}" != job-fail ] || exit 1 ;;
 esac
 case "${1:-} ${2:-} ${3:-}" in
-  "run services describe") for a in "$@"; do case "$a" in --format*) echo "https://sad61263d-test.a.run.app" ;; esac; done ;;
+  "run services describe") for a in "$@"; do case "$a" in --format*) echo "${STUB_URL:-https://sad61263d-test.a.run.app}" ;; esac; done ;;
   "run jobs execute") [ "${STUB_MODE:-ok}" != job-fail ] || exit 1 ;;
 esac
 exit 0
@@ -104,3 +105,12 @@ for n in demo nodemo; do
   fi
 done
 echo 'PASS: never creates Cloud SQL, secrets, service accounts, repositories or IAM bindings'
+
+# 8. the service URL must equal the portal URL, otherwise sign-in is refused (403 Request origin not allowed)
+PORTAL=https://sad61263d-4d7hbszvwq-as.a.run.app
+run urlsame 0 DRY_RUN=0 STUB_URL=$PORTAL bash "$DEPLOY_SCRIPT" --demo
+if grep -q 'WARNING' "$TEST_STATE_DIR/out-urlsame.txt"; then echo 'FAIL urlsame: warned although the URLs are equal'; exit 1; fi
+run urldiff 0 DRY_RUN=0 STUB_URL=https://sad61263d-123456.asia-southeast1.run.app bash "$DEPLOY_SCRIPT" --demo
+grep -q 'WARNING' "$TEST_STATE_DIR/out-urldiff.txt"
+grep -q "update-env-vars CLIENT_ORIGIN=$PORTAL" "$TEST_STATE_DIR/out-urldiff.txt"
+echo 'PASS: warns with the fix command when status.url differs from the portal URL, silent when equal'

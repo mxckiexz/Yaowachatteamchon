@@ -12,21 +12,25 @@ set -euo pipefail
 #   REGION       GCP Region (default: asia-southeast1)
 #   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
 #
-# WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
-#   Creates every cloud resource the app needs and does the first deployment:
-#   1 enable APIs     2 Artifact Registry  3 Cloud SQL instance  4 database
-#   5 runtime SA+IAM  6 DB user + secret   7 admin password      8 demo password
-#   (secret access)   9 build image        10 migrate+seed job   11 Cloud Run service
+# WHAT THIS SCRIPT DOES  (first manual deployment; safe to re-run)
+#   The course portal has ALREADY created Cloud SQL, Artifact Registry, the runtime service
+#   account, its IAM roles, the secrets and the Cloud Run service. This script creates none of
+#   them and changes no IAM. It only:
+#   9 builds the image (linux/amd64) and pushes it tagged with the commit SHA
+#   10 updates and runs the migration + seed Cloud Run job (stops here if it fails)
+#   11 updates the Cloud Run service to the new image, then sets CLIENT_ORIGIN and APP_COMMIT
 #   After this, routine releases are done by GitHub Actions (deploy.yml ->
-#   deploy/release.sh), which only UPDATES these resources.
+#   deploy/release.sh), which only UPDATES the image.
 #
 # ⭐ IMPORTANT
-#   - Idempotent: existing resources/secrets are reused, never overwritten
-#     (a re-run does not replace credentials).
-#   - Passwords are generated with openssl and live only in Secret Manager;
-#     they are never printed (run_cmd redacts --password=...).
+#   - Run from the REPO ROOT on the main branch (step 9 builds the root Dockerfile); the script
+#     refuses any other branch and any project other than the course project.
+#   - Passwords already live in Secret Manager (created by the portal); they are never printed
+#     (run_cmd redacts --password=...).
 #   - Preview first with:  DRY_RUN=1 ./deploy/deploy.sh   (no gcloud calls)
-#   - Run from the REPO ROOT (step 9 builds the root Dockerfile).
+#   - PORTAL_URL (default https://sad61263d-4d7hbszvwq-as.a.run.app) is the URL the portal
+#     gives the team. If Cloud Run reports a different status.url the script warns and prints
+#     the command that sets CLIENT_ORIGIN to the portal URL.
 #   - Offline test: deploy/tests/test_deploy_stub.sh
 #
 # REFERENCES
@@ -38,7 +42,6 @@ set -euo pipefail
 #
 # ⭐ CHANGE ME — groups using another tech stack must review (marked below):
 #   # CHANGE ME: resource names (REPO_NAME, SQL_INSTANCE, SERVICE_NAME, ...)
-#   # CHANGE ME: database engine/version (steps 3, 4, 6)
 #   # CHANGE ME: migrate/seed command of the Cloud Run job (step 10)
 #   # CHANGE ME: port / memory / scaling flags (step 11)
 # ==============================================================================
@@ -213,6 +216,14 @@ fi
 # share the service URL. The service update above uses --set-env-vars, which replaced all variables, so set these two now.
 # --update-env-vars changes only the variables it names.
 run_cmd gcloud run services update "$SERVICE_NAME"   --update-env-vars "CLIENT_ORIGIN=${SERVICE_URL},APP_COMMIT=${IMAGE_TAG}"   --region "$REGION"   --project "$PROJECT_ID"
+
+# Cloud Run can report a different status.url than the portal URL; the API refuses sign-in from any other origin.
+PORTAL_URL="${PORTAL_URL:-https://sad61263d-4d7hbszvwq-as.a.run.app}"
+if [ "$DRY_RUN" != "1" ] && [ "$SERVICE_URL" != "$PORTAL_URL" ]; then
+  printf '%s\n' "WARNING: Cloud Run status.url is ${SERVICE_URL}, the portal URL is ${PORTAL_URL}."
+  printf '%s\n' "If people open the portal URL, set CLIENT_ORIGIN to it:"
+  printf '%s\n' "gcloud run services update ${SERVICE_NAME} --update-env-vars CLIENT_ORIGIN=${PORTAL_URL} --region ${REGION} --project ${PROJECT_ID}"
+fi
 
 # Summary output (URLs; passwords stay in Secret Manager and are not printed)
 # ------------------------------------------------------------------------------
