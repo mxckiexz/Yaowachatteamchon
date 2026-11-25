@@ -1,0 +1,729 @@
+
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f07/search-filter.test.ts
+
+
+ RUN  v2.1.9 C:/Users/THANWA~1/AppData/Local/Temp/purchaseflow-f07-red/server
+
+ ❯ tests/f07/search-filter.test.ts (18 tests | 9 failed) 15176ms
+   ✓ F-07 search and filter > TEST-106 / AC-74: keeps the default mine list 729ms
+   ✓ F-07 search and filter > TEST-107 / AC-75: filters each valid status 584ms
+   ✓ F-07 search and filter > TEST-108 / AC-76: filters each valid category 680ms
+   ✓ F-07 search and filter > TEST-109 / AC-77: searches request number, item name, description and reason 553ms
+   × F-07 search and filter > TEST-110 / AC-78: combines filters with AND 677ms
+     → expected [ 1701, 1700, 1699, 1698, 1697, …(7) ] to deeply equal [ 1700 ]
+   ✓ F-07 search and filter > TEST-111 / AC-79: clear-equivalent empty filters return the complete list 615ms
+   ✓ F-07 search and filter > TEST-112 / AC-80: all roles keep their visibility scope 1987ms
+   ✓ F-07 search and filter > TEST-114 / AC-82: administrator can filter all requests 903ms
+   ✓ F-07 search and filter > TEST-116 / AC-84: anonymous and unauthorized scopes return no data 491ms
+   × F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload 930ms
+     → expected [ { id: 1705, …(9) }, …(14) ] to deeply equal []
+   ✓ F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows 1165ms
+   × F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter 623ms
+     → expected [ Array(216) ] to deeply equal [ 1907 ]
+   × F-07 search and filter > TEST-113 / AC-81: review status remains submitted even when another status is requested 931ms
+     → expected [ { id: 1691, …(9) }, …(3) ] to deeply equal []
+   × F-07 search and filter > TEST-115 / AC-83: rejects invalid and overlong parameters 458ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-125 / AC-93: rejects repeated and lower-case parameters 476ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101 533ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter 484ms
+     → expected [ Array(218) ] to not include 1909
+   × F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED 535ms
+     → expected [ { id: 1691, …(9) }, …(3) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-110 / AC-78: combines filters with AND
+AssertionError: expected [ 1701, 1700, 1699, 1698, 1697, …(7) ] to deeply equal [ 1700 ]
+
+- Expected
++ Received
+
+  Array [
++   1701,
+    1700,
++   1699,
++   1698,
++   1697,
++   1696,
++   1695,
++   1694,
++   1693,
++   1692,
++   1691,
++   1690,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:66:109
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload
+AssertionError: expected [ { id: 1705, …(9) }, …(14) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:37.751Z",
++     "id": 1705,
++     "itemName": "Admin all row",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0905",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:36.743Z",
++     "id": 1703,
++     "itemName": "Visible submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0903",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:36.776Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:34.852Z",
++     "id": 1702,
++     "itemName": "Clear filter row",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0902",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-25T18:26:34.200Z",
++     "id": 1701,
++     "itemName": "AND wrong category",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0901",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:34.150Z",
++     "id": 1700,
++     "itemName": "AND match",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0900",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:33.516Z",
++     "id": 1699,
++     "itemName": "MixedCase Item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0899",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "OTHER",
++     "createdAt": "2026-11-25T18:26:33.013Z",
++     "id": 1698,
++     "itemName": "Category OTHER",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0898",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "STATIONERY",
++     "createdAt": "2026-11-25T18:26:32.960Z",
++     "id": 1697,
++     "itemName": "Category STATIONERY",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0897",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "FURNITURE",
++     "createdAt": "2026-11-25T18:26:32.915Z",
++     "id": 1696,
++     "itemName": "Category FURNITURE",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0896",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-25T18:26:32.871Z",
++     "id": 1695,
++     "itemName": "Category SOFTWARE",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0895",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:32.826Z",
++     "id": 1694,
++     "itemName": "Category EQUIPMENT",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0894",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:32.268Z",
++     "id": 1693,
++     "itemName": "Status submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0893",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:32.299Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:32.237Z",
++     "id": 1692,
++     "itemName": "Status draft",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0892",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-25T18:26:31.690Z",
++     "id": 1691,
++     "itemName": "Submitted filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0891",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:31.728Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:31.632Z",
++     "id": 1690,
++     "itemName": "Draft filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0890",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++ ]
+
+ ❯ tests/f07/search-filter.test.ts:105:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter
+AssertionError: expected [ Array(216) ] to deeply equal [ 1907 ]
+
+- Expected
++ Received
+
+  Array [
+    1907,
++   1906,
++   1905,
++   1904,
++   1903,
++   1902,
++   1901,
++   1900,
++   1899,
++   1898,
++   1897,
++   1896,
++   1895,
++   1894,
++   1893,
++   1892,
++   1891,
++   1890,
++   1889,
++   1888,
++   1887,
++   1886,
++   1885,
++   1884,
++   1883,
++   1882,
++   1881,
++   1880,
++   1879,
++   1878,
++   1877,
++   1876,
++   1875,
++   1874,
++   1873,
++   1872,
++   1871,
++   1870,
++   1869,
++   1868,
++   1867,
++   1866,
++   1865,
++   1864,
++   1863,
++   1862,
++   1861,
++   1860,
++   1859,
++   1858,
++   1857,
++   1856,
++   1855,
++   1854,
++   1853,
++   1852,
++   1851,
++   1850,
++   1849,
++   1848,
++   1847,
++   1846,
++   1845,
++   1844,
++   1843,
++   1842,
++   1841,
++   1840,
++   1839,
++   1838,
++   1837,
++   1836,
++   1835,
++   1834,
++   1833,
++   1832,
++   1831,
++   1830,
++   1829,
++   1828,
++   1827,
++   1826,
++   1825,
++   1824,
++   1823,
++   1822,
++   1821,
++   1820,
++   1819,
++   1818,
++   1817,
++   1816,
++   1815,
++   1814,
++   1813,
++   1812,
++   1811,
++   1810,
++   1809,
++   1808,
++   1807,
++   1806,
++   1805,
++   1804,
++   1803,
++   1802,
++   1801,
++   1800,
++   1799,
++   1798,
++   1797,
++   1796,
++   1795,
++   1794,
++   1793,
++   1792,
++   1791,
++   1790,
++   1789,
++   1788,
++   1787,
++   1786,
++   1785,
++   1784,
++   1783,
++   1782,
++   1781,
++   1780,
++   1779,
++   1778,
++   1777,
++   1776,
++   1775,
++   1774,
++   1773,
++   1772,
++   1771,
++   1770,
++   1769,
++   1768,
++   1767,
++   1766,
++   1765,
++   1764,
++   1763,
++   1762,
++   1761,
++   1760,
++   1759,
++   1758,
++   1757,
++   1756,
++   1755,
++   1754,
++   1753,
++   1752,
++   1751,
++   1750,
++   1749,
++   1748,
++   1747,
++   1746,
++   1745,
++   1744,
++   1743,
++   1742,
++   1741,
++   1740,
++   1739,
++   1738,
++   1737,
++   1736,
++   1735,
++   1734,
++   1733,
++   1732,
++   1731,
++   1730,
++   1729,
++   1728,
++   1727,
++   1726,
++   1725,
++   1724,
++   1723,
++   1722,
++   1721,
++   1720,
++   1719,
++   1718,
++   1717,
++   1716,
++   1715,
++   1714,
++   1713,
++   1712,
++   1711,
++   1710,
++   1709,
++   1708,
++   1707,
++   1705,
++   1703,
++   1702,
++   1701,
++   1700,
++   1699,
++   1698,
++   1697,
++   1696,
++   1695,
++   1694,
++   1693,
++   1692,
++   1691,
++   1690,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:138:90
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-113 / AC-81: review status remains submitted even when another status is requested
+AssertionError: expected [ { id: 1691, …(9) }, …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-25T18:26:31.690Z",
++     "id": 1691,
++     "itemName": "Submitted filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0891",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:31.728Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:32.268Z",
++     "id": 1693,
++     "itemName": "Status submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0893",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:32.299Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:36.743Z",
++     "id": 1703,
++     "itemName": "Visible submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0903",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:36.776Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:41.865Z",
++     "id": 1908,
++     "itemName": "Review filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0908",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:41.892Z",
++     "total": 201,
++   },
++ ]
+
+ ❯ tests/f07/search-filter.test.ts:147:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-115 / AC-83: rejects invalid and overlong parameters
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:152:85
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-125 / AC-93: rejects repeated and lower-case parameters
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:160:85
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:168:76
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter
+AssertionError: expected [ Array(218) ] to not include 1909
+ ❯ tests/f07/search-filter.test.ts:174:103
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED
+AssertionError: expected [ { id: 1691, …(9) }, …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-25T18:26:31.690Z",
++     "id": 1691,
++     "itemName": "Submitted filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0891",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:31.728Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:32.268Z",
++     "id": 1693,
++     "itemName": "Status submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0893",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:32.299Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:36.743Z",
++     "id": 1703,
++     "itemName": "Visible submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0903",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:36.776Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-25T18:26:41.865Z",
++     "id": 1908,
++     "itemName": "Review filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-0908",
++     "requester": Object {
++       "id": 200,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-25T18:26:41.892Z",
++     "total": 201,
++   },
++ ]
+
+ ❯ tests/f07/search-filter.test.ts:182:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 9 passed (18)
+   Start at  01:26:27
+   Duration  17.28s (transform 361ms, setup 0ms, collect 1.49s, tests 15.18s, environment 1ms, prepare 257ms)
+
