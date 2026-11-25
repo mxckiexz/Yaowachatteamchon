@@ -1,8 +1,8 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.0 (planning). Requirement, feature or responsibility, sprint, acceptance criteria and planned tests. Actual results are recorded after the Sprint 1 run in `docs/sprints/sprint-1/results.md`. Later sprints have a feature and a sprint now; their AC and tests are written before those sprints.
+Version 2.1. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 F-06 actual results are in `docs/sprints/sprint-2/results.md`.
 
-| Requirement | Feature or responsibility | Sprint | AC | Planned tests |
+| Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
 | FR-01 | F-02 | 1 | AC-13 to AC-15, AC-22, AC-23 | TEST-16 to 22, 31, 32, 71 |
 | FR-02 | F-02 | 1 | AC-16, AC-17, AC-23 | TEST-23 to 25, 71 |

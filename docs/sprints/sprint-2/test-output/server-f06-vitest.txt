@@ -1,0 +1,31 @@
+
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f06/cancel-request.test.ts
+
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
+
+stderr | tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update
+Error: forced history failure
+    at Object.failingHistory.create (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\tests\f06\cancel-request.test.ts:102:53)
+    at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\src\requestRoutes.ts:234:33
+    at Proxy._transactionWithCallback (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:130:8000)
+
+ ✓ tests/f06/cancel-request.test.ts (11 tests) 9458ms
+   ✓ F-06 cancel request > TEST-93 / AC-58: the owner cancels a draft 520ms
+   ✓ F-06 cancel request > TEST-94 / AC-59: the owner cancels a submitted request 544ms
+   ✓ F-06 cancel request > TEST-95 / AC-60, AC-61: cancellation keeps data and appends one history row 518ms
+   ✓ F-06 cancel request > TEST-96 / AC-62, AC-63: non-owners receive 404 1834ms
+   ✓ F-06 cancel request > TEST-97 / AC-64: terminal requests cannot be cancelled 665ms
+   ✓ F-06 cancel request > TEST-98 / AC-65: concurrent cancels produce one transition 498ms
+   ✓ F-06 cancel request > TEST-99 / AC-66: a decision racing with cancel produces one transition 964ms
+   ✓ F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update 502ms
+   ✓ F-06 cancel request > TEST-101 / AC-68: nonnumeric id is 404 and anonymous request with the correct origin is 401 416ms
+   ✓ F-06 cancel request > TEST-102 / AC-69: a foreign origin is refused 430ms
+   ✓ F-06 cancel request > TEST-103 / AC-70: cancellation blocks later actions and leaves the owner-visible request 1069ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  18:10:01
+   Duration  10.62s (transform 188ms, setup 0ms, collect 765ms, tests 9.46s, environment 0ms, prepare 133ms)
+
