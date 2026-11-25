@@ -49,7 +49,7 @@ SUBMITTED
 | SUBMITTED | Sent to the approvers for review. |
 | APPROVED | Approved by an approver. |
 | REJECTED | Rejected by an approver; a reason is stored. |
-| CANCELLED | Cancelled by the requester before approval (the status exists now, the action is built in Sprint 2). |
+| CANCELLED | Cancelled by the request owner before approval; the transition is specified by F-06 in Sprint 2. |
 
 ## 6. Functional requirements (FR)
 
@@ -112,6 +112,7 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-18 | Only the owner can edit or submit a request. The administrator and approvers cannot. | 1 |
 | BR-19 | A request that needs several steps must be approved by different approvers at each step, none of whom is the requester. | 3 |
 | BR-20 | The approval route depends on the total amount; the thresholds are decided in the Sprint 3 contract. | 3 |
+| BR-21 | Only the request owner can cancel a DRAFT or SUBMITTED request; APPROVED, REJECTED and CANCELLED requests cannot be cancelled. | 2 |
 
 ## 8. Non-functional requirements (NFR)
 
@@ -165,3 +166,4 @@ NFR-01 to NFR-08 are those of the proposal, with measurable targets and a verifi
 |---|---|---|
 | 1.0, 1.1 | Sprint 1 planning | Earlier design called BuyFlow (several items per request, one assigned approver, two roles). Kept in the repository under the tag `archive/buyflow-v1`. |
 | 2.0 | 2026-11-15, before any 2.0 code | The team's proposal (PurchaseFlow) became the baseline. Differences: one item per request; status names DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED; any approver decides; request numbers and categories; an administrator role; separate approve and reject endpoints. Added FR-16, BR-15 to BR-18, NFR-09 to NFR-13. Reason: the proposal is the agreed scope of the pair. Contracts and tests were rewritten for 2.0 before the new code. |
+| 2.1 | 2026-11-25 | Added BR-21 for F-06: only the request owner may cancel a DRAFT or SUBMITTED request. Reason: the confirmed Sprint 2 cancellation decision makes ownership explicit and prevents another user, approver or administrator from changing the request's lifecycle. |
