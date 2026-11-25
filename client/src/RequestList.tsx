@@ -79,13 +79,13 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
           <button className="btn btn-outline-secondary" type="button" onClick={clearFilters}>Clear filters</button>
         </div>
       </form>
+      <p className="visually-hidden" role="status" aria-live="polite">{requests == null ? "Loading results" : requests.length ? `${requests.length} results` : "0 results"}</p>
       {error && (
         <div role="alert" className="alert alert-danger">
           {error} <button className="btn btn-sm btn-outline-danger ms-2" onClick={load}>Retry</button>
         </div>
       )}
       {!error && requests === null && <p>Loading...</p>}
-      {requests && <p className="visually-hidden" role="status" aria-live="polite">{requests.length ? `${requests.length} results` : "0 results"}</p>}
       {requests && requests.length === 0 && <p className="text-muted">{emptyText}</p>}
       {requests && requests.length > 0 && <RequestTable requests={requests} showRequester={showRequester} dateLabel={dateLabel} />}
     </>

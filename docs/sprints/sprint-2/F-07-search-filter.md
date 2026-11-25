@@ -135,6 +135,6 @@ The following tests are planned for Sprint 2 and must be added to the Sprint 2 r
 - API tests cover every filter, combinations, invalid values, visibility and no-data leakage.
 - API tests cover NFR-09 metacharacters, repeated parameters, enum case, empty values, exact text boundaries and NULL fields.
 - The formal NFR-12 measurement is recorded with its environment and raw output.
-- Browser tests cover labels, keyboard access, URL persistence, clear action, responsive widths, axe accessibility, result announcements, empty state and forbidden scopes.
+- Browser tests cover labels, keyboard access, URL persistence, clear action, responsive layouts at 375, 768 and 1280 px, an axe-core run on the filter toolbar, result announcements, empty state and forbidden scopes.
 - The implementation branch is reviewed in a PR into `staging`.
 - The merged feature is included in the Sprint 2 completion table.

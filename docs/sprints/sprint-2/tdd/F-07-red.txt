@@ -1,0 +1,4 @@
+F-07 TDD evidence note
+Date: 26 November 2026
+
+The first implementation commit did not preserve a red run before the route and UI existed. This is disclosed rather than reconstructed. The missing pre-implementation red output must be captured by running the F-07 tests against staging before the implementation PR is merged; the current green server run is recorded in F-07-green.txt.

@@ -271,9 +271,12 @@ requestRouter.get(
     const categoryParam = single("category");
     const qParam = single("q");
     const scope = scopeParam.value === undefined ? "mine" : scopeParam.value;
-    if (scopeParam.repeated || statusParam.repeated || categoryParam.repeated || qParam.repeated) {
-      return res.status(422).json(validationError({ query: "Each filter may be supplied only once." }));
-    }
+    const repeatedFields: Record<string, string> = {};
+    if (scopeParam.repeated) repeatedFields.scope = "This parameter may be supplied only once.";
+    if (statusParam.repeated) repeatedFields.status = "This parameter may be supplied only once.";
+    if (categoryParam.repeated) repeatedFields.category = "This parameter may be supplied only once.";
+    if (qParam.repeated) repeatedFields.q = "This parameter may be supplied only once.";
+    if (Object.keys(repeatedFields).length > 0) return res.status(422).json(validationError(repeatedFields));
     const statusValues = ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "CANCELLED"] as const;
     const categoryValues = ["EQUIPMENT", "SOFTWARE", "FURNITURE", "STATIONERY", "OTHER"] as const;
     const status = statusParam.value === "" ? undefined : statusParam.value;

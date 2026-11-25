@@ -1,0 +1,12 @@
+F-07 implementation verification
+Date: 26 November 2026
+Commit: 16d5af9
+
+Command:
+npm test --prefix server -- --run tests/f07/search-filter.test.ts
+
+Result:
+19 tests passed, 0 failed.
+
+Covered IDs: TEST-106 to TEST-118, TEST-124 to TEST-128.
+The browser tests are in e2e/requests/search-filter.spec.ts and must be run with the Playwright command before the final results table is marked complete.

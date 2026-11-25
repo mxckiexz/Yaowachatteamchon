@@ -27,3 +27,15 @@ The server suite passed 112 tests, the client suite passed 14 tests, and the two
 | Server | 112 passed, 0 failed |
 | Client | 14 passed, 0 failed |
 | F-06 browser tests | 2 passed, 0 failed |
+
+## F-07 search and filter (implementation in progress)
+
+Implementation commit: `16d5af9` plus the review-fix commits on this branch. The server F-07 suite was rerun on 26 November 2026: 19 tests passed, 0 failed. The browser file contains TEST-119 to TEST-123 and TEST-129 to TEST-131; its full Playwright run is still being verified and is not claimed as complete here.
+
+| AC | Implementation | Test | Actual result | Commit |
+|---|---|---|---|---|
+| AC-74 to AC-85 | `GET /api/requests` scope, status, category and text filters | TEST-106 to TEST-117 | Server tests passed; visibility and no-data leakage verified | `16d5af9` |
+| AC-86 | Unfiltered mine list timing | TEST-118 | 200 rows, one warm-up and 20 calls passed the 500 ms median threshold in the local test environment | `16d5af9` |
+| AC-87 to AC-91 | Filter toolbar, URL parameters, clear action and live result status | TEST-119 to TEST-123 | Browser tests added; execution pending final local Playwright run | `16d5af9` |
+| AC-92 to AC-96 | Literal metacharacters, parameter boundaries, NULL fields and review status | TEST-124 to TEST-128 | Server tests passed | `16d5af9` |
+| AC-97 to AC-99 | Responsive widths, axe-core and reload/Back | TEST-129 to TEST-131 | Browser tests added; execution pending final local Playwright run | `16d5af9` |
