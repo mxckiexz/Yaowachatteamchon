@@ -34,7 +34,7 @@ Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attach
 | User | id, name, email, passwordHash, role (REQUESTER, APPROVER, ADMIN), isActive, createdAt | email unique and stored in lower case; passwordHash is a bcrypt hash |
 | Session | id (random UUID), userId, expiresAt, createdAt | deleted at logout; invalid after expiresAt; invalid when the user is inactive |
 | PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints |
-| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, later CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it |
+| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-06 adds the CANCELLED transition |
 | Attachment (Sprint 2) | id, requestId, fileName, fileType, filePath, uploadedById, createdAt | not created in Sprint 1 |
 
 Money is stored as integer satang (1 baht = 100 satang). The API sends and receives baht as decimal numbers and converts at the boundary.

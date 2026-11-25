@@ -8,7 +8,7 @@ Version 2.0 (planning). Requirement, feature or responsibility, sprint, acceptan
 | FR-02 | F-02 | 1 | AC-16, AC-17, AC-23 | TEST-23 to 25, 71 |
 | FR-03 | F-02 | 1 | AC-18 to AC-20, AC-23 | TEST-26 to 29, 71 |
 | FR-04 | F-04 | 1 | AC-33, AC-38 | TEST-51, 74 |
-| FR-05 | F-06 | 2 | planned | planned |
+| FR-05 | F-06 | 2 | AC-58 to AC-73 | TEST-93 to TEST-105 |
 | FR-06 | F-04 | 1 | AC-34, AC-35 | TEST-52, 53, 55 |
 | FR-07 | F-03 | 1 | AC-24, AC-28, AC-32 | TEST-36, 41, 72 |
 | FR-08 | F-03 | 1 | AC-25, AC-32 | TEST-37, 38, 72 |
@@ -52,20 +52,21 @@ Version 2.0 (planning). Requirement, feature or responsibility, sprint, acceptan
 | BR-18 | F-02 | 1 | AC-17, AC-20 | TEST-25, 29 |
 | BR-19 | F-13 | 3 | planned | planned |
 | BR-20 | F-14 | 3 | planned | planned |
-| NFR-01 | F-01 | 1 | AC-08, AC-26, AC-34, AC-37, AC-39 | TEST-12, 39, 53, 58, 62 |
-| NFR-02 | F-04 | 1 | AC-35 | TEST-55, 56 |
+| BR-21 | F-06 | 2 | AC-58 to AC-73 | TEST-93 to TEST-105 |
+| NFR-01 | F-01, F-06 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68 | TEST-12, 39, 53, 58, 62, 101 |
+| NFR-02 | F-04, F-06 | 1, 2 | AC-35, AC-70, AC-73 | TEST-55, 56, 103, 104 |
 | NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |
 | NFR-04 | R-02 | 1 | AC-10, AC-14, AC-48 | TEST-14, 18 to 21, 83 |
 | NFR-05 | R-06 | 1 | AC-53 | TEST-88 |
-| NFR-06 | F-02, F-03 | 1 | AC-18, AC-24, AC-25, AC-29, AC-31 | TEST-26, 36, 37, 42 to 44, 46 |
-| NFR-07 | F-04 | 1 | AC-33, AC-38 | TEST-51, 74 |
+| NFR-06 | F-02, F-03, F-06 | 1, 2 | AC-18, AC-24, AC-25, AC-29, AC-31, AC-64, AC-66, AC-70 | TEST-26, 36, 37, 42 to 44, 46, 97, 99, 103 |
+| NFR-07 | F-04, F-06 | 1, 2 | AC-33, AC-38, AC-61, AC-70, AC-73 | TEST-51, 74, 95, 103, 104 |
 | NFR-08 | F-02 | 1 | AC-21 | TEST-30 |
 | NFR-09 | R-02, R-05 | 1 | AC-45 to AC-51 | TEST-80 to 86 |
-| NFR-10 | R-06 | 1 | AC-52, AC-53 | TEST-87, 88 |
+| NFR-10 | R-06, F-06 | 1, 2 | AC-52, AC-53, AC-71 to AC-73 | TEST-87, 88, 104, 105 |
 | NFR-11 | R-01 | 1 | AC-11 | TEST-15, manual check M-01 |
 | NFR-12 | R-03, F-07, R-05 | 2 (early check in 1) | AC-54, AC-55 (early); formal AC planned | TEST-89, 90 (early); formal planned |
 | NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
 
-None in the baseline. FR-05, FR-17 to FR-28, BR-19, BR-20 and the formal NFR-12 measurement have no executable tests yet because their sprints have not started. This is planned, not forgotten.
+The Sprint 2 contract for FR-05 and BR-21 defines planned tests TEST-93 to TEST-105; those tests are not executed yet. FR-17 to FR-28, BR-19, BR-20 and the formal NFR-12 measurement remain planned because their sprints have not started. This is planned, not forgotten.

@@ -11,7 +11,7 @@ Version 2.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a s
 | F-03 | Approve or reject | An approver approves or rejects a SUBMITTED request; a rejection needs a reason; decisions are final, recorded, and never on one's own request. | FR-07, FR-08, FR-09, FR-11, FR-13, BR-07, BR-08, BR-09, BR-11, BR-17, NFR-06 | F-02 | 1 |
 | F-04 | Lists, detail and history | My requests, the review queue, request detail with ordered history, visibility rules for each role. | FR-04, FR-06, FR-10, FR-11, FR-12, BR-12, NFR-02, NFR-07 | F-02 | 1 |
 | F-05 | Administrator: user management | List users, activate or deactivate, set the role, read all requests; an administrator cannot change their own account. | FR-15, BR-13, BR-16 | F-01 | 1 |
-| F-06 | Cancel a request | The owner cancels a request before it is approved. | FR-05 | F-02, F-03 | 2 |
+| F-06 | Cancel a request | The owner cancels a DRAFT or SUBMITTED request before it is approved; the request and history remain readable after cancellation. | FR-05, BR-21, BR-11, BR-12, BR-17, NFR-01, NFR-02, NFR-06, NFR-07, NFR-10 | F-02, F-03 | 2 |
 | F-07 | Search and filter | Filter lists by status, text and category. | FR-17, NFR-12 | F-04 | 2 |
 | F-08 | Dashboard | Counts of requests by status for the user's role. | FR-18 | F-04 | 2 |
 | F-09 | Attachments | Upload and download files on a request. | FR-19 | F-02 | 2 |

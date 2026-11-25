@@ -49,7 +49,7 @@ SUBMITTED
 | SUBMITTED | Sent to the approvers for review. |
 | APPROVED | Approved by an approver. |
 | REJECTED | Rejected by an approver; a reason is stored. |
-| CANCELLED | Cancelled by the requester before approval (the status exists now, the action is built in Sprint 2). |
+| CANCELLED | Cancelled by the request owner before approval; the transition is specified by F-06 in Sprint 2. |
 
 ## 6. Functional requirements (FR)
 
@@ -112,6 +112,7 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-18 | Only the owner can edit or submit a request. The administrator and approvers cannot. | 1 |
 | BR-19 | A request that needs several steps must be approved by different approvers at each step, none of whom is the requester. | 3 |
 | BR-20 | The approval route depends on the total amount; the thresholds are decided in the Sprint 3 contract. | 3 |
+| BR-21 | Only the request owner can cancel a DRAFT or SUBMITTED request; APPROVED, REJECTED and CANCELLED requests cannot be cancelled. | 2 |
 
 ## 8. Non-functional requirements (NFR)
 
