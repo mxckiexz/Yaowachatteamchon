@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
 import { useAuth } from "./AuthContext";
@@ -105,6 +105,11 @@ function CancelPanel({ request, onDone }: { request: Detail; onDone: () => Promi
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const confirmButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (confirming) confirmButton.current?.focus();
+  }, [confirming]);
 
   async function cancel() {
     setBusy(true);
@@ -128,7 +133,7 @@ function CancelPanel({ request, onDone }: { request: Detail; onDone: () => Promi
         <>
           <p className="mb-2">Cancel <strong>{request.requestNumber}</strong>? This cannot be undone.</p>
           <div className="d-flex gap-2">
-            <button className="btn btn-danger" disabled={busy} onClick={cancel}>Confirm cancellation</button>
+            <button ref={confirmButton} className="btn btn-danger" disabled={busy} onClick={cancel}>Confirm cancellation</button>
             <button className="btn btn-outline-secondary" disabled={busy} onClick={() => { setConfirming(false); setError(null); }}>Keep request</button>
           </div>
         </>

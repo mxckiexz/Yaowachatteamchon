@@ -225,7 +225,9 @@ requestRouter.post(
 
     const changed = await prisma.$transaction(async (tx) => {
       const result = await tx.purchaseRequest.updateMany({
-        where: { id, requesterId: userId, status: { in: ["DRAFT", "SUBMITTED"] } },
+        // Match the status read before the transaction so the history fromStatus
+        // cannot become stale if submit races with cancellation.
+        where: { id, requesterId: userId, status: existing.status },
         data: { status: "CANCELLED" },
       });
       if (result.count === 1) {

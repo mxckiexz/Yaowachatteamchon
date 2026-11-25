@@ -1,10 +1,9 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { app } from "../../src/app.js";
 import { getPrisma } from "../../src/prisma.js";
-import { cleanupUsers, createUser, loginAgent } from "../helpers/fixtures.js";
+import { cleanupUsers, createUser, loginAgent, ORIGIN } from "../helpers/fixtures.js";
 import { approve, cancel, createDraft, createSubmitted, loadRequest, reject } from "../helpers/requests.js";
-import { ORIGIN } from "../helpers/fixtures.js";
 
 const REQ = "f06-req@test.local";
 const OTHER = "f06-other@test.local";
@@ -91,6 +90,30 @@ describe("F-06 cancel request", () => {
     expect((await loadRequest(request.id)).history.filter((h) => ["APPROVED", "CANCELLED"].includes(h.action))).toHaveLength(1);
   });
 
+  it("TEST-100 / AC-67: a history failure rolls back the status update", async () => {
+    const owner = await loginAgent(REQ);
+    const request = await createDraft(owner);
+    const prisma = getPrisma();
+    const transaction = prisma.$transaction.bind(prisma);
+    const forcedFailure = vi.spyOn(prisma, "$transaction").mockImplementationOnce(async (callback: any) =>
+      transaction(async (tx: any) => {
+        const failingTx = Object.create(tx);
+        const failingHistory = Object.create(tx.requestHistory);
+        failingHistory.create = async () => { throw new Error("forced history failure"); };
+        failingTx.requestHistory = failingHistory;
+        return callback(failingTx);
+      }) as any
+    );
+    try {
+      expect((await cancel(owner, request.id)).status).toBe(500);
+    } finally {
+      forcedFailure.mockRestore();
+    }
+    const unchanged = await loadRequest(request.id);
+    expect(unchanged.status).toBe("DRAFT");
+    expect(unchanged.history.map((h) => h.action)).toEqual(["CREATED"]);
+  });
+
   it("TEST-101 / AC-68: nonnumeric id is 404 and anonymous request with the correct origin is 401", async () => {
     const owner = await loginAgent(REQ);
     expect((await owner.post("/api/requests/not-a-number/cancel").set("Origin", ORIGIN).send({})).status).toBe(404);
@@ -113,7 +136,7 @@ describe("F-06 cancel request", () => {
     expect((await owner.patch(`/api/requests/${request.id}`).set("Origin", ORIGIN).send({ itemName: "No" })).status).toBe(409);
     expect((await owner.post(`/api/requests/${request.id}/submit`).set("Origin", ORIGIN).send({})).status).toBe(409);
     expect((await approve(approver, request.id, "No")).status).toBe(409);
-    expect((await reject(approver, request.id, "No")).status).toBe(409);
+    expect((await reject(approver, request.id, "Not needed")).status).toBe(409);
     expect((await approver.get("/api/requests?scope=review")).body.requests.map((r: { id: number }) => r.id)).not.toContain(request.id);
     expect((await owner.get(`/api/requests/${request.id}`)).body.request.status).toBe("CANCELLED");
   });
