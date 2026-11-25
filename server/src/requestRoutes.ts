@@ -207,6 +207,43 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
 requestRouter.post("/requests/:id/approve", requireAuth, requireRole("APPROVER"), decisionHandler("APPROVED"));
 requestRouter.post("/requests/:id/reject", requireAuth, requireRole("APPROVER"), decisionHandler("REJECTED"));
 
+// F-06: the owner cancels an eligible request. FR-05, BR-11, BR-12, BR-17, BR-21.
+// The conditional update makes cancellation race-safe with another cancel or a decision.
+requestRouter.post(
+  "/requests/:id/cancel",
+  requireAuth,
+  asyncHandler(async (req: AuthedRequest, res) => {
+    const id = parseId(req.params.id);
+    if (id === null) return res.status(404).json(notFound);
+    const prisma = getPrisma();
+    const userId = req.user!.id;
+    const existing = await prisma.purchaseRequest.findFirst({ where: { id, requesterId: userId } });
+    if (!existing) return res.status(404).json(notFound);
+    if (existing.status !== "DRAFT" && existing.status !== "SUBMITTED") {
+      return res.status(409).json({ error: "This request cannot be cancelled.", code: "ILLEGAL_TRANSITION" });
+    }
+
+    const changed = await prisma.$transaction(async (tx) => {
+      const result = await tx.purchaseRequest.updateMany({
+        where: { id, requesterId: userId, status: { in: ["DRAFT", "SUBMITTED"] } },
+        data: { status: "CANCELLED" },
+      });
+      if (result.count === 1) {
+        await tx.requestHistory.create({
+          data: { requestId: id, actorId: userId, action: "CANCELLED", fromStatus: existing.status, toStatus: "CANCELLED" },
+        });
+      }
+      return result.count;
+    });
+    if (changed !== 1) {
+      return res.status(409).json({ error: "This request cannot be cancelled.", code: "ILLEGAL_TRANSITION" });
+    }
+
+    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: { ...REQUEST_INCLUDE, ...HISTORY_INCLUDE } });
+    res.json({ request: serializeRequest(full) });
+  })
+);
+
 // F-04: who may read a request (BR-12). The owner; an approver for every request that is not a draft;
 // the administrator for all. Everyone else gets "not found".
 function visibilityWhere(user: { id: number; role: string }) {

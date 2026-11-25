@@ -16,6 +16,7 @@ const ROUTES: [string, string][] = [
   ["POST", "/api/requests/1/submit"],
   ["POST", "/api/requests/1/approve"],
   ["POST", "/api/requests/1/reject"],
+  ["POST", "/api/requests/1/cancel"],
   ["GET", "/api/admin/users"],
   ["PATCH", "/api/admin/users/1"],
 ];

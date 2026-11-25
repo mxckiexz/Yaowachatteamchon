@@ -42,6 +42,10 @@ export function reject(agent: Agent, id: number, reason?: string) {
   return agent.post(`/api/requests/${id}/reject`).set("Origin", ORIGIN).send({ reason });
 }
 
+export function cancel(agent: Agent, id: number) {
+  return agent.post(`/api/requests/${id}/cancel`).set("Origin", ORIGIN).send({});
+}
+
 export async function loadRequest(id: number) {
   return getPrisma().purchaseRequest.findUniqueOrThrow({ where: { id }, include: { history: { orderBy: { id: "asc" } } } });
 }
