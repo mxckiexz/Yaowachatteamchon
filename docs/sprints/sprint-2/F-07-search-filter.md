@@ -1,6 +1,6 @@
 # Feature contract F-07: Search and filter requests
 
-Contract version 1.1, 25 November 2026. Proposed before implementation. It must be reviewed before code is written.
+Contract version 1.2, 25 November 2026. Proposed before implementation. It must be reviewed before code is written.
 
 Linked requirements: FR-17, BR-12, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10, NFR-12. Depends on F-04, with a soft dependency on F-06 for CANCELLED test data. If F-11 adds a new request status, this contract must be revised before that status is accepted by the filter. The existing visibility rules remain the security boundary; filtering must never reveal a request that the caller could not already list.
 
@@ -10,6 +10,7 @@ Linked requirements: FR-17, BR-12, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-0
 |---|---|---|
 | 1.0 | 25 November 2026 | Initial Sprint 2 contract for server-side request search and filtering. |
 | 1.1 | 25 November 2026 | Added UI and data-layer definitions, query boundary rules, NFR-09 input cases, review-scope behavior, null-field behavior and the formal NFR-12 measurement. |
+| 1.2 | 25 November 2026 | Added responsive, axe-core and URL-persistence acceptance tests; clarified literal backslash and percent searches; renumbered sections. |
 
 ## 1. Feature design
 
@@ -33,9 +34,9 @@ Workflow:
 
 My requests and All requests show a filter toolbar above the list. It contains visible labels **Search text**, **Status** and **Category**, plus **Apply filters** and **Clear filters** buttons. The Review queue shows **Search text** and **Category** only; it does not show a status control because that scope is always SUBMITTED. Pressing Enter in Search text applies the filters; the Apply filters button does the same. Clear filters removes every filter and reloads the scope.
 
-The selected filters are stored in the URL query string, so reload and Back restore the same result. The scope is also kept in the URL. At 375 px the controls stack vertically, each field and button uses the full available width, and the list remains horizontally scrollable rather than hiding columns. Labels are associated with their controls and the result/empty state is announced to a screen reader.
+The selected filters are stored in the URL query string, so reload and Back restore the same result. The scope is also kept in the URL. At 375 px the controls stack vertically, each field and button uses the full available width, and the page itself does not scroll horizontally; if the table needs more width, only the table's own box scrolls horizontally. Labels are associated with their controls and an `aria-live`/`role="status"` region announces the result or empty state to a screen reader.
 
-## 2. Filter contract
+## 3. Filter contract
 
 `GET /api/requests?scope=<scope>&status=<status>&q=<text>&category=<category>`
 
@@ -54,15 +55,15 @@ Each parameter must occur at most once. Repeated parameters such as `status=A&st
 
 The review scope is intrinsically `SUBMITTED` requests of other users. Therefore `scope=review&status=APPROVED` is valid and returns `200` with an empty list; the Review queue UI has no status control. The all scope remains administrator-only.
 
-For NFR-09, `%`, `_`, `\\`, `'`, `;--` and HTML in `q` are ordinary search characters. They are escaped/parameterized as data: `q=%` does not match every row unless a literal `%` occurs in the searchable fields.
+For NFR-09, `%`, `_`, `\`, `'`, `;--` and HTML in `q` are ordinary search characters. They are escaped/parameterized as data: `q=%` does not match every row unless a literal `%` occurs in the searchable fields.
 
-## 3. Data and migration
+## 4. Data and migration
 
 No schema or migration change is needed. Filtering uses the existing `PurchaseRequest` columns `requestNumber`, `itemName`, `description`, `reason`, `status` and `category`; NULL reason/category values are handled as described above. The schema currently has indexes on `requesterId` and `(status, submittedAt)`, but not on the substring-search fields. A substring search therefore cannot use those indexes; this is accepted for the 200-row NFR-12 target and is measured rather than hidden.
 
 Invalid scope, status, category or an overlong `q` returns `422 VALIDATION_ERROR` with a `fields` entry naming the invalid parameter. A caller without permission for `review` or `all` receives the existing `403 FORBIDDEN`. An anonymous caller receives `401` before any filter is processed.
 
-## 3. Acceptance criteria
+## 5. Acceptance criteria
 
 | AC | Observable outcome |
 |---|---|
@@ -84,13 +85,16 @@ Invalid scope, status, category or an overlong `q` returns `422 VALIDATION_ERROR
 | AC-89 | Clear filters removes the URL parameters and restores the complete list for the current scope. |
 | AC-90 | The UI shows an empty-state message when valid filters match no request and does not show a filter control for a forbidden scope. |
 | AC-91 | The result count or empty state is announced to screen readers after filtering. |
-| AC-92 | NFR-09 search characters (`%`, `_`, `\\`, `'`, `;--` and HTML) are matched as plain characters; `q=%` does not match every row. |
+| AC-92 | NFR-09 search characters (`%`, `_`, `\`, `'`, `;--` and HTML) are matched as plain characters; `q=%` does not match every row. |
 | AC-93 | Repeated parameters return 422; empty status/category are absent; lower-case enum values return 422. |
 | AC-94 | A 100-character `q` is accepted and a 101-character `q` returns 422. |
 | AC-95 | A category filter does not match NULL category, and searching requests with NULL reason/category does not error. |
 | AC-96 | `scope=review&status=APPROVED` returns 200 with an empty list, while the Review queue has no status control. |
+| AC-97 | At 375, 768 and 1280 px the page has no horizontal page scrolling; only an overflowing table box may scroll horizontally. |
+| AC-98 | An axe-core run on the filter toolbar reports no violations. |
+| AC-99 | After applying filters, reloading the page and using Back restore the same scope, URL parameters and filtered result. |
 
-## 4. Software test specification
+## 6. Software test specification
 
 The following tests are planned for Sprint 2 and must be added to the Sprint 2 results table when executed.
 
@@ -113,14 +117,17 @@ The following tests are planned for Sprint 2 and must be added to the Sprint 2 r
 | TEST-120 | AC-88 | Browser end to end | Inspect the toolbar in mine, review and all scopes | Required visible labels and associated controls are present; review has no status control |
 | TEST-121 | AC-89 | Browser end to end | Apply filters, then click Clear filters | URL parameters disappear and the complete scope list returns |
 | TEST-122 | AC-90 | Browser end to end | Use a no-match filter and open a forbidden scope | Empty state appears; forbidden scope control is absent |
-| TEST-123 | AC-91 | Browser end to end | Apply a filter and inspect the live result announcement | Screen reader announcement reports the result count or empty state |
-| TEST-124 | AC-92 | API/security integration | Search each metacharacter and HTML, including `q=%` | Characters are treated literally; `%` does not match every row |
+| TEST-123 | AC-91 | Browser end to end | Apply a filter and inspect the `role="status"`/`aria-live` result region | The live region contains the result count or empty-state message and is announced to screen readers |
+| TEST-124 | AC-92 | API/security integration | Seed one row containing a literal `%`; search each of `%`, `_`, one `\`, `'`, `;--` and HTML, including `q=%` | Characters are treated literally; `q=%` returns only the row containing literal `%` and does not match every row |
 | TEST-125 | AC-93 | API integration | Repeat status, send empty values and lower-case enum values | Repeated/lower-case values return 422; empty enum values are absent |
 | TEST-126 | AC-94 | API integration | Send `q` with exactly 100 and then 101 characters | 100 is accepted; 101 returns 422 |
 | TEST-127 | AC-95 | API integration | Filter category and search a DRAFT with NULL category/reason | NULL values do not match category and do not cause an error |
 | TEST-128 | AC-96 | API integration | Approver requests review scope with `status=APPROVED` | 200 with an empty list; no status control is rendered in review UI |
+| TEST-129 | AC-97 | Browser end to end | Run the list at 375, 768 and 1280 px and inspect document scroll width | `document.documentElement.scrollWidth` is no greater than `clientWidth`; only the table wrapper may scroll |
+| TEST-130 | AC-98 | Browser accessibility | Run axe-core against the filter toolbar in mine, review and all scopes | No axe violations are reported |
+| TEST-131 | AC-99 | Browser end to end | Apply filters, reload, then navigate Back | The URL parameters and filtered result are restored |
 
-## 5. Definition of Done
+## 7. Definition of Done
 
 - This contract is reviewed and approved before implementation.
 - The SRS, feature inventory, System SDS and traceability matrix are updated with the approved decision and links to this contract.
@@ -128,6 +135,6 @@ The following tests are planned for Sprint 2 and must be added to the Sprint 2 r
 - API tests cover every filter, combinations, invalid values, visibility and no-data leakage.
 - API tests cover NFR-09 metacharacters, repeated parameters, enum case, empty values, exact text boundaries and NULL fields.
 - The formal NFR-12 measurement is recorded with its environment and raw output.
-- Browser tests cover labels, keyboard access, URL persistence, clear action, result announcements, empty state and forbidden scopes.
+- Browser tests cover labels, keyboard access, URL persistence, clear action, responsive widths, axe accessibility, result announcements, empty state and forbidden scopes.
 - The implementation branch is reviewed in a PR into `staging`.
 - The merged feature is included in the Sprint 2 completion table.
