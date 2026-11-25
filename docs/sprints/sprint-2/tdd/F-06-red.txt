@@ -1,0 +1,234 @@
+
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f06/cancel-request.test.ts
+
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon-red/server
+
+ ❯ tests/f06/cancel-request.test.ts (11 tests | 10 failed) 8232ms
+   × F-06 cancel request > TEST-93 / AC-58: the owner cancels a draft 537ms
+     → expected 404 to be 200 // Object.is equality
+   × F-06 cancel request > TEST-94 / AC-59: the owner cancels a submitted request 597ms
+     → expected 404 to be 200 // Object.is equality
+   × F-06 cancel request > TEST-95 / AC-60, AC-61: cancellation keeps data and appends one history row 464ms
+     → expected 404 to be 200 // Object.is equality
+   × F-06 cancel request > TEST-96 / AC-62, AC-63: non-owners receive 404 911ms
+     → expected undefined to be 'NOT_FOUND' // Object.is equality
+   × F-06 cancel request > TEST-97 / AC-64: terminal requests cannot be cancelled 490ms
+     → APPROVED: expected 404 to be 409 // Object.is equality
+   × F-06 cancel request > TEST-98 / AC-65: concurrent cancels produce one transition 486ms
+     → expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+   × F-06 cancel request > TEST-99 / AC-66: a decision racing with cancel produces one transition 890ms
+     → expected [ 200, 404 ] to deeply equal [ 200, 409 ]
+   × F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update 477ms
+     → expected 404 to be 500 // Object.is equality
+   × F-06 cancel request > TEST-101 / AC-68: nonnumeric id is 404 and anonymous request with the correct origin is 401 428ms
+     → expected 404 to be 401 // Object.is equality
+   ✓ F-06 cancel request > TEST-102 / AC-69: a foreign origin is refused 520ms
+   × F-06 cancel request > TEST-103 / AC-70: cancellation blocks later actions and leaves the owner-visible request 917ms
+     → expected 404 to be 200 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-93 / AC-58: the owner cancels a draft
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:30:29
+     28|     const request = await createDraft(owner);
+     29|     const response = await cancel(owner, request.id);
+     30|     expect(response.status).toBe(200);
+       |                             ^
+     31|     expect(response.body.request.status).toBe("CANCELLED");
+     32|     expect((await loadRequest(request.id)).history.map((h) => h.action…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-94 / AC-59: the owner cancels a submitted request
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:39:29
+     37|     const request = await createSubmitted(owner);
+     38|     const response = await cancel(owner, request.id);
+     39|     expect(response.status).toBe(200);
+       |                             ^
+     40|     expect(response.body.request.status).toBe("CANCELLED");
+     41|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-95 / AC-60, AC-61: cancellation keeps data and appends one history row
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:47:54
+     45|     const request = await createDraft(owner, { itemName: "Keep all fie…
+     46|     const before = await loadRequest(request.id);
+     47|     expect((await cancel(owner, request.id)).status).toBe(200);
+       |                                                      ^
+     48|     const after = await loadRequest(request.id);
+     49|     expect(after).toMatchObject({ itemName: before.itemName, totalSata…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-96 / AC-62, AC-63: non-owners receive 404
+AssertionError: expected undefined to be 'NOT_FOUND' // Object.is equality
+
+- Expected: 
+"NOT_FOUND"
+
++ Received: 
+undefined
+
+ ❯ tests/f06/cancel-request.test.ts:60:34
+     58|       const response = await cancel(await loginAgent(email), request.i…
+     59|       expect(response.status, email).toBe(404);
+     60|       expect(response.body.code).toBe("NOT_FOUND");
+       |                                  ^
+     61|     }
+     62|     expect((await loadRequest(request.id)).status).toBe("SUBMITTED");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-97 / AC-64: terminal requests cannot be cancelled
+AssertionError: APPROVED: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:71:39
+     69|       await getPrisma().purchaseRequest.update({ where: { id: request.…
+     70|       const response = await cancel(owner, request.id);
+     71|       expect(response.status, status).toBe(409);
+       |                                       ^
+     72|       expect(response.body.code).toBe("ILLEGAL_TRANSITION");
+     73|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-98 / AC-65: concurrent cancels produce one transition
+AssertionError: expected [ 404, 404 ] to deeply equal [ 200, 409 ]
+
+- Expected
++ Received
+
+  Array [
+-   200,
+-   409,
++   404,
++   404,
+  ]
+
+ ❯ tests/f06/cancel-request.test.ts:80:41
+     78|     const request = await createSubmitted(owner);
+     79|     const [a, b] = await Promise.all([cancel(owner, request.id), cance…
+     80|     expect([a.status, b.status].sort()).toEqual([200, 409]);
+       |                                         ^
+     81|     expect((await loadRequest(request.id)).history.filter((h) => h.act…
+     82|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-99 / AC-66: a decision racing with cancel produces one transition
+AssertionError: expected [ 200, 404 ] to deeply equal [ 200, 409 ]
+
+- Expected
++ Received
+
+  Array [
+    200,
+-   409,
++   404,
+  ]
+
+ ❯ tests/f06/cancel-request.test.ts:89:59
+     87|     const approver = await loginAgent(APP);
+     88|     const [decision, cancellation] = await Promise.all([approve(approv…
+     89|     expect([decision.status, cancellation.status].sort()).toEqual([200…
+       |                                                           ^
+     90|     expect((await loadRequest(request.id)).history.filter((h) => ["APP…
+     91|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update
+AssertionError: expected 404 to be 500 // Object.is equality
+
+- Expected
++ Received
+
+- 500
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:108:56
+    106|     );
+    107|     try {
+    108|       expect((await cancel(owner, request.id)).status).toBe(500);
+       |                                                        ^
+    109|     } finally {
+    110|       forcedFailure.mockRestore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-101 / AC-68: nonnumeric id is 404 and anonymous request with the correct origin is 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:120:103
+    118|     const owner = await loginAgent(REQ);
+    119|     expect((await owner.post("/api/requests/not-a-number/cancel").set(…
+    120|     expect((await request(app).post("/api/requests/1/cancel").set("Ori…
+       |                                                                                                       ^
+    121|   });
+    122| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-103 / AC-70: cancellation blocks later actions and leaves the owner-visible request
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f06/cancel-request.test.ts:135:54
+    133|     const approver = await loginAgent(APP);
+    134|     const request = await createSubmitted(owner);
+    135|     expect((await cancel(owner, request.id)).status).toBe(200);
+       |                                                      ^
+    136|     expect((await owner.patch(`/api/requests/${request.id}`).set("Orig…
+    137|     expect((await owner.post(`/api/requests/${request.id}/submit`).set…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 1 passed (11)
+   Start at  18:09:39
+   Duration  9.40s (transform 186ms, setup 0ms, collect 789ms, tests 8.23s, environment 0ms, prepare 144ms)
+

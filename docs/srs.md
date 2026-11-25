@@ -1,7 +1,7 @@
 # PurchaseFlow Software Requirements Specification (SRS)
 
 PurchaseFlow: Equipment Purchase Approval System. Theme 5: Workflow and Approval System.
-Document version 2.0. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigns the whole baseline with the team's project proposal (see the change log).
+Document version 2.1. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, and version 2.1 records the approved BR-21 baseline addition for F-06 (see the change log).
 
 ## 1. Stakeholder problem and context
 

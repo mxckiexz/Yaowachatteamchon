@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ApiError, approveRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
+import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
 import { useAuth } from "./AuthContext";
 import { CATEGORY_LABEL, formatBaht, formatDateTime, StatusBadge } from "./format";
 import RequestForm from "./RequestForm";
@@ -31,6 +31,7 @@ export default function RequestDetail() {
 
   const isOwner = request.requester.id === user.id;
   const canEdit = isOwner && request.status === "DRAFT";
+  const canCancel = isOwner && (request.status === "DRAFT" || request.status === "SUBMITTED");
   const canDecide = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
   // After a change the server's version, with its history, is loaded again.
   const reload = () => getRequest(request.id).then((r) => setRequest(r.request));
@@ -84,6 +85,7 @@ export default function RequestDetail() {
         </section>
       )}
       {canEdit && <SubmitPanel request={request} onDone={reload} />}
+      {canCancel && <CancelPanel request={request} onDone={reload} />}
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
 
       <h2 className="h6 mt-4">History</h2>
@@ -96,6 +98,48 @@ export default function RequestDetail() {
         ))}
       </ol>
     </>
+  );
+}
+
+function CancelPanel({ request, onDone }: { request: Detail; onDone: () => Promise<void> }) {
+  const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const confirmButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (confirming) confirmButton.current?.focus();
+  }, [confirming]);
+
+  async function cancel() {
+    setBusy(true);
+    setError(null);
+    try {
+      await cancelRequest(request.id);
+      await onDone();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not cancel the request.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="border rounded p-3 mb-3" aria-label="Cancel request">
+      <h2 className="h6">Cancel request</h2>
+      {!confirming ? (
+        <button className="btn btn-outline-danger" onClick={() => setConfirming(true)}>Cancel request</button>
+      ) : (
+        <>
+          <p className="mb-2">Cancel <strong>{request.requestNumber}</strong>? This cannot be undone.</p>
+          <div className="d-flex gap-2">
+            <button ref={confirmButton} className="btn btn-danger" disabled={busy} onClick={cancel}>Confirm cancellation</button>
+            <button className="btn btn-outline-secondary" disabled={busy} onClick={() => { setConfirming(false); setError(null); }}>Keep request</button>
+          </div>
+        </>
+      )}
+      {error && <div role="alert" className="alert alert-danger mt-2 mb-0">{error}</div>}
+    </section>
   );
 }
 

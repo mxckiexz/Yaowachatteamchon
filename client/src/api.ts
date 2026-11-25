@@ -115,6 +115,8 @@ export const approveRequest = (id: number, comment: string) =>
   api<{ request: RequestDetail }>(`/requests/${id}/approve`, { method: "POST", body: { comment } });
 export const rejectRequest = (id: number, reason: string) =>
   api<{ request: RequestDetail }>(`/requests/${id}/reject`, { method: "POST", body: { reason } });
+export const cancelRequest = (id: number) =>
+  api<{ request: RequestDetail }>(`/requests/${id}/cancel`, { method: "POST", body: {} });
 export const listUsers = () => api<{ users: AdminUser[] }>("/admin/users");
 export const updateUser = (id: number, patch: { isActive?: boolean; role?: Role }) =>
   api<{ user: AdminUser }>(`/admin/users/${id}`, { method: "PATCH", body: patch });

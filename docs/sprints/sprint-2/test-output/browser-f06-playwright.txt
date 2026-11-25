@@ -1,0 +1,26 @@
+[WebServer] (node:10400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:28916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:4152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:29032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
+
+Seeded demo accounts.
+
+Running 2 tests using 1 worker
+
+(node:29348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:29348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › e2e\requests\cancel-request.spec.ts:5:5 › TEST-104 / AC-71, AC-73: owner sees Cancel, confirms it, and sees the cancelled history (2.3s)
+  ok 2 [chromium] › e2e\requests\cancel-request.spec.ts:22:5 › TEST-105 / AC-72: a non-owner and an owner of an approved request do not see Cancel (3.9s)
+
+  2 passed (13.9s)
