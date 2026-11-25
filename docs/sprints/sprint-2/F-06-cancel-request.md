@@ -42,7 +42,7 @@ Errors:
 | Case | Status | Response |
 |---|---:|---|
 | No session | 401 | `{ "error": "Authentication required." }` with no `code` and no request data |
-| Non-numeric id or request not found/not visible to caller | 404 | `NOT_FOUND` where the existing API supplies that code; no request data |
+| Non-numeric id or request not found/not visible to caller | 404 | `NOT_FOUND`; no request data |
 | Request is `APPROVED`, `REJECTED` or `CANCELLED` | 409 | `ILLEGAL_TRANSITION` |
 | Requester, approver or administrator tries to cancel another user's request | 404 | `NOT_FOUND`; no request data |
 | Invalid origin on the state-changing POST | 403 | existing same-origin error response |
@@ -112,7 +112,7 @@ The test IDs below are planned for Sprint 2 and must be added to the Sprint 2 re
 | TEST-98 | AC-65 | API/database integration | Two cancel commands sent at the same time | At most one succeeds; one `CANCELLED` history row exists |
 | TEST-99 | AC-66 | API/database integration | Approve or reject and cancel sent simultaneously for one `SUBMITTED` request | Exactly one succeeds; one matching history row exists |
 | TEST-100 | AC-67 | API/database integration | Force the history insert to fail during cancellation | Status and history remain unchanged; no partial cancellation |
-| TEST-101 | AC-68 | API integration | Call `/api/requests/abc/cancel` and call the endpoint without a session | Non-numeric id is `404`; anonymous call is `401` with no request data |
+| TEST-101 | AC-68 | API integration | Call `/api/requests/abc/cancel` and call the endpoint without a session, sending an `Origin` equal to `CLIENT_ORIGIN` | Non-numeric id is `404`; anonymous call is `401` with no request data |
 | TEST-102 | AC-69 | API integration | Send the cancel POST with an origin different from `CLIENT_ORIGIN` | `403`; request and history unchanged |
 | TEST-103 | AC-70 | API integration | Cancel, then attempt edit, submit, approve and reject; inspect queue and owner detail | All forbidden transitions return `409`; absent from queue; owner still reads `CANCELLED` |
 | TEST-104 | AC-71, AC-73 | Browser end to end | Owner opens an eligible request, clicks Cancel and confirms | Button is shown; confirmation appears; status and history update; edit/submit/decision controls disappear |

@@ -42,13 +42,13 @@ Version 2.0 (planning). Requirement, feature or responsibility, sprint, acceptan
 | BR-08 | F-03 | 1 | AC-29 | TEST-42, 43, 44 |
 | BR-09 | F-03 | 1 | AC-25 | TEST-38 |
 | BR-10 | F-02 | 1 | AC-17 | TEST-24 |
-| BR-11 | F-02, F-03, F-04 | 1 | AC-18, AC-24, AC-25, AC-36 | TEST-26, 36, 37, 54, 57 |
-| BR-12 | F-04 | 1 | AC-35, AC-37 | TEST-55, 56, 58 |
+| BR-11 | F-02, F-03, F-04, F-06 | 1, 2 | AC-18, AC-24, AC-25, AC-36, AC-60 | TEST-26, 36, 37, 54, 57, 95 |
+| BR-12 | F-04, F-06 | 1, 2 | AC-35, AC-37, AC-70, AC-73 | TEST-55, 56, 58, 103, 104 |
 | BR-13 | F-01, F-05 | 1 | AC-07, AC-40 | TEST-10, 11, 63 |
 | BR-14 | F-02 | 1 | AC-15 | TEST-22 |
 | BR-15 | F-02 | 1 | AC-14 | TEST-21, 34 |
 | BR-16 | F-05 | 1 | AC-42 | TEST-66 |
-| BR-17 | F-03 | 1 | AC-30 | TEST-45 |
+| BR-17 | F-03, F-06 | 1, 2 | AC-30, AC-66 | TEST-45, 99 |
 | BR-18 | F-02 | 1 | AC-17, AC-20 | TEST-25, 29 |
 | BR-19 | F-13 | 3 | planned | planned |
 | BR-20 | F-14 | 3 | planned | planned |
