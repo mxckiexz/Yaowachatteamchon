@@ -1,0 +1,888 @@
+
+ RUN  v2.1.9 C:/Users/Thanwarat/AppData/Local/Temp/purchaseflow-f07-red/server
+
+stdout | tests/f07/search-filter.test.ts > F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows
+{"test":"TEST-118","rows":200,"warmup":1,"calls":20,"medianMs":23.209100000000035,"p95Ms":40.57849999999962,"maxMs":55.52099999999882,"durationsMs":[18.420799999999872,18.692300000000614,19.74040000000059,20.040899999999965,20.379100000000108,20.423800000000483,20.459000000000742,21.281699999999546,22.118500000000495,22.67749999999978,23.740700000000288,25.251800000000003,26.2429000000011,26.29830000000038,27.222899999998845,37.31630000000041,38.19709999999941,39.30479999999989,40.57849999999962,55.52099999999882]}
+
+ ❯ tests/f07/search-filter.test.ts (18 tests | 13 failed) 14450ms
+   ✓ F-07 search and filter > TEST-106 / AC-74: keeps the default mine list 628ms
+   × F-07 search and filter > TEST-107 / AC-75: filters each valid status 709ms
+     → expected false to be true // Object.is equality
+   × F-07 search and filter > TEST-108 / AC-76: filters each valid category 447ms
+     → expected false to be true // Object.is equality
+   × F-07 search and filter > TEST-109 / AC-77: searches request number, item name, description and reason 481ms
+     → expected [ 2843, 2842, 2841, 2840, 2839, …(2) ] to not include 2843
+   × F-07 search and filter > TEST-110 / AC-78: combines filters with AND 564ms
+     → expected [ 2845, 2844, 2843, 2842, 2841, …(4) ] to deeply equal [ 2844 ]
+   ✓ F-07 search and filter > TEST-111 / AC-79: clear-equivalent empty filters return the complete list 451ms
+   ✓ F-07 search and filter > TEST-112 / AC-80: all roles keep their visibility scope 1816ms
+   × F-07 search and filter > TEST-114 / AC-82: administrator can filter all requests 913ms
+     → expected [ 2849, 2848, 2847, 2846, 2845, …(35) ] to deeply equal [ 2849 ]
+   ✓ F-07 search and filter > TEST-116 / AC-84: anonymous and unauthorized scopes return no data 843ms
+   × F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload 857ms
+     → expected [ { id: 2849, …(9) }, …(11) ] to deeply equal []
+   ✓ F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows 1060ms
+   × F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter 606ms
+     → expected [ Array(218) ] to deeply equal [ 3051 ]
+   × F-07 search and filter > TEST-113 / AC-81: review filtering returns other users submitted rows and narrows by text 1018ms
+     → expected [ 2367, 2372, 2375, 2378, 2613, …(5) ] to deeply equal [ 3057 ]
+   × F-07 search and filter > TEST-115 / AC-83: rejects invalid scope, status and category with field errors 469ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-125 / AC-93: handles repeated, lower-case and empty parameters 431ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101 452ms
+     → expected 200 to be 422 // Object.is equality
+   × F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter 448ms
+     → expected [ Array(221) ] to not include 3060
+   × F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED 514ms
+     → expected [ { id: 2367, …(9) }, …(9) ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-107 / AC-75: filters each valid status
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/f07/search-filter.test.ts:45:60
+     43|     const submitted = (await owner.get("/api/requests?status=SUBMITTED…
+     44|     expect(drafts.length).toBeGreaterThan(0);
+     45|     expect(drafts.every((r: any) => r.status === "DRAFT")).toBe(true);
+       |                                                            ^
+     46|     expect(drafts.map((r: any) => r.id)).toContain(rows[0].id);
+     47|     expect(drafts.map((r: any) => r.id)).not.toContain(rows[1].id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-108 / AC-76: filters each valid category
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/f07/search-filter.test.ts:60:63
+     58|       const rows = (await owner.get(`/api/requests?category=${category…
+     59|       expect(rows.length).toBeGreaterThan(0);
+     60|       expect(rows.every((r: any) => r.category === category)).toBe(tru…
+       |                                                               ^
+     61|       expect(rows.map((r: any) => r.id)).toContain(row.id);
+     62|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-109 / AC-77: searches request number, item name, description and reason
+AssertionError: expected [ 2843, 2842, 2841, 2840, 2839, …(2) ] to not include 2843
+ ❯ tests/f07/search-filter.test.ts:72:46
+     70|       const rows = (await owner.get(`/api/requests?q=${encodeURICompon…
+     71|       expect(rows.map((r: any) => r.id)).toContain(row.id);
+     72|       expect(rows.map((r: any) => r.id)).not.toContain(unrelated.id);
+       |                                              ^
+     73|     }
+     74|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-110 / AC-78: combines filters with AND
+AssertionError: expected [ 2845, 2844, 2843, 2842, 2841, …(4) ] to deeply equal [ 2844 ]
+
+- Expected
++ Received
+
+  Array [
++   2845,
+    2844,
++   2843,
++   2842,
++   2841,
++   2840,
++   2839,
++   2838,
++   2837,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:80:109
+     78|     const match = await createDraft(owner, { itemName: "AND match", ca…
+     79|     await createDraft(owner, { itemName: "AND wrong category", categor…
+     80|     expect((await owner.get("/api/requests?category=EQUIPMENT&q=AND"))…
+       |                                                                                                             ^
+     81|   });
+     82| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-114 / AC-82: administrator can filter all requests
+AssertionError: expected [ 2849, 2848, 2847, 2846, 2845, …(35) ] to deeply equal [ 2849 ]
+
+- Expected
++ Received
+
+  Array [
+    2849,
++   2848,
++   2847,
++   2846,
++   2845,
++   2844,
++   2843,
++   2842,
++   2841,
++   2840,
++   2839,
++   2838,
++   2837,
++   2616,
++   2615,
++   2614,
++   2613,
++   2612,
++   2383,
++   2382,
++   2381,
++   2380,
++   2379,
++   2378,
++   2377,
++   2376,
++   2375,
++   2374,
++   2373,
++   2372,
++   2371,
++   2370,
++   2369,
++   2368,
++   2367,
++   2366,
++   362,
++   361,
++   48,
++   47,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:111:108
+    109|     const admin = await loginAgent(ADMIN);
+    110|     const row = await createDraft(owner, { itemName: "Admin all row" }…
+    111|     expect((await admin.get("/api/requests?scope=all&q=Admin%20all")).…
+       |                                                                                                            ^
+    112|     expect((await owner.get("/api/requests?scope=all")).status).toBe(4…
+    113|     expect((await (await loginAgent(APPROVER)).get("/api/requests?scop…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload
+AssertionError: expected [ { id: 2849, …(9) }, …(11) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:14.683Z",
++     "id": 2849,
++     "itemName": "Admin all row",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1049",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:13.674Z",
++     "id": 2847,
++     "itemName": "Visible submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1047",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:13.698Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:11.950Z",
++     "id": 2846,
++     "itemName": "Clear filter row",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1046",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T17:23:11.500Z",
++     "id": 2845,
++     "itemName": "AND wrong category",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1045",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:11.470Z",
++     "id": 2844,
++     "itemName": "AND match",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1044",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:10.943Z",
++     "id": 2843,
++     "itemName": "Unrelated search row",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1043",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:10.921Z",
++     "id": 2842,
++     "itemName": "MixedCase Item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1042",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:10.461Z",
++     "id": 2841,
++     "itemName": "Category EQUIPMENT",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1041",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:09.889Z",
++     "id": 2840,
++     "itemName": "Status submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1040",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:09.949Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:09.823Z",
++     "id": 2839,
++     "itemName": "Status draft",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1039",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T17:23:09.252Z",
++     "id": 2838,
++     "itemName": "Submitted filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1038",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:09.283Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:09.208Z",
++     "id": 2837,
++     "itemName": "Draft filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1037",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "DRAFT",
++     "submittedAt": null,
++     "total": 201,
++   },
++ ]
+
+ ❯ tests/f07/search-filter.test.ts:130:36
+    128|     await createDraft(await loginAgent(OTHER), { itemName: "Secret hid…
+    129|     const response = await owner.get("/api/requests?q=Secret");
+    130|     expect(response.body.requests).toEqual([]);
+       |                                    ^
+    131|   });
+    132| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter
+AssertionError: expected [ Array(218) ] to deeply equal [ 3051 ]
+
+- Expected
++ Received
+
+  Array [
++   3056,
++   3055,
++   3054,
++   3053,
++   3052,
+    3051,
++   3050,
++   3049,
++   3048,
++   3047,
++   3046,
++   3045,
++   3044,
++   3043,
++   3042,
++   3041,
++   3040,
++   3039,
++   3038,
++   3037,
++   3036,
++   3035,
++   3034,
++   3033,
++   3032,
++   3031,
++   3030,
++   3029,
++   3028,
++   3027,
++   3026,
++   3025,
++   3024,
++   3023,
++   3022,
++   3021,
++   3020,
++   3019,
++   3018,
++   3017,
++   3016,
++   3015,
++   3014,
++   3013,
++   3012,
++   3011,
++   3010,
++   3009,
++   3008,
++   3007,
++   3006,
++   3005,
++   3004,
++   3003,
++   3002,
++   3001,
++   3000,
++   2999,
++   2998,
++   2997,
++   2996,
++   2995,
++   2994,
++   2993,
++   2992,
++   2991,
++   2990,
++   2989,
++   2988,
++   2987,
++   2986,
++   2985,
++   2984,
++   2983,
++   2982,
++   2981,
++   2980,
++   2979,
++   2978,
++   2977,
++   2976,
++   2975,
++   2974,
++   2973,
++   2972,
++   2971,
++   2970,
++   2969,
++   2968,
++   2967,
++   2966,
++   2965,
++   2964,
++   2963,
++   2962,
++   2961,
++   2960,
++   2959,
++   2958,
++   2957,
++   2956,
++   2955,
++   2954,
++   2953,
++   2952,
++   2951,
++   2950,
++   2949,
++   2948,
++   2947,
++   2946,
++   2945,
++   2944,
++   2943,
++   2942,
++   2941,
++   2940,
++   2939,
++   2938,
++   2937,
++   2936,
++   2935,
++   2934,
++   2933,
++   2932,
++   2931,
++   2930,
++   2929,
++   2928,
++   2927,
++   2926,
++   2925,
++   2924,
++   2923,
++   2922,
++   2921,
++   2920,
++   2919,
++   2918,
++   2917,
++   2916,
++   2915,
++   2914,
++   2913,
++   2912,
++   2911,
++   2910,
++   2909,
++   2908,
++   2907,
++   2906,
++   2905,
++   2904,
++   2903,
++   2902,
++   2901,
++   2900,
++   2899,
++   2898,
++   2897,
++   2896,
++   2895,
++   2894,
++   2893,
++   2892,
++   2891,
++   2890,
++   2889,
++   2888,
++   2887,
++   2886,
++   2885,
++   2884,
++   2883,
++   2882,
++   2881,
++   2880,
++   2879,
++   2878,
++   2877,
++   2876,
++   2875,
++   2874,
++   2873,
++   2872,
++   2871,
++   2870,
++   2869,
++   2868,
++   2867,
++   2866,
++   2865,
++   2864,
++   2863,
++   2862,
++   2861,
++   2860,
++   2859,
++   2858,
++   2857,
++   2856,
++   2855,
++   2854,
++   2853,
++   2852,
++   2851,
++   2849,
++   2847,
++   2846,
++   2845,
++   2844,
++   2843,
++   2842,
++   2841,
++   2840,
++   2839,
++   2838,
++   2837,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:176:60
+    174|       const response = await owner.get(`/api/requests?q=${encodeURICom…
+    175|       expect(response.status).toBe(200);
+    176|       expect(response.body.requests.map((r: any) => r.id)).toEqual([ro…
+       |                                                            ^
+    177|     }
+    178|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-113 / AC-81: review filtering returns other users submitted rows and narrows by text
+AssertionError: expected [ 2367, 2372, 2375, 2378, 2613, …(5) ] to deeply equal [ 3057 ]
+
+- Expected
++ Received
+
+  Array [
++   2367,
++   2372,
++   2375,
++   2378,
++   2613,
++   2838,
++   2840,
++   2847,
+    3057,
++   3058,
+  ]
+
+ ❯ tests/f07/search-filter.test.ts:188:58
+    186|     const response = await approver.get("/api/requests?scope=review&q=…
+    187|     expect(response.status).toBe(200);
+    188|     expect(response.body.requests.map((r: any) => r.id)).toEqual([targ…
+       |                                                          ^
+    189|     expect(response.body.requests.every((r: any) => r.status === "SUBM…
+    190|     expect(response.body.requests.map((r: any) => r.id)).not.toContain…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-115 / AC-83: rejects invalid scope, status and category with field errors
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:197:31
+    195|     for (const [query, field] of [["scope=bad", "scope"], ["status=bad…
+    196|       const response = await owner.get(`/api/requests?${query}`);
+    197|       expect(response.status).toBe(422);
+       |                               ^
+    198|       expect(response.body.code).toBe("VALIDATION_ERROR");
+    199|       expect(response.body.fields[field]).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-125 / AC-93: handles repeated, lower-case and empty parameters
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:207:31
+    205|     for (const [query, field] of [["status=DRAFT&status=SUBMITTED", "s…
+    206|       const response = await owner.get(`/api/requests?${query}`);
+    207|       expect(response.status).toBe(422);
+       |                               ^
+    208|       expect(response.body.code).toBe("VALIDATION_ERROR");
+    209|       expect(response.body.fields[field]).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ tests/f07/search-filter.test.ts:218:76
+    216|     const owner = await loginAgent(OWNER);
+    217|     expect((await owner.get(`/api/requests?q=${"x".repeat(100)}`)).sta…
+    218|     expect((await owner.get(`/api/requests?q=${"x".repeat(101)}`)).sta…
+       |                                                                            ^
+    219|   });
+    220| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter
+AssertionError: expected [ Array(221) ] to not include 3060
+ ❯ tests/f07/search-filter.test.ts:224:103
+    222|     const owner = await loginAgent(OWNER);
+    223|     const row = await createDraft(owner, { itemName: "Visible name", d…
+    224|     expect((await owner.get("/api/requests?category=OTHER")).body.requ…
+       |                                                                                                       ^
+    225|     expect((await owner.get("/api/requests?q=Searchable%20description"…
+    226|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+ FAIL  tests/f07/search-filter.test.ts > F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED
+AssertionError: expected [ { id: 2367, …(9) }, …(9) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T16:57:13.205Z",
++     "id": 2367,
++     "itemName": "Browser filter submitted",
++     "quantity": 1,
++     "requestNumber": "PR-2026-0967",
++     "requester": Object {
++       "id": 1,
++       "name": "Ploy",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T16:57:13.284Z",
++     "total": 10,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T16:58:01.064Z",
++     "id": 2372,
++     "itemName": "Browser filter submitted",
++     "quantity": 1,
++     "requestNumber": "PR-2026-0972",
++     "requester": Object {
++       "id": 1,
++       "name": "Ploy",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T16:58:01.107Z",
++     "total": 10,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T16:58:43.515Z",
++     "id": 2375,
++     "itemName": "Browser filter submitted 1795712323385-838",
++     "quantity": 1,
++     "requestNumber": "PR-2026-0975",
++     "requester": Object {
++       "id": 1,
++       "name": "Ploy",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T16:58:43.564Z",
++     "total": 10,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T16:58:57.136Z",
++     "id": 2378,
++     "itemName": "Browser filter submitted 1795712336999-609",
++     "quantity": 1,
++     "requestNumber": "PR-2026-0978",
++     "requester": Object {
++       "id": 1,
++       "name": "Ploy",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T16:58:57.187Z",
++     "total": 10,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T17:02:09.850Z",
++     "id": 2613,
++     "itemName": "Browser filter submitted 1795712529606-30",
++     "quantity": 1,
++     "requestNumber": "PR-2026-1013",
++     "requester": Object {
++       "id": 1,
++       "name": "Ploy",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:02:09.914Z",
++     "total": 10,
++   },
++   Object {
++     "category": "SOFTWARE",
++     "createdAt": "2026-11-26T17:23:09.252Z",
++     "id": 2838,
++     "itemName": "Submitted filter item",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1038",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:09.283Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:09.889Z",
++     "id": 2840,
++     "itemName": "Status submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1040",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:09.949Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:13.674Z",
++     "id": 2847,
++     "itemName": "Visible submitted",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1047",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:13.698Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:18.945Z",
++     "id": 3057,
++     "itemName": "Review filter target",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1057",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:18.969Z",
++     "total": 201,
++   },
++   Object {
++     "category": "EQUIPMENT",
++     "createdAt": "2026-11-26T17:23:18.995Z",
++     "id": 3058,
++     "itemName": "Review filter other",
++     "quantity": 2,
++     "requestNumber": "PR-2026-1058",
++     "requester": Object {
++       "id": 225,
++       "name": "F07 owner",
++     },
++     "status": "SUBMITTED",
++     "submittedAt": "2026-11-26T17:23:19.019Z",
++     "total": 201,
++   },
++ ]
+
+ ❯ tests/f07/search-filter.test.ts:232:36
+    230|     const response = await approver.get("/api/requests?scope=review&st…
+    231|     expect(response.status).toBe(200);
+    232|     expect(response.body.requests).toEqual([]);
+       |                                    ^
+    233|   });
+    234| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/13]⎯
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 5 passed (18)
+   Start at  00:23:05
+   Duration  15.74s (transform 243ms, setup 0ms, collect 787ms, tests 14.45s, environment 0ms, prepare 165ms)
+
