@@ -39,23 +39,37 @@ describe("F-07 search and filter", () => {
       await createDraft(owner, { itemName: "Status draft" }),
       await createSubmitted(owner, { itemName: "Status submitted" }),
     ];
-    expect((await owner.get("/api/requests?status=DRAFT")).body.requests.map((r: any) => r.id)).toContain(rows[0].id);
-    expect((await owner.get("/api/requests?status=SUBMITTED")).body.requests.map((r: any) => r.id)).toContain(rows[1].id);
+    const drafts = (await owner.get("/api/requests?status=DRAFT")).body.requests;
+    const submitted = (await owner.get("/api/requests?status=SUBMITTED")).body.requests;
+    expect(drafts.length).toBeGreaterThan(0);
+    expect(drafts.every((r: any) => r.status === "DRAFT")).toBe(true);
+    expect(drafts.map((r: any) => r.id)).toContain(rows[0].id);
+    expect(drafts.map((r: any) => r.id)).not.toContain(rows[1].id);
+    expect(submitted.length).toBeGreaterThan(0);
+    expect(submitted.every((r: any) => r.status === "SUBMITTED")).toBe(true);
+    expect(submitted.map((r: any) => r.id)).toContain(rows[1].id);
+    expect(submitted.map((r: any) => r.id)).not.toContain(rows[0].id);
   });
 
   it("TEST-108 / AC-76: filters each valid category", async () => {
     const owner = await loginAgent(OWNER);
     for (const category of ["EQUIPMENT", "SOFTWARE", "FURNITURE", "STATIONERY", "OTHER"]) {
       const row = await createDraft(owner, { itemName: `Category ${category}`, category });
-      expect((await owner.get(`/api/requests?category=${category}`)).body.requests.map((r: any) => r.id)).toContain(row.id);
+      const rows = (await owner.get(`/api/requests?category=${category}`)).body.requests;
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows.every((r: any) => r.category === category)).toBe(true);
+      expect(rows.map((r: any) => r.id)).toContain(row.id);
     }
   });
 
   it("TEST-109 / AC-77: searches request number, item name, description and reason", async () => {
     const owner = await loginAgent(OWNER);
     const row = await createDraft(owner, { itemName: "MixedCase Item", description: "UniqueDescription", reason: "UniqueReason" });
-    for (const q of [row.requestNumber.slice(0, 6).toLowerCase(), "mixedcase", "uniquedescription", "uniquereason"]) {
-      expect((await owner.get(`/api/requests?q=${q}`)).body.requests.map((r: any) => r.id)).toContain(row.id);
+    const unrelated = await createDraft(owner, { itemName: "Unrelated search row", description: "Different text", reason: "Different reason" });
+    for (const q of [row.requestNumber.toLowerCase(), "mixedcase", "uniquedescription", "uniquereason"]) {
+      const rows = (await owner.get(`/api/requests?q=${encodeURIComponent(q)}`)).body.requests;
+      expect(rows.map((r: any) => r.id)).toContain(row.id);
+      expect(rows.map((r: any) => r.id)).not.toContain(unrelated.id);
     }
   });
 
@@ -80,22 +94,33 @@ describe("F-07 search and filter", () => {
     const admin = await loginAgent(ADMIN);
     const submitted = await createSubmitted(owner, { itemName: "Visible submitted" });
     const otherDraft = await createDraft(other, { itemName: "Hidden draft" });
-    expect((await owner.get("/api/requests?q=Visible")).body.requests.map((r: any) => r.id)).toContain(submitted.id);
-    expect((await approver.get("/api/requests?scope=review")).body.requests.map((r: any) => r.id)).toContain(submitted.id);
-    expect((await admin.get("/api/requests?scope=all")).body.requests.map((r: any) => r.id)).toContain(otherDraft.id);
+    const ownerRows = (await owner.get("/api/requests")).body.requests;
+    const reviewRows = (await approver.get("/api/requests?scope=review")).body.requests;
+    const allRows = (await admin.get("/api/requests?scope=all")).body.requests;
+    expect(ownerRows.map((r: any) => r.id)).toContain(submitted.id);
+    expect(ownerRows.map((r: any) => r.id)).not.toContain(otherDraft.id);
+    expect(reviewRows.map((r: any) => r.id)).toContain(submitted.id);
+    expect(reviewRows.map((r: any) => r.id)).not.toContain(otherDraft.id);
+    expect(allRows.map((r: any) => r.id)).toContain(otherDraft.id);
   });
 
   it("TEST-114 / AC-82: administrator can filter all requests", async () => {
     const owner = await loginAgent(OWNER);
     const admin = await loginAgent(ADMIN);
     const row = await createDraft(owner, { itemName: "Admin all row" });
-    expect((await admin.get("/api/requests?scope=all&q=Admin%20all")).body.requests.map((r: any) => r.id)).toContain(row.id);
+    expect((await admin.get("/api/requests?scope=all&q=Admin%20all")).body.requests.map((r: any) => r.id)).toEqual([row.id]);
+    expect((await owner.get("/api/requests?scope=all")).status).toBe(403);
+    expect((await (await loginAgent(APPROVER)).get("/api/requests?scope=all")).status).toBe(403);
   });
 
   it("TEST-116 / AC-84: anonymous and unauthorized scopes return no data", async () => {
     const anonymous = await request(app).get("/api/requests").set("Origin", "http://localhost:5173");
     expect(anonymous.status).toBe(401);
+    expect(anonymous.body.requests).toBeUndefined();
     expect((await (await loginAgent(OWNER)).get("/api/requests?scope=all")).status).toBe(403);
+    const requesterReview = await (await loginAgent(OWNER)).get("/api/requests?scope=review");
+    expect(requesterReview.status).toBe(403);
+    expect(requesterReview.body.requests).toBeUndefined();
   });
 
   it("TEST-117 / AC-85: hidden rows never appear in the payload", async () => {
@@ -123,43 +148,68 @@ describe("F-07 search and filter", () => {
       })),
     });
     await owner.get("/api/requests");
-    const start = performance.now();
-    for (let i = 0; i < 20; i++) await owner.get("/api/requests");
-    const median = (performance.now() - start) / 20;
+    const durations: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const start = performance.now();
+      await owner.get("/api/requests");
+      durations.push(performance.now() - start);
+    }
+    durations.sort((a, b) => a - b);
+    const median = (durations[9] + durations[10]) / 2;
+    const p95 = durations[Math.ceil(durations.length * 0.95) - 1];
+    const max = durations[durations.length - 1];
+    console.log(JSON.stringify({ test: "TEST-118", rows: 200, warmup: 1, calls: 20, medianMs: median, p95Ms: p95, maxMs: max, durationsMs: durations }));
     expect(median).toBeLessThan(500);
   });
 
   it("TEST-124 / AC-92: searches every literal metacharacter", async () => {
     const owner = await loginAgent(OWNER);
-    const row = await createDraft(owner, { itemName: "Literal 100% marker", description: "Need a backslash \\ and ;-- text" });
-    for (const q of ["%", "_", "\\", "'", ";--", "HTML"]) {
-      expect((await owner.get(`/api/requests?q=${encodeURIComponent(q)}`)).status).toBe(200);
+    const literals = ["%", "_", "\\", "'", ";--", "<b>HTML</b>"];
+    const rows = new Map<string, number>();
+    for (const value of literals) {
+      const row = await createDraft(owner, { itemName: `Literal ${value} marker`, description: "Neutral description", reason: "Neutral reason" });
+      rows.set(value, row.id);
     }
-    expect((await owner.get("/api/requests?q=%25")).body.requests.map((r: any) => r.id)).toEqual([row.id]);
+    for (const value of literals) {
+      const response = await owner.get(`/api/requests?q=${encodeURIComponent(value)}`);
+      expect(response.status).toBe(200);
+      expect(response.body.requests.map((r: any) => r.id)).toEqual([rows.get(value)]);
+    }
   });
 
-  it("TEST-113 / AC-81: review status remains submitted even when another status is requested", async () => {
+  it("TEST-113 / AC-81: review filtering returns other users submitted rows and narrows by text", async () => {
     const owner = await loginAgent(OWNER);
     const approver = await loginAgent(APPROVER);
-    await createSubmitted(owner, { itemName: "Review filter item" });
-    const response = await approver.get("/api/requests?scope=review&status=APPROVED");
+    const target = await createSubmitted(owner, { itemName: "Review filter target" });
+    const other = await createSubmitted(owner, { itemName: "Review filter other" });
+    await createSubmitted(approver, { itemName: "Review filter own" });
+    const response = await approver.get("/api/requests?scope=review&q=target");
     expect(response.status).toBe(200);
-    expect(response.body.requests).toEqual([]);
+    expect(response.body.requests.map((r: any) => r.id)).toEqual([target.id]);
+    expect(response.body.requests.every((r: any) => r.status === "SUBMITTED")).toBe(true);
+    expect(response.body.requests.map((r: any) => r.id)).not.toContain(other.id);
   });
 
-  it("TEST-115 / AC-83: rejects invalid and overlong parameters", async () => {
+  it("TEST-115 / AC-83: rejects invalid scope, status and category with field errors", async () => {
     const owner = await loginAgent(OWNER);
-    expect((await owner.get("/api/requests?status=DRAFT&status=SUBMITTED")).status).toBe(422);
-    expect((await owner.get("/api/requests?status=draft")).status).toBe(422);
-    expect((await owner.get(`/api/requests?q=${"x".repeat(101)}`)).status).toBe(422);
-    expect((await owner.get("/api/requests?status=")).status).toBe(200);
+    for (const [query, field] of [["scope=bad", "scope"], ["status=bad", "status"], ["category=bad", "category"]]) {
+      const response = await owner.get(`/api/requests?${query}`);
+      expect(response.status).toBe(422);
+      expect(response.body.code).toBe("VALIDATION_ERROR");
+      expect(response.body.fields[field]).toBeTruthy();
+    }
   });
 
-  it("TEST-125 / AC-93: rejects repeated and lower-case parameters", async () => {
+  it("TEST-125 / AC-93: handles repeated, lower-case and empty parameters", async () => {
     const owner = await loginAgent(OWNER);
-    expect((await owner.get("/api/requests?status=DRAFT&status=SUBMITTED")).status).toBe(422);
+    for (const [query, field] of [["status=DRAFT&status=SUBMITTED", "status"], ["q=one&q=two", "q"]]) {
+      const response = await owner.get(`/api/requests?${query}`);
+      expect(response.status).toBe(422);
+      expect(response.body.code).toBe("VALIDATION_ERROR");
+      expect(response.body.fields[field]).toBeTruthy();
+    }
     expect((await owner.get("/api/requests?category=equipment")).status).toBe(422);
-    expect((await owner.get("/api/requests?status=")).status).toBe(200);
+    expect((await owner.get("/api/requests?category=&q=")).status).toBe(200);
   });
 
   it("TEST-126 / AC-94: accepts 100 characters and rejects 101", async () => {
@@ -170,9 +220,9 @@ describe("F-07 search and filter", () => {
 
   it("TEST-127 / AC-95: NULL category and reason are safe to filter", async () => {
     const owner = await loginAgent(OWNER);
-    const row = await createDraft(owner, { itemName: "Null fields", category: "", reason: "" });
+    const row = await createDraft(owner, { itemName: "Visible name", description: "Searchable description", category: "", reason: "" });
     expect((await owner.get("/api/requests?category=OTHER")).body.requests.map((r: any) => r.id)).not.toContain(row.id);
-    expect((await owner.get("/api/requests?q=Null%20fields")).body.requests.map((r: any) => r.id)).toContain(row.id);
+    expect((await owner.get("/api/requests?q=Searchable%20description")).body.requests.map((r: any) => r.id)).toContain(row.id);
   });
 
   it("TEST-128 / AC-96: review status filtering returns an empty list for APPROVED", async () => {

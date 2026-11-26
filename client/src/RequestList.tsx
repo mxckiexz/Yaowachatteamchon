@@ -19,6 +19,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
   const q = searchParams.get("q") ?? "";
   const status = (searchParams.get("status") ?? "") as Status | "";
   const category = (searchParams.get("category") ?? "") as Category | "";
+  const hasFilters = Boolean(q || status || category);
   const [draft, setDraft] = useState({ q, status, category });
   const [requests, setRequests] = useState<RequestSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +87,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
         </div>
       )}
       {!error && requests === null && <p>Loading...</p>}
-      {requests && requests.length === 0 && <p className="text-muted">{emptyText}</p>}
+      {requests && requests.length === 0 && <p className="text-muted">{hasFilters ? "No requests match these filters." : emptyText}</p>}
       {requests && requests.length > 0 && <RequestTable requests={requests} showRequester={showRequester} dateLabel={dateLabel} />}
     </>
   );
