@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.3. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server tests are executed; browser execution remains disclosed there until complete.
+Version 2.4. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -69,4 +69,4 @@ Version 2.3. Requirement, feature or responsibility, sprint, acceptance criteria
 
 ## Uncovered requirements
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 have executed; browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 are added and their final local execution is still pending. F-08 to F-28, BR-19 and BR-20 and their later feature tests remain planned because their sprints have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 to F-28, BR-19 and BR-20 and their later feature tests remain planned because their sprints have not started. This is planned, not forgotten.

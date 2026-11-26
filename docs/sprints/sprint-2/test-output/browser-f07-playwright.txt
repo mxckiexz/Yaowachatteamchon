@@ -1,0 +1,12 @@
+F-07 browser verification
+Date: 27 November 2026
+Commit: fc0189f
+
+Command:
+node node_modules/@playwright/test/cli.js test e2e/requests/search-filter.spec.ts
+
+Result:
+8 passed, 0 failed.
+
+Covered IDs: TEST-119, TEST-120, TEST-121, TEST-122, TEST-123, TEST-129, TEST-130 and TEST-131.
+The run covered keyboard/Enter filtering, labels and clear, empty state and live result announcement, no horizontal overflow at 375/768/1280 px, axe filter-toolbar checks, and URL persistence after reload and Back.

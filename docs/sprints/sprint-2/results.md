@@ -28,14 +28,21 @@ The server suite passed 112 tests, the client suite passed 14 tests, and the two
 | Client | 14 passed, 0 failed |
 | F-06 browser tests | 2 passed, 0 failed |
 
-## F-07 search and filter (implementation in progress)
+## F-07 search and filter
 
-Implementation commit: `16d5af9` plus the review-fix commits on this branch. The server F-07 suite was rerun on 26 November 2026: 19 tests passed, 0 failed. The browser file contains TEST-119 to TEST-123 and TEST-129 to TEST-131; its full Playwright run is still being verified and is not claimed as complete here.
+Implementation and coverage commit: `fc0189f` (27 November 2026). The server F-07 suite has 18 tests and the browser file has 8 tests; together they cover TEST-106 to TEST-131. Raw output is in `test-output/server-f07-vitest.txt` and `test-output/browser-f07-playwright.txt`.
 
 | AC | Implementation | Test | Actual result | Commit |
 |---|---|---|---|---|
-| AC-74 to AC-85 | `GET /api/requests` scope, status, category and text filters | TEST-106 to TEST-117 | Server tests passed; visibility and no-data leakage verified | `16d5af9` |
-| AC-86 | Unfiltered mine list timing | TEST-118 | 200 rows, one warm-up and 20 calls passed the 500 ms median threshold in the local test environment | `16d5af9` |
-| AC-87 to AC-91 | Filter toolbar, URL parameters, clear action and live result status | TEST-119 to TEST-123 | Browser tests added; execution pending final local Playwright run | `16d5af9` |
-| AC-92 to AC-96 | Literal metacharacters, parameter boundaries, NULL fields and review status | TEST-124 to TEST-128 | Server tests passed | `16d5af9` |
-| AC-97 to AC-99 | Responsive widths, axe-core and reload/Back | TEST-129 to TEST-131 | Browser tests added; execution pending final local Playwright run | `16d5af9` |
+| AC-74 to AC-85 | `GET /api/requests` scope, status, category and text filters | TEST-106 to TEST-117 | 12 server tests passed; visibility, role scope, validation and no-data leakage verified | `fc0189f` |
+| AC-86 | Unfiltered mine list timing | TEST-118 | 200 rows, one warm-up and 20 individual calls; median 39.01 ms, p95 47.03 ms, max 47.56 ms on the local PostgreSQL test environment | `fc0189f` |
+| AC-87 to AC-91 | Filter toolbar, URL parameters, clear action and live result status | TEST-119 to TEST-123 | 5 browser tests passed, including keyboard/Enter, labels, clear, empty state and live announcement | `fc0189f` |
+| AC-92 to AC-96 | Literal metacharacters, parameter boundaries, NULL fields and review status | TEST-124 to TEST-128 | 5 server tests passed, including literal `%`, `_`, `\\`, quotes, `;--`, HTML and NULL fields | `fc0189f` |
+| AC-97 to AC-99 | Responsive widths, axe-core and reload/Back | TEST-129 to TEST-131 | 3 browser tests passed at 375/768/1280 px, axe filter-toolbar check and URL persistence | `fc0189f` |
+
+### F-07 suite totals
+
+| Suite | Result |
+|---|---|
+| Server F-07 | 18 passed, 0 failed |
+| Browser F-07 | 8 passed, 0 failed |
