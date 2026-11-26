@@ -1,0 +1,12 @@
+Running 8 tests using 1 worker
+
+[1/8] [chromium] › e2e\requests\search-filter.spec.ts:22:5 › TEST-119 / AC-87: filters work with keyboard and Enter
+[2/8] [chromium] › e2e\requests\search-filter.spec.ts:43:5 › TEST-120 / AC-88: labels and review controls are present
+[3/8] [chromium] › e2e\requests\search-filter.spec.ts:56:5 › TEST-121 / AC-89: Clear filters removes query parameters
+[4/8] [chromium] › e2e\requests\search-filter.spec.ts:66:5 › TEST-122 / AC-90: empty state and forbidden scope control
+[5/8] [chromium] › e2e\requests\search-filter.spec.ts:74:5 › TEST-123 / AC-91: live result announcement
+[6/8] [chromium] › e2e\requests\search-filter.spec.ts:80:5 › TEST-129 / AC-97: the page has no horizontal overflow at supported widths
+[7/8] [chromium] › e2e\requests\search-filter.spec.ts:89:5 › TEST-130 / AC-98: axe reports no filter-toolbar violations
+[8/8] [chromium] › e2e\requests\search-filter.spec.ts:102:5 › TEST-131 / AC-99: reload and Back restore URL filters
+
+8 passed (28.8s)

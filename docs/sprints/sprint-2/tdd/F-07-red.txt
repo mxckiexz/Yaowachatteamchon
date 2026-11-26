@@ -1,0 +1,4 @@
+F-07 TDD evidence note
+Date: 27 November 2026
+
+The original `F-07-red-run.txt` is retained as history from the first review. After the tests were strengthened, the current test file was copied to a clean worktree at staging commit `f30ae04` and rerun before the implementation files were present. The current run failed 13 of 18 tests and passed 5 existing-behaviour guards. Its raw output is in `F-07-red-current.txt`. The passing implementation run is recorded in `F-07-green.txt`.

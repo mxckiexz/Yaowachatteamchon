@@ -1,0 +1,19 @@
+F-07 implementation verification
+Date: 27 November 2026
+Commit: fc0189f
+
+Command:
+npm test --prefix server -- --run tests/f07/search-filter.test.ts
+
+Result:
+18 server tests passed, 0 failed.
+
+Covered IDs: TEST-106 to TEST-118, TEST-124 to TEST-128.
+
+Browser command (with the local API and client running):
+node node_modules/@playwright/test/cli.js test e2e/requests/search-filter.spec.ts
+
+Browser result:
+8 tests passed, 0 failed. Covered IDs: TEST-119 to TEST-123 and TEST-129 to TEST-131.
+
+The server raw output, including TEST-118 timings, is in `docs/sprints/sprint-2/test-output/server-f07-vitest.txt`.

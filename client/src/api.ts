@@ -106,7 +106,18 @@ export interface AdminUser {
 }
 
 export type Scope = "mine" | "review" | "all";
-export const listRequests = (scope: Scope = "mine") => api<{ requests: RequestSummary[] }>(`/requests?scope=${scope}`);
+export interface RequestFilters {
+  q?: string;
+  status?: Status | "";
+  category?: Category | "";
+}
+export const listRequests = (scope: Scope = "mine", filters: RequestFilters = {}) => {
+  const params = new URLSearchParams({ scope });
+  if (filters.q) params.set("q", filters.q);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.category) params.set("category", filters.category);
+  return api<{ requests: RequestSummary[] }>(`/requests?${params.toString()}`);
+};
 export const getRequest = (id: string | number) => api<{ request: RequestDetail }>(`/requests/${id}`);
 export const createRequest = (body: RequestInput) => api<{ request: RequestDetail }>("/requests", { method: "POST", body });
 export const updateRequest = (id: number, body: RequestInput) => api<{ request: RequestDetail }>(`/requests/${id}`, { method: "PATCH", body });

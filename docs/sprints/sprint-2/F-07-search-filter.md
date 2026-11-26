@@ -79,7 +79,7 @@ Invalid scope, status, category or an overlong `q` returns `422 VALIDATION_ERROR
 | AC-83 | Invalid scope, status, category and overlong text return `422 VALIDATION_ERROR` with fields. |
 | AC-84 | Anonymous calls return `401`, and unauthorized scopes return `403`, without request data. |
 | AC-85 | The response payload contains only rows visible to the caller that match all supplied filters; no hidden or unfiltered row is present. |
-| AC-86 | For one user with 200 requests, after one warm-up call, the unfiltered mine list has a median of 20 calls under 500 ms on the recorded local test environment (formal NFR-12 measurement). |
+| AC-86 | For one user with 200 requests, after one warm-up call, the unfiltered mine list has a median of 20 calls under 500 ms on the recorded local test environment (formal NFR-12 measurement). The recorded run used an ASUS Vivobook X1502ZA, Intel Core i7-1255U, 15.69 GB RAM, Windows 11 Home, Node.js v22.14.0 and PostgreSQL 16.16. |
 | AC-87 | The UI filter controls can be used fully with the keyboard, including Enter and focus order. |
 | AC-88 | Every filter and action has a visible, associated label: Search text, Status, Category, Apply filters and Clear filters. |
 | AC-89 | Clear filters removes the URL parameters and restores the complete list for the current scope. |
@@ -135,6 +135,6 @@ The following tests are planned for Sprint 2 and must be added to the Sprint 2 r
 - API tests cover every filter, combinations, invalid values, visibility and no-data leakage.
 - API tests cover NFR-09 metacharacters, repeated parameters, enum case, empty values, exact text boundaries and NULL fields.
 - The formal NFR-12 measurement is recorded with its environment and raw output.
-- Browser tests cover labels, keyboard access, URL persistence, clear action, responsive widths, axe accessibility, result announcements, empty state and forbidden scopes.
+- Browser tests cover labels, keyboard access, URL persistence, clear action, responsive layouts at 375, 768 and 1280 px, an axe-core run on the filter toolbar, result announcements, empty state and forbidden scopes.
 - The implementation branch is reviewed in a PR into `staging`.
 - The merged feature is included in the Sprint 2 completion table.

@@ -1,0 +1,31 @@
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
+
+stdout | tests/f07/search-filter.test.ts > F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows
+{"test":"TEST-118","rows":200,"warmup":1,"calls":20,"medianMs":39.00655000000006,"p95Ms":47.03440000000046,"maxMs":47.55749999999898,"durationsMs":[35.15350000000035,35.2628999999979,36.53729999999996,36.97910000000047,37.216700000000856,37.31910000000062,37.61590000000069,38.060199999999895,38.331200000000536,38.9349000000002,39.078199999999924,40.3083000000006,40.34300000000076,40.66480000000229,40.91560000000027,41.78549999999814,42.72479999999996,43.0679999999993,47.03440000000046,47.55749999999898]}
+
+ ✓ tests/f07/search-filter.test.ts (18 tests) 23809ms
+   ✓ F-07 search and filter > TEST-106 / AC-74: keeps the default mine list 1011ms
+   ✓ F-07 search and filter > TEST-107 / AC-75: filters each valid status 888ms
+   ✓ F-07 search and filter > TEST-108 / AC-76: filters each valid category 994ms
+   ✓ F-07 search and filter > TEST-109 / AC-77: searches request number, item name, description and reason 828ms
+   ✓ F-07 search and filter > TEST-110 / AC-78: combines filters with AND 774ms
+   ✓ F-07 search and filter > TEST-111 / AC-79: clear-equivalent empty filters return the complete list 793ms
+   ✓ F-07 search and filter > TEST-112 / AC-80: all roles keep their visibility scope 2995ms
+   ✓ F-07 search and filter > TEST-114 / AC-82: administrator can filter all requests 2181ms
+   ✓ F-07 search and filter > TEST-116 / AC-84: anonymous and unauthorized scopes return no data 1417ms
+   ✓ F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload 1450ms
+   ✓ F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows 1625ms
+   ✓ F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter 1088ms
+   ✓ F-07 search and filter > TEST-113 / AC-81: review filtering returns other users submitted rows and narrows by text 1686ms
+   ✓ F-07 search and filter > TEST-115 / AC-83: rejects invalid scope, status and category with field errors 748ms
+   ✓ F-07 search and filter > TEST-125 / AC-93: handles repeated, lower-case and empty parameters 780ms
+   ✓ F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101 764ms
+   ✓ F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter 813ms
+   ✓ F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED 749ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  00:00:48
+   Duration  25.84s (transform 537ms, setup 0ms, collect 1.46s, tests 23.81s, environment 0ms, prepare 216ms)
+

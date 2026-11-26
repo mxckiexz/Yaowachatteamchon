@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { Prisma } from "@prisma/client";
 import { requireAuth, requireRole, type AuthedRequest } from "./auth.js";
 import { asyncHandler, parseId } from "./http.js";
 import { calculateTotalSatang, satangToBaht } from "./money.js";
@@ -259,7 +260,34 @@ requestRouter.get(
   "/requests",
   requireAuth,
   asyncHandler(async (req: AuthedRequest, res) => {
-    const scope = req.query.scope === undefined ? "mine" : String(req.query.scope);
+    const single = (name: string): { value?: string; repeated: boolean } => {
+      const raw = req.query[name];
+      if (raw === undefined) return { repeated: false };
+      if (Array.isArray(raw)) return { repeated: true };
+      return { value: String(raw), repeated: false };
+    };
+    const scopeParam = single("scope");
+    const statusParam = single("status");
+    const categoryParam = single("category");
+    const qParam = single("q");
+    const scope = scopeParam.value === undefined ? "mine" : scopeParam.value;
+    const repeatedFields: Record<string, string> = {};
+    if (scopeParam.repeated) repeatedFields.scope = "This parameter may be supplied only once.";
+    if (statusParam.repeated) repeatedFields.status = "This parameter may be supplied only once.";
+    if (categoryParam.repeated) repeatedFields.category = "This parameter may be supplied only once.";
+    if (qParam.repeated) repeatedFields.q = "This parameter may be supplied only once.";
+    if (Object.keys(repeatedFields).length > 0) return res.status(422).json(validationError(repeatedFields));
+    const statusValues = ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "CANCELLED"] as const;
+    const categoryValues = ["EQUIPMENT", "SOFTWARE", "FURNITURE", "STATIONERY", "OTHER"] as const;
+    const status = statusParam.value === "" ? undefined : statusParam.value;
+    const category = categoryParam.value === "" ? undefined : categoryParam.value;
+    const q = qParam.value?.trim() || undefined;
+    const fields: Record<string, string> = {};
+    if (!["mine", "review", "all"].includes(scope)) fields.scope = "Unknown scope.";
+    if (status !== undefined && !(statusValues as readonly string[]).includes(status)) fields.status = "Unknown status.";
+    if (category !== undefined && !(categoryValues as readonly string[]).includes(category)) fields.category = "Unknown category.";
+    if (q !== undefined && q.length > 100) fields.q = "Search text must be at most 100 characters.";
+    if (Object.keys(fields).length > 0) return res.status(422).json(validationError(fields));
     const user = req.user!;
     let where: object;
     let orderBy: object[];
@@ -277,7 +305,30 @@ requestRouter.get(
     } else {
       return res.status(422).json({ error: "scope must be mine, review or all.", code: "VALIDATION_ERROR", fields: { scope: "Unknown scope." } });
     }
-    const rows = await getPrisma().purchaseRequest.findMany({ where, include: REQUEST_INCLUDE, orderBy: orderBy as any });
+    const conditions: any[] = [where];
+    if (status !== undefined) conditions.push({ status });
+    if (category !== undefined) conditions.push({ category });
+    const prisma = getPrisma();
+    let ids: number[] | undefined;
+    if (q !== undefined) {
+      const candidates = await prisma.purchaseRequest.findMany({ where: { AND: conditions }, select: { id: true } });
+      if (candidates.length === 0) return res.json({ requests: [] });
+      const escaped = q.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+      const pattern = `%${escaped}%`;
+      const matches = await prisma.$queryRaw<{ id: number }[]>`
+        SELECT "id" FROM "PurchaseRequest"
+        WHERE "id" IN (${Prisma.join(candidates.map((candidate) => candidate.id))})
+          AND (
+            COALESCE("requestNumber", '') ILIKE ${pattern} ESCAPE '\\'
+            OR COALESCE("itemName", '') ILIKE ${pattern} ESCAPE '\\'
+            OR COALESCE("description", '') ILIKE ${pattern} ESCAPE '\\'
+            OR COALESCE("reason", '') ILIKE ${pattern} ESCAPE '\\'
+          )`;
+      ids = matches.map((match) => match.id);
+      if (ids.length === 0) return res.json({ requests: [] });
+    }
+    const filters = { AND: [...conditions, ...(ids ? [{ id: { in: ids } }] : [])] };
+    const rows = await prisma.purchaseRequest.findMany({ where: filters, include: REQUEST_INCLUDE, orderBy: orderBy as any });
     res.json({
       requests: rows.map((r) => {
         const s = serializeRequest(r);

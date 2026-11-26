@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.1. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 F-06 actual results are in `docs/sprints/sprint-2/results.md`.
+Version 2.4. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -20,7 +20,7 @@ Version 2.1. Requirement, feature or responsibility, sprint, acceptance criteria
 | FR-14 | F-02 | 1 | AC-17 | TEST-25 |
 | FR-15 | F-05 | 1 | AC-39 to AC-44 | TEST-61 to 67, 75 |
 | FR-16 | F-01 | 1 | AC-01 to AC-05, AC-12 | TEST-01 to 07, 70 |
-| FR-17 | F-07 | 2 | planned | planned |
+| FR-17 | F-07 | 2 | AC-74 to AC-99 | TEST-106 to TEST-131 |
 | FR-18 | F-08 | 2 | planned | planned |
 | FR-19 | F-09 | 2 | planned | planned |
 | FR-20 | F-10 | 2 | planned | planned |
@@ -53,20 +53,20 @@ Version 2.1. Requirement, feature or responsibility, sprint, acceptance criteria
 | BR-19 | F-13 | 3 | planned | planned |
 | BR-20 | F-14 | 3 | planned | planned |
 | BR-21 | F-06 | 2 | AC-58 to AC-73 | TEST-93 to TEST-105 |
-| NFR-01 | F-01, F-06 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68 | TEST-12, 39, 53, 58, 62, 101 |
-| NFR-02 | F-04, F-06 | 1, 2 | AC-35, AC-70, AC-73 | TEST-55, 56, 103, 104 |
+| NFR-01 | F-01, F-06, F-07 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-84 | TEST-12, 39, 53, 58, 62, 101, 116 |
+| NFR-02 | F-04, F-06, F-07 | 1, 2 | AC-35, AC-70, AC-73, AC-80, AC-84 | TEST-55, 56, 103, 104, 112, 116 |
 | NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |
-| NFR-04 | R-02 | 1 | AC-10, AC-14, AC-48 | TEST-14, 18 to 21, 83 |
-| NFR-05 | R-06 | 1 | AC-53 | TEST-88 |
+| NFR-04 | R-02, F-07 | 1, 2 | AC-10, AC-14, AC-48, AC-83 | TEST-14, 18 to 21, 83, 115 |
+| NFR-05 | R-06, F-07 | 1, 2 | AC-53, AC-87, AC-88, AC-97 | TEST-88, 119, 120, 129 |
 | NFR-06 | F-02, F-03, F-06 | 1, 2 | AC-18, AC-24, AC-25, AC-29, AC-31, AC-64, AC-66, AC-70 | TEST-26, 36, 37, 42 to 44, 46, 97, 99, 103 |
-| NFR-07 | F-04, F-06 | 1, 2 | AC-33, AC-38, AC-61, AC-70, AC-73 | TEST-51, 74, 95, 103, 104 |
+| NFR-07 | F-04, F-06, F-07 | 1, 2 | AC-33, AC-38, AC-61, AC-70, AC-73, AC-80, AC-85 | TEST-51, 74, 95, 103, 104, 112, 117 |
 | NFR-08 | F-02 | 1 | AC-21 | TEST-30 |
-| NFR-09 | R-02, R-05 | 1 | AC-45 to AC-51 | TEST-80 to 86 |
-| NFR-10 | R-06, F-06 | 1, 2 | AC-52, AC-53, AC-71 to AC-73 | TEST-87, 88, 104, 105 |
+| NFR-09 | R-02, R-05, F-07 | 1, 2 | AC-45 to AC-51, AC-92 | TEST-80 to 86, 124 |
+| NFR-10 | R-06, F-06, F-07 | 1, 2 | AC-52, AC-53, AC-71 to AC-73, AC-87, AC-88, AC-91, AC-98 | TEST-87, 88, 104, 105, 119, 120, 123, 130 |
 | NFR-11 | R-01 | 1 | AC-11 | TEST-15, manual check M-01 |
-| NFR-12 | R-03, F-07, R-05 | 2 (early check in 1) | AC-54, AC-55 (early); formal AC planned | TEST-89, 90 (early); formal planned |
+| NFR-12 | R-03, F-07, R-05 | 2 (early check in 1) | AC-54, AC-55 (early), AC-86 | TEST-89, 90 (early), TEST-118 |
 | NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
 
-The Sprint 2 contract for FR-05 and BR-21 defines planned tests TEST-93 to TEST-105; those tests are not executed yet. FR-17 to FR-28, BR-19, BR-20 and the formal NFR-12 measurement remain planned because their sprints have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 to F-28, BR-19 and BR-20 and their later feature tests remain planned because their sprints have not started. This is planned, not forgotten.
