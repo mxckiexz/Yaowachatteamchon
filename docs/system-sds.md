@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.5. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented.
+Version 2.6. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition.
 
 ## 1. Architecture and stack
 
@@ -34,8 +34,8 @@ Comment (Sprint 2): PurchaseRequest 1 ---- * Comment, User 1 ---- * Comment (aut
 |---|---|---|
 | User | id, name, email, passwordHash, role (REQUESTER, APPROVER, ADMIN), isActive, createdAt | email unique and stored in lower case; passwordHash is a bcrypt hash |
 | Session | id (random UUID), userId, expiresAt, createdAt | deleted at logout; invalid after expiresAt; invalid when the user is inactive |
-| PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints |
-| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-06 adds the CANCELLED transition |
+| PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints; F-11 clears submittedAt and decidedAt on return |
+| RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED, RETURNED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-11 adds the RETURNED transition from SUBMITTED to DRAFT |
 | Attachment (Sprint 2) | id, requestId, fileName, fileType, sizeBytes, content (bytes), uploadedById, createdAt | F-09; at most 5 per request, 1 to 5,242,880 bytes each (CHECK on sizeBytes); content is never selected by list or detail queries; only the owner of a DRAFT adds or removes |
 | Comment (Sprint 2) | id, requestId, authorId, text, createdAt | F-10; 1 to 1000 characters (CHECK); append only, the API has no update or delete |
 
@@ -88,6 +88,7 @@ Endpoint list (details are in the feature contracts):
 | `GET /api/dashboard`, `/dashboard` | F-08 (implemented) |
 | `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (implemented) |
 | `GET`, `POST /api/requests/:id/comments` | F-10 (implemented) |
+| `POST /api/requests/:id/return` | F-11 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
@@ -103,6 +104,7 @@ Endpoint list (details are in the feature contracts):
 | All requests (`scope=all`) | 401 | 403 | 403 | all, read only |
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
+| Return for editing (F-11, planned) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |
 | Add or delete an attachment (F-09) | 401 | own draft only (other: 404, not a draft: 409) | own draft only (other: 404, not a draft: 409) | 404 |
 | Read comments (F-10) | 401 | own request (other: 404) | requests the approver may read | all |
