@@ -1,6 +1,6 @@
 # Feature contract F-10: Comments
 
-Contract version 1.0, 27 November 2026. Contract only, for review before implementation. Tracks Issue #59 and implements FR-20.
+Contract version 1.1, 27 November 2026. Contract only, for review before implementation. Tracks Issue #59 and implements FR-20.
 
 Linked requirements: FR-20, BR-12, BR-24, BR-25, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-04 for the visibility rules. It does not depend on F-09.
 
@@ -9,6 +9,7 @@ Linked requirements: FR-20, BR-12, BR-24, BR-25, NFR-01, NFR-02, NFR-04, NFR-05,
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 27 November 2026 | Initial F-10 contract proposed for review. |
+| 1.1 | 27 November 2026 | Review of Pull Request 60: AC-143 and TEST-174 now also require approver comments on another user's request in every status an approver can see. |
 
 ## 1. Feature design
 
@@ -99,7 +100,7 @@ The migration only adds a table. Existing rows are not changed, and an earlier a
 |---|---|
 | AC-141 | The owner adds a comment and gets 201 with the comment fields; it is stored with the owner as author. |
 | AC-142 | An approver can comment on another user's non-draft request and on their own draft. |
-| AC-143 | Comments are accepted on requests in DRAFT, SUBMITTED, APPROVED, REJECTED and CANCELLED. |
+| AC-143 | Comments are accepted from the owner on requests in DRAFT, SUBMITTED, APPROVED, REJECTED and CANCELLED, and from an approver on another user's request in SUBMITTED, APPROVED, REJECTED and CANCELLED. |
 | AC-144 | Missing, non-string, blank, 1001-character or U+0000 text gives 422 with `fields.text` and stores nothing; 1 and 1000 characters are accepted. |
 | AC-145 | The stored text is trimmed at the ends and keeps inner spaces, line breaks and Thai text. |
 | AC-146 | An administrator who posts gets 403, whether or not the request exists, and nothing is stored. |
@@ -123,7 +124,7 @@ The migration only adds a table. Existing rows are not changed, and an earlier a
 |---|---|---|---|---|
 | TEST-172 | AC-141 | API integration | Owner posts on their request | 201, exact response fields, one database row with the owner as author |
 | TEST-173 | AC-142 | API integration | An approver posts on a submitted request of another user and on their own draft | Both 201 |
-| TEST-174 | AC-143 | API integration | Owner posts on one request in each of the five statuses | All 201 |
+| TEST-174 | AC-143 | API integration | The owner posts on one request in each of the five statuses; an approver who is not the owner posts on the SUBMITTED, APPROVED, REJECTED and CANCELLED ones | All nine posts give 201, and each row has the caller as author |
 | TEST-175 | AC-144 | Unit and API integration | No `text`, a number, an array, spaces and line breaks only, 1001 characters, text with U+0000; then 1 and 1000 characters | The bad inputs give 422 with `fields.text` and add no row; the last two give 201 |
 | TEST-176 | AC-145 | API integration | Text with outer spaces, double inner spaces, line breaks and Thai | Stored and returned with only the outer white space removed |
 | TEST-177 | AC-146 | API integration | Administrator posts on an existing request and on an id that does not exist | Both 403 `FORBIDDEN`; no row |
