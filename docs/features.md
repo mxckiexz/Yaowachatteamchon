@@ -14,7 +14,7 @@ Version 2.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a s
 | F-06 | Cancel a request | The owner cancels a DRAFT or SUBMITTED request before it is approved; the request and history remain readable after cancellation. | FR-05, BR-21, BR-11, BR-12, BR-17, NFR-01, NFR-02, NFR-06, NFR-07, NFR-10 | F-02, F-03 | 2 |
 | F-07 | Search and filter | Filter lists by status, text and category while preserving each role's visibility scope. | FR-17, BR-12, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10, NFR-12 | F-04 (soft dependency F-06 for CANCELLED test data) | 2 |
 | F-08 | Dashboard | Counts of requests by status for the user's role, with an approver's own-request and waiting-for-review groups. | FR-18, BR-12, NFR-01, NFR-02, NFR-05, NFR-07, NFR-10 | F-04, F-07 | 2 |
-| F-09 | Attachments | Upload and download files on a request. | FR-19 | F-02 | 2 |
+| F-09 | Attachments | The owner adds and removes PDF, PNG or JPEG files on a draft; everyone who may see the request can list and download them. | FR-19, BR-12, BR-22, BR-23, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-02, F-04 | 2 |
 | F-10 | Comments | Comments on a request. | FR-20 | F-04 | 2 |
 | F-11 | Return for editing | The approver sends a request back to the requester, who edits and resubmits. | FR-21 | F-03 | 2 |
 | F-12 | In-app notifications | Notify on submission, decision and return. | FR-22 | F-03, F-11 | 2 |

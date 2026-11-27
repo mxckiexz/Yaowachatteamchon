@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.0.
+Version 2.1. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints.
 
 ## 1. Architecture and stack
 
@@ -35,7 +35,7 @@ Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attach
 | Session | id (random UUID), userId, expiresAt, createdAt | deleted at logout; invalid after expiresAt; invalid when the user is inactive |
 | PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints |
 | RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-06 adds the CANCELLED transition |
-| Attachment (Sprint 2) | id, requestId, fileName, fileType, filePath, uploadedById, createdAt | not created in Sprint 1 |
+| Attachment (Sprint 2) | id, requestId, fileName, fileType, sizeBytes, content (bytes), uploadedById, createdAt | planned in F-09; at most 5 per request, 1 to 5,242,880 bytes each (CHECK on sizeBytes); content is never selected by list or detail queries; only the owner of a DRAFT adds or removes |
 
 Money is stored as integer satang (1 baht = 100 satang). The API sends and receives baht as decimal numbers and converts at the boundary.
 
@@ -84,6 +84,7 @@ Endpoint list (details are in the feature contracts):
 | `POST /api/requests/:id/approve`, `POST /api/requests/:id/reject` | F-03 |
 | `GET /api/requests?scope=mine\|review\|all`, `GET /api/requests/:id`, `GET /api/requests/:id/history` | F-04 |
 | `GET /api/dashboard`, `/dashboard` | F-08 |
+| `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
@@ -136,4 +137,4 @@ Real secrets are never committed. `.env` is ignored by Git; `.env.example` holds
 | Runtime | Cloud Run. |
 | Pipeline | GitHub Actions: build and test on pull requests; deploy from `main` by image digest with a smoke test. |
 
-Design for this in Sprint 1: port from `PORT`, health route, configuration from environment, sessions in the database, no local file storage (attachments in Sprint 2 will need object storage for the same reason).
+Design for this in Sprint 1: port from `PORT`, health route, configuration from environment, sessions in the database, no local file storage. For the same reason F-09 attachments are stored in PostgreSQL, not on disk; version 2.0 expected object storage, but the course environment has no storage bucket (F-09 contract, section 4).
