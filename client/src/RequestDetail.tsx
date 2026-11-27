@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
 import Attachments from "./Attachments";
 import { useAuth } from "./AuthContext";
+import Comments from "./Comments";
 import { CATEGORY_LABEL, formatBaht, formatDateTime, StatusBadge } from "./format";
 import RequestForm from "./RequestForm";
 
@@ -100,6 +101,8 @@ export default function RequestDetail() {
           </li>
         ))}
       </ol>
+
+      <Comments key={request.id} requestId={request.id} canComment={user.role !== "ADMIN"} />
     </>
   );
 }

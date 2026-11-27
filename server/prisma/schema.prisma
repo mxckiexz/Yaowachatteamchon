@@ -49,6 +49,7 @@ model User {
   requests       PurchaseRequest[]
   historyEntries RequestHistory[]
   attachments    Attachment[]
+  comments       Comment[]
 }
 
 model Session {
@@ -79,6 +80,7 @@ model PurchaseRequest {
   requester       User             @relation(fields: [requesterId], references: [id], onDelete: Restrict)
   history         RequestHistory[]
   attachments     Attachment[]
+  comments        Comment[]
 
   @@index([requesterId])
   @@index([status, submittedAt])
@@ -111,6 +113,19 @@ model Attachment {
   createdAt    DateTime        @default(now())
   request      PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   uploadedBy   User            @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([requestId])
+}
+
+// F-10: comments on a request (BR-24, BR-25). Rows are only added, never changed by the application.
+model Comment {
+  id        Int             @id @default(autoincrement())
+  requestId Int
+  authorId  Int
+  text      String
+  createdAt DateTime        @default(now())
+  request   PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  author    User            @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
   @@index([requestId])
 }
