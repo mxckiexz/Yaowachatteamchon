@@ -1,6 +1,6 @@
 # Feature contract F-08: Dashboard request counts
 
-Contract version 1.1, 27 November 2026. This is a contract-only proposal for review before implementation. It tracks Issue #55 and implements FR-18.
+Contract version 1.2, 27 November 2026. This is a contract-only proposal for review before implementation. It tracks Issue #55 and implements FR-18.
 
 Linked requirements: FR-18, BR-12, NFR-01, NFR-02, NFR-05, NFR-07 and NFR-10. Depends on F-04 for the existing visibility rules and F-07 for the list/filter navigation. No database migration is proposed.
 
@@ -10,6 +10,7 @@ Linked requirements: FR-18, BR-12, NFR-01, NFR-02, NFR-05, NFR-07 and NFR-10. De
 |---|---|---|
 | 1.0 | 27 November 2026 | Initial F-08 dashboard contract proposed for review. |
 | 1.1 | 27 November 2026 | Replaced the approver scope with My requests plus Waiting for review; added exact links, count/list consistency, loading/error/retry, navigation, state-change and no-request checks, and traceability requirements. |
+| 1.2 | 27 November 2026 | Clarified the approver response and cards, made the no-waiting test deterministic, and added F-08 to the BR/NFR traceability rows. |
 
 ## 1. Feature design
 
@@ -84,7 +85,7 @@ No schema change or migration is needed. The route aggregates the existing `Purc
 | AC-104 | Every existing status is present with a numeric count, including zero. |
 | AC-105 | Anonymous access returns 401 without counts or request data. |
 | AC-106 | The endpoint returns aggregate counts only and never serializes request rows or hidden fields. |
-| AC-107 | The dashboard shows five labelled cards and links each card to the role-appropriate request list. |
+| AC-107 | The dashboard shows five labelled cards for requester and administrator, and an approver sees those five My requests cards plus a labelled Waiting for review card; every card links to the role-appropriate list. |
 | AC-108 | The dashboard is usable by keyboard and has no axe violations in its status cards and navigation. |
 | AC-109 | At 375, 768 and 1280 px the page has no horizontal document overflow and all cards remain readable. |
 | AC-110 | Loading, success and error states are announced through a mounted polite status region. |
@@ -92,7 +93,7 @@ No schema change or migration is needed. The route aggregates the existing `Purc
 | AC-112 | For every role and every card, the displayed number equals the number of rows in the list opened by that card's exact link. |
 | AC-113 | While loading, cards show a loading state rather than `0`; on failure they show the exact message `Unable to load dashboard counts.` and a `Retry` control. A successful retry replaces the error with the counts and announces success. |
 | AC-114 | The Dashboard link is visible for requester, approver and administrator; login landing paths remain unchanged, and an anonymous `/dashboard` visit redirects to `/login`. |
-| AC-115 | A new user with no requests receives five zero counts; an approver with no waiting requests receives `reviewWaiting: 0`. |
+| AC-115 | A new user with no requests receives five zero counts. For an approver, `reviewWaiting` equals the database count of other users' SUBMITTED requests; when the controlled fixture contains none, it is `0`. |
 | AC-116 | After submit, approve, reject or cancel, the corresponding source and destination counts change consistently with the list data. |
 
 ## 6. Software test specification
@@ -105,7 +106,7 @@ No schema change or migration is needed. The route aggregates the existing `Purc
 | TEST-135 | AC-103 | API integration | Record a baseline, seed known rows, then compare the response with a Prisma `groupBy` over all requests | Administrator counts exactly equal the database `groupBy` totals for every status. |
 | TEST-136 | AC-104 | API integration | Dataset has at least one zero-count status | Response contains every status key with numeric values. |
 | TEST-137 | AC-105 | API integration | Call without a session | 401 with no counts or request data. |
-| TEST-138 | AC-106 | API integration | Inspect the dashboard response body | Only the counts object is present; no request rows or hidden fields are returned. |
+| TEST-138 | AC-106 | API integration | Inspect requester, approver and administrator response bodies | Requester and administrator bodies contain only `counts`; the approver body contains only `counts` and `reviewWaiting`; no rows or other fields are returned. |
 | TEST-139 | AC-107 | Browser end to end | Open dashboard as requester, approver and administrator | Requester/admin see five labelled cards; approver sees My requests plus Waiting for review with the correct links. |
 | TEST-140 | AC-108 | Browser accessibility | Navigate with keyboard and run axe on dashboard cards/navigation | Focus order is usable and axe reports no violations. |
 | TEST-141 | AC-109 | Browser responsive | Open dashboard at 375, 768 and 1280 px | No horizontal document overflow; cards remain readable. |
@@ -113,7 +114,7 @@ No schema change or migration is needed. The route aggregates the existing `Purc
 | TEST-143 | AC-111 | Browser end to end | Use a zero-count card and open its list link | The card shows `0`; the linked list opens with the correct role scope. |
 | TEST-144 | AC-112 | Browser/API cross-check | Seed known rows, read cards and open every card link | Each card number equals the number of rows in its linked list. |
 | TEST-145 | AC-114 | Browser end to end | Check login landing, Dashboard navigation and anonymous `/dashboard` | Landing paths remain unchanged; Dashboard link is present for all roles; anonymous users reach login. |
-| TEST-146 | AC-115 | API/browser integration | Use a new requester and an approver with no waiting rows | Five counts and `reviewWaiting` are all `0` where applicable. |
+| TEST-146 | AC-115 | API/browser integration | Use a new requester; for the approver, seed or clear a controlled fixture so no other user's request is SUBMITTED, then compare with a database count | The new requester's five counts are `0`; the approver's own counts are `0`; `reviewWaiting` is exactly the database count and is `0` for the empty fixture. |
 | TEST-147 | AC-116 | API integration | Submit, approve, reject and cancel controlled requests | Counts move from the old status to the new status exactly once. |
 
 ## 7. Definition of Done
