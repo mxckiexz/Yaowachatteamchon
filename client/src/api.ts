@@ -131,3 +131,16 @@ export const cancelRequest = (id: number) =>
 export const listUsers = () => api<{ users: AdminUser[] }>("/admin/users");
 export const updateUser = (id: number, patch: { isActive?: boolean; role?: Role }) =>
   api<{ user: AdminUser }>(`/admin/users/${id}`, { method: "PATCH", body: patch });
+
+export interface DashboardCounts {
+  DRAFT: number;
+  SUBMITTED: number;
+  APPROVED: number;
+  REJECTED: number;
+  CANCELLED: number;
+}
+export interface DashboardResponse {
+  counts: DashboardCounts;
+  reviewWaiting?: number;
+}
+export const getDashboard = () => api<DashboardResponse>("/dashboard");

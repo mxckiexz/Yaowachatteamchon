@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.7. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08, F-09 and F-10 remain planned pending implementation.
+Version 2.8. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 is executed at commit `fc0189f`; F-08 is implemented on this branch and its results are recorded in the Sprint 2 results file. F-09 and F-10 remain planned pending implementation.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -57,7 +57,7 @@ Version 2.7. Requirement, feature or responsibility, sprint, acceptance criteria
 | BR-23 | F-09 | 2 | AC-124 to AC-127, AC-132, AC-137 | TEST-155 to 158, 163, 168 |
 | BR-24 | F-10 | 2 | AC-141 to AC-146 | TEST-172 to TEST-177 |
 | BR-25 | F-10 | 2 | AC-152, AC-153 | TEST-183, 184 |
-| NFR-01 | F-01, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-84, AC-105, AC-113, AC-114, AC-126, AC-127, AC-146 to AC-148 | TEST-12, 39, 53, 58, 62, 101, 116, 137, 142, 145, 157, 158, 177 to 179 |
+| NFR-01 | F-01, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-84, AC-105, AC-114, AC-126, AC-127, AC-146 to AC-148 | TEST-12, 39, 53, 58, 62, 101, 116, 137, 145, 157, 158, 177 to 179 |
 | NFR-02 | F-04, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-35, AC-70, AC-73, AC-80, AC-84, AC-102, AC-103, AC-106, AC-112, AC-126, AC-129, AC-131, AC-147, AC-149, AC-150 | TEST-55, 56, 103, 104, 112, 116, 134, 135, 138, 144, 157, 160, 162, 178, 180, 181 |
 | NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |
 | NFR-04 | R-02, F-07, F-09, F-10 | 1, 2 | AC-10, AC-14, AC-48, AC-83, AC-119 to AC-122, AC-144 | TEST-14, 18 to 21, 83, 115, 150 to 153, 175 |
@@ -73,4 +73,4 @@ Version 2.7. Requirement, feature or responsibility, sprint, acceptance criteria
 
 ## Uncovered requirements
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 contract AC-100 to AC-116 and TEST-132 to TEST-147 are approved; implementation has not started. F-09 contract AC-117 to AC-140 and TEST-148 to TEST-171 are approved; implementation has not started. F-10 contract AC-141 to AC-159 and TEST-172 to TEST-190 are planned pending contract review. F-11 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 contract AC-117 to AC-140 and TEST-148 to TEST-171 are approved; implementation has not started. F-10 contract AC-141 to AC-159 and TEST-172 to TEST-190 are planned pending contract review. F-11 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.

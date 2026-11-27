@@ -7,6 +7,7 @@ import NewRequest from "./NewRequest";
 import RequestDetail from "./RequestDetail";
 import RequestList from "./RequestList";
 import { homePath } from "./routes";
+import Dashboard from "./Dashboard";
 
 function Fallback() {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/requests"
             element={
