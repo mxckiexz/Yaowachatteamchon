@@ -1,2 +1,13 @@
 Command: npx playwright test e2e/requests/dashboard.spec.ts
-Result in this local checkout: the web-server-backed run was started but did not complete successfully because the local browser environment did not reach the seeded application within the test timeout. No passing browser result is claimed here; rerun against the deployed or fully started local app before merge and replace this file with the complete terminal output.
+Environment: local web servers, seeded temporary PostgreSQL database, Chromium.
+
+Running 7 tests using 1 worker
+  ✓ TEST-139 / AC-107: role-specific dashboard cards and groups (2.6s)
+  ✓ TEST-140 / AC-108: dashboard is keyboard accessible and has no serious axe violations (1.7s)
+  ✓ TEST-141 / AC-109: dashboard has no horizontal document overflow (1.2s)
+  ✓ TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact message (1.4s)
+  ✓ TEST-143 / AC-111: zero cards remain visible as zero with a scoped link (959ms)
+  ✓ TEST-144 / AC-112: card counts equal rows in each linked list for every role (4.5s)
+  ✓ TEST-145 / AC-114: dashboard navigation and anonymous redirect (2.3s)
+
+7 passed (21.9s)

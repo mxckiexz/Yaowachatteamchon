@@ -82,22 +82,47 @@ describe("F-08 dashboard", () => {
 
   it("TEST-146 / AC-115: a new requester starts with five zero counts", async () => {
     const fresh = "f08-fresh@test.local";
+    const freshApprover = "f08-fresh-approver@test.local";
     await createUser(fresh, { name: "F08 fresh" });
+    await createUser(freshApprover, { role: "APPROVER", name: "F08 fresh approver" });
     const response = await (await loginAgent(fresh)).get("/api/dashboard").expect(200);
     expect(response.body.counts).toEqual({ DRAFT: 0, SUBMITTED: 0, APPROVED: 0, REJECTED: 0, CANCELLED: 0 });
-    await cleanupUsers([fresh]);
+    const freshApproverId = (await getPrisma().user.findUniqueOrThrow({ where: { email: freshApprover } })).id;
+    const expectedWaiting = await getPrisma().purchaseRequest.count({ where: { status: "SUBMITTED", requesterId: { not: freshApproverId } } });
+    const approverResponse = await (await loginAgent(freshApprover)).get("/api/dashboard").expect(200);
+    expect(approverResponse.body.counts).toEqual({ DRAFT: 0, SUBMITTED: 0, APPROVED: 0, REJECTED: 0, CANCELLED: 0 });
+    expect(approverResponse.body.reviewWaiting).toBe(expectedWaiting);
+    await cleanupUsers([fresh, freshApprover]);
   });
 
   it("TEST-147 / AC-116: status transitions move dashboard counts", async () => {
     const owner = await loginAgent(OWNER);
     const approver = await loginAgent(APPROVER);
-    const draft = await createDraft(owner, { itemName: "F08 transition" });
-    expect((await owner.get("/api/dashboard")).body.counts.DRAFT).toBeGreaterThan(0);
+    const beforeSubmit = (await owner.get("/api/dashboard")).body.counts;
+    const draft = await createDraft(owner, { itemName: "F08 transition submit" });
+    const afterCreate = (await owner.get("/api/dashboard")).body.counts;
+    expect(afterCreate.DRAFT).toBe(beforeSubmit.DRAFT + 1);
     await owner.post(`/api/requests/${draft.id}/submit`).set("Origin", ORIGIN).send({}).expect(200);
-    expect((await owner.get("/api/dashboard")).body.counts.SUBMITTED).toBeGreaterThan(0);
+    const afterSubmit = (await owner.get("/api/dashboard")).body.counts;
+    expect(afterSubmit.DRAFT).toBe(afterCreate.DRAFT - 1);
+    expect(afterSubmit.SUBMITTED).toBe(afterCreate.SUBMITTED + 1);
     await approver.post(`/api/requests/${draft.id}/approve`).set("Origin", ORIGIN).send({ comment: "F08 approval" }).expect(200);
     const afterApprove = (await owner.get("/api/dashboard")).body.counts;
-    expect(afterApprove.APPROVED).toBeGreaterThan(0);
-    expect(afterApprove.SUBMITTED).toBeGreaterThanOrEqual(0);
+    expect(afterApprove.SUBMITTED).toBe(afterSubmit.SUBMITTED - 1);
+    expect(afterApprove.APPROVED).toBe(afterSubmit.APPROVED + 1);
+
+    const rejectRequest = await createSubmitted(owner, { itemName: "F08 transition reject" });
+    const beforeReject = (await owner.get("/api/dashboard")).body.counts;
+    await approver.post(`/api/requests/${rejectRequest.id}/reject`).set("Origin", ORIGIN).send({ reason: "Not needed" }).expect(200);
+    const afterReject = (await owner.get("/api/dashboard")).body.counts;
+    expect(afterReject.SUBMITTED).toBe(beforeReject.SUBMITTED - 1);
+    expect(afterReject.REJECTED).toBe(beforeReject.REJECTED + 1);
+
+    const cancelRequest = await createSubmitted(owner, { itemName: "F08 transition cancel" });
+    const beforeCancel = (await owner.get("/api/dashboard")).body.counts;
+    await owner.post(`/api/requests/${cancelRequest.id}/cancel`).set("Origin", ORIGIN).send({}).expect(200);
+    const afterCancel = (await owner.get("/api/dashboard")).body.counts;
+    expect(afterCancel.SUBMITTED).toBe(beforeCancel.SUBMITTED - 1);
+    expect(afterCancel.CANCELLED).toBe(beforeCancel.CANCELLED + 1);
   });
 });

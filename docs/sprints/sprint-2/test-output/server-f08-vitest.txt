@@ -1,6 +1,11 @@
 Command: npm test -- --run tests/f08-dashboard.test.ts
 Environment: temporary PostgreSQL database; Windows 11; Node.js 22.14.0; PostgreSQL 16.16.
 
-Test Files  1 passed (1)
-Tests  9 passed (9)
-Result: server F-08 tests passed.
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f08-dashboard.test.ts
+
+ RUN  v2.1.9
+ ✓ tests/f08-dashboard.test.ts (9 tests) 7537ms
+ Test Files  1 passed (1)
+ Tests  9 passed (9)
+ Result: server F-08 tests passed.

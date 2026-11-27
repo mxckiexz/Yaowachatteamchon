@@ -1,3 +1,5 @@
-F-08 red evidence
+F-08 red evidence against the pre-implementation staging code
 
-The dashboard tests were authored before the dashboard route and UI were available. The pre-implementation run must be repeated in a staging worktree before merge; this file is intentionally marked as pending rather than claiming a result that was not captured in this checkout.
+Command: npm test -- --run tests/f08-dashboard.test.ts
+Baseline: staging before the F-08 implementation.
+Result: 9 failed, 0 passed. Each failure was an expected missing `/api/dashboard` route or dashboard behavior. The same test file passed 9/9 after implementation.
