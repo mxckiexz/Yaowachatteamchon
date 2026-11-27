@@ -151,3 +151,16 @@ export const deleteAttachment = (requestId: number, attachmentId: number) =>
   api<void>(`/requests/${requestId}/attachments/${attachmentId}`, { method: "DELETE" });
 export const uploadAttachment = (requestId: number, file: File) =>
   api<{ attachment: Attachment }>(`/requests/${requestId}/attachments`, { method: "POST", file });
+
+export interface DashboardCounts {
+  DRAFT: number;
+  SUBMITTED: number;
+  APPROVED: number;
+  REJECTED: number;
+  CANCELLED: number;
+}
+export interface DashboardResponse {
+  counts: DashboardCounts;
+  reviewWaiting?: number;
+}
+export const getDashboard = () => api<DashboardResponse>("/dashboard");

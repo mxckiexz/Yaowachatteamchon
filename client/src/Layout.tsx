@@ -23,6 +23,7 @@ export default function Layout() {
           {user.role === "APPROVER" && <Link className="nav-link" to="/reviews">Review queue</Link>}
           {user.role === "ADMIN" && <Link className="nav-link" to="/all-requests">All requests</Link>}
           {user.role === "ADMIN" && <Link className="nav-link" to="/admin/users">Users</Link>}
+          <Link className="nav-link" to="/dashboard">Dashboard</Link>
         </div>
         <span className="navbar-text me-3" data-testid="current-user">
           {user.name} ({ROLE_LABEL[user.role]})

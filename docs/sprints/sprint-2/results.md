@@ -47,6 +47,27 @@ Implementation and coverage commit: `fc0189f` (27 November 2026). The server F-0
 | Server F-07 | 18 passed, 0 failed |
 | Browser F-07 | 8 passed, 0 failed |
 
+## F-08 dashboard counts
+
+Implementation and acceptance-coverage commit: `03ba1fc`. The endpoint returns role-scoped counts only; approvers also receive `reviewWaiting`. The dashboard cards link to the corresponding filtered list, and the client tests and browser checks cover the role explanations, labels, loading/error/retry states, responsive layout and anonymous redirect.
+
+| AC | Implementation | Test | Actual result | Commit |
+|---|---|---|---|---|
+| AC-100 to AC-106 | `GET /api/dashboard` role scope and response shape | TEST-132 to TEST-138 | Requester own counts, approver own plus exact review count, administrator all counts, ignored unknown parameters, numeric status keys and no data leakage passed | `03ba1fc` |
+| AC-107 to AC-111 | Dashboard cards, labelled status badges, role explanation and loading/error states | TEST-139 to TEST-143, CT-08 to CT-10 | Component and browser checks cover role groups, keyboard access, responsive widths, exact error announcement, retry and zero-state cards | `03ba1fc` |
+| AC-112 | Card count equals linked list rows for requester, approver and administrator | TEST-144 | Browser check compares all six approver cards (including review queue) and every other role card with its filtered list | `03ba1fc` |
+| AC-113 to AC-116 | Live success/failure announcement, navigation and state transitions | TEST-142, TEST-145, TEST-146, TEST-147 | Retry announcement, anonymous redirect and unchanged landing paths for all roles, fresh requester/approver counts, and exact submit/approve/reject/cancel count movement passed | `03ba1fc` |
+
+### F-08 suite totals
+
+| Suite | Result |
+|---|---|
+| Server F-08 | 9 passed, 0 failed |
+| Client | 17 passed, 0 failed |
+| Build and type check | passed |
+| Browser F-08 | 7 passed, 0 failed; raw terminal output in `test-output/browser-f08-playwright.txt` |
+| Full Playwright suite | 30 passed, 0 failed; raw terminal output in `test-output/browser-f08-playwright.txt` |
+
 ## F-09 attachments
 
 Branch `feature/F-09-attachments`, 27 November 2026, run before review. Implementation commit: `bf1c4ee`. The suites below ran on the files of this commit before it was created. Contract: `F-09-attachments.md` v1.0. Environment: Apple M2, 8 GB RAM, macOS 26.6, Node.js v24.19.0, PostgreSQL 16.15, a separate local test database.
