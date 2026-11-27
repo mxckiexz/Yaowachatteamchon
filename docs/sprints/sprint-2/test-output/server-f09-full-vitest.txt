@@ -1,0 +1,177 @@
+Environment: Apple M2, 8 GB RAM, macOS 26.6, Node.js v24.19.0, PostgreSQL 16.15
+Command: npx vitest run --reporter=verbose
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow-f09/server
+
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-148 / AC-117: the owner uploads a PDF to a draft
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-149 / AC-118: PNG, JPEG and upper-case extensions are accepted
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-150 / AC-119: other types and mismatched content are refused
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-151 / AC-120: the size limit is 5,242,880 bytes
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-152 / AC-121: file name rules
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-153 / AC-122: only application/octet-stream is accepted
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-154 / AC-123: at most 5 files, also with simultaneous uploads
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-155 / AC-124: nothing changes on a request that is not a draft 546ms
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-156 / AC-125: a change that waits behind a submit is refused
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-157 / AC-126: only the owner can add or remove 1395ms
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-158 / AC-127: anonymous calls and foreign origins are refused
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-159 / AC-128: the list has only the attachment fields, oldest first
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-160 / AC-129: reading follows request visibility
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-161 / AC-130: a download returns the same bytes with safe headers
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-162 / AC-131: an attachment id works only under its own request
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-163 / AC-132: the owner deletes a file of a draft
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-164 / AC-133: server-owned fields cannot be set and names stay text
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-165 / AC-134: files stay through the request lifecycle and a new session 532ms
+ ✓ tests/f09/attachments.test.ts > F-09 attachments API > TEST-166 / AC-135: files change no status or history and do not affect submit
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-106 / AC-74: keeps the default mine list 538ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-107 / AC-75: filters each valid status 471ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-108 / AC-76: filters each valid category 488ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-109 / AC-77: searches request number, item name, description and reason 472ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-110 / AC-78: combines filters with AND 461ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-111 / AC-79: clear-equivalent empty filters return the complete list 456ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-112 / AC-80: all roles keep their visibility scope 1835ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-114 / AC-82: administrator can filter all requests 1372ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-116 / AC-84: anonymous and unauthorized scopes return no data 898ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-117 / AC-85: hidden rows never appear in the payload 907ms
+stdout | tests/f07/search-filter.test.ts > F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows
+{"test":"TEST-118","rows":200,"warmup":1,"calls":20,"medianMs":7.010395499999504,"p95Ms":7.987708000000566,"maxMs":9.329207999999198,"durationsMs":[6.607791000000361,6.67266600000039,6.754666000000725,6.7792499999995925,6.790875000000597,6.865790999998353,6.866125000000466,6.906291999999667,7.008708999999726,7.00945800000045,7.011332999998558,7.043833000001541,7.261500000000524,7.298084000000017,7.301625000000058,7.308875000000626,7.3449170000003505,7.392540999999255,7.987708000000566,9.329207999999198]}
+
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-118 / AC-86: measures 20 unfiltered calls over 200 rows 624ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-124 / AC-92: searches every literal metacharacter 506ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-113 / AC-81: review filtering returns other users submitted rows and narrows by text 948ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-115 / AC-83: rejects invalid scope, status and category with field errors 454ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-125 / AC-93: handles repeated, lower-case and empty parameters 459ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-126 / AC-94: accepts 100 characters and rejects 101 457ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-127 / AC-95: NULL category and reason are safe to filter 487ms
+ ✓ tests/f07/search-filter.test.ts > F-07 search and filter > TEST-128 / AC-96: review status filtering returns an empty list for APPROVED 460ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-16 / AC-13: creates a DRAFT with a request number; the server calculates the total and ignores a client total 501ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-18 / AC-14: item name and description rules; nothing is stored on failure 472ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-19 / AC-14: quantity boundaries (0, 1001, 1.5, -1 and text fail; 1 and 1000 pass) 469ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-20 / AC-14: unit price boundaries (0, -1, 10.505, 1000000.01 fail; 0.01 and 1000000 pass) 471ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-21 / AC-14: the category must be one of the list and the reason has a length limit 483ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-22 / AC-15: 20 simultaneous creates get 20 different request numbers 503ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-31 / AC-22: the administrator cannot create a request 456ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 create > TEST-32 / AC-22: an approver can create a request of their own 461ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-23 / AC-16: the owner edits a DRAFT; the total is recalculated and the number stays 483ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-24 / AC-17: only a DRAFT can be edited (SUBMITTED, APPROVED, REJECTED, CANCELLED are refused) 470ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 edit > TEST-25 / AC-17: someone who is not the owner (requester, approver, administrator) gets 404 1822ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-26 / AC-18: the owner submits a complete DRAFT 464ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-27 / AC-19: a draft without a reason or a category cannot be submitted (INCOMPLETE) 493ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-28 / AC-20: submitting a request that is not a DRAFT gives 409 and changes nothing 461ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-29 / AC-20: someone who is not the owner gets 404 when submitting 1511ms
+ ✓ tests/f02/create-edit-submit.test.ts > F-02 submit > TEST-30 / AC-21: editing and submitting one user's request leaves another user's request untouched 925ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-51 / AC-33: a user lists only their own requests, newest first 995ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-52 / AC-34: the review queue holds only submitted requests of others, oldest first 1848ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-53 / AC-34: a requester and the administrator get 403 and no data from the review queue 891ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 lists > TEST-58 / AC-37: only the administrator can list all requests, and can read any of them 2255ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-54 / AC-35: the owner sees every field, the rejection reason and the history in order 1319ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-55 / AC-35: an approver can open a submitted request but not another user's draft 928ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-56 / AC-35: another requester gets 404 and no request data 1066ms
+ ✓ tests/f04/lists-detail-history.test.ts > F-04 detail and history > TEST-57 / AC-36: the history endpoint has the same visibility and order as the detail 1421ms
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-80 / AC-45: SQL metacharacters never log anyone in, never cause a 500, and are stored unchanged 4170ms
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-81 / AC-46: fields owned by the server cannot be set by the client 1426ms
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-82 / AC-47: forged session cookies get 401 on protected routes and never a 500
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-83 / AC-48: an oversized body gives 413 and a JSON error without a stack 450ms
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-84 / AC-49: the session cookie is HttpOnly, SameSite=Lax, Path=/ and lasts 8 hours 449ms
+ ✓ tests/q/security.test.ts > NFR-09 input is data (penetration-style checks, automated) > TEST-85 / AC-50: no technology header, and the basic protective headers are sent
+ ✓ tests/q/security.test.ts > AC-51 data side: HTML in text is stored as typed > returns HTML text unchanged from the API (the UI escapes it, see TEST-86) 915ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-93 / AC-58: the owner cancels a draft 508ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-94 / AC-59: the owner cancels a submitted request 462ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-95 / AC-60, AC-61: cancellation keeps data and appends one history row 466ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-96 / AC-62, AC-63: non-owners receive 404 1793ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-97 / AC-64: terminal requests cannot be cancelled 490ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-98 / AC-65: concurrent cancels produce one transition 478ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-99 / AC-66: a decision racing with cancel produces one transition 913ms
+stderr | tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update
+Error: forced history failure
+    at Object.failingHistory.create (/Users/aphisamai/Downloads/buyflow-f09/server/tests/f06/cancel-request.test.ts:102:53)
+    at /Users/aphisamai/Downloads/buyflow-f09/server/src/requestRoutes.ts:236:33
+    at Proxy._transactionWithCallback (/Users/aphisamai/Downloads/buyflow-f09/server/node_modules/@prisma/client/runtime/library.js:130:8000)
+
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-100 / AC-67: a history failure rolls back the status update 527ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-101 / AC-68: nonnumeric id is 404 and anonymous request with the correct origin is 401 449ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-102 / AC-69: a foreign origin is refused 451ms
+ ✓ tests/f06/cancel-request.test.ts > F-06 cancel request > TEST-103 / AC-70: cancellation blocks later actions and leaves the owner-visible request 922ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-36 / AC-24: an approver approves a submitted request and one history row is written 978ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-37 / AC-25: an approver rejects with a reason; the reason is stored in the request and in the history 910ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-38 / AC-25: a rejection needs a reason of at least 5 characters 926ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-39 / AC-26: a requester and the administrator cannot approve or reject 1348ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-40 / AC-27: an approver cannot approve or reject their own request 460ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-41 / AC-28: any other approver can decide a submitted request (there is no assignment) 912ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-42 / AC-29: a decided request cannot be decided again 905ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-43 / AC-29: the draft of another user is not found 1353ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-44 / AC-29: a CANCELLED request cannot be decided 901ms
+ ✓ tests/f03/approve-reject.test.ts > F-03 approve and reject > TEST-45 / AC-30: two simultaneous decisions produce exactly one decision 1358ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-01 / AC-01: correct credentials return the user and an HttpOnly cookie, no hash 476ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-02 / AC-02: a wrong password gives 401 with the standard message 446ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-03 / AC-02: an unknown e-mail gives exactly the same response as a wrong password 885ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-04 / AC-03: me returns the current user for a valid session 455ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-05 / AC-03: me without a session gives 401
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-06 / AC-04: logout destroys the session and is idempotent 461ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-07 / AC-05: an expired session gives 401 451ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-10 / AC-07: a deactivated user cannot log in 441ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-11 / AC-07: the session of a user who is deactivated afterwards stops working at once 450ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-13 / AC-09: a state-changing request with a foreign Origin is rejected and the session survives 445ms
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-14 / AC-10: malformed JSON gives 400 and no stack trace
+ ✓ tests/f01/auth.test.ts > F-01 authentication > TEST-15 / AC-11: health is public
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-61 / AC-39: the administrator lists users without any password hash 490ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-62 / AC-39: a requester and an approver get 403 and no data, and cannot change a user 902ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-63 / AC-40: after the administrator deactivates a user, they cannot log in and their session stops at once 1345ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-64 / AC-41: the administrator reactivates a user, who can then log in 889ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-65 / AC-41: the role can be changed to a valid value; invalid values and an empty body give 422 469ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-66 / AC-42: the administrator cannot change their own account 453ms
+ ✓ tests/f05/admin-users.test.ts > F-05 administrator, user management > TEST-67 / AC-43: an unknown id gives 404 and an invalid body gives 422 456ms
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > creates the accounts when they are missing 905ms
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > with overwrite off, a second run keeps a changed role, a deactivation and a changed password 449ms
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > with overwrite on (local development), a rerun resets role, status and password 883ms
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > overwrite follows NODE_ENV by default: off in production, on elsewhere
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > seeds the administrator with its own password and skips the other accounts when there is no demo password 904ms
+ ✓ tests/deploy/seedSafety.test.ts > seed does not destroy data on a later run (production rule) > gives the administrator a different password from the demo accounts when both are set 2237ms
+ ✓ tests/f02/money-validation.unit.test.ts > F-02 money helpers (unit) > TEST-17 / AC-13: the total is the exact product in satang (0.1 baht x 3 = 30 satang)
+ ✓ tests/f02/money-validation.unit.test.ts > F-02 money helpers (unit) > TEST-33 / AC-13, AC-14: bahtToSatang accepts numbers and numeric strings with at most 2 decimals
+ ✓ tests/f02/money-validation.unit.test.ts > F-02 validation (unit) > TEST-34 / AC-14: accepts exactly the valid boundaries and names every invalid field
+ ✓ tests/f02/money-validation.unit.test.ts > F-02 validation (unit) > trims text, treats an empty category as none, and never reads a total sent by the client
+ ✓ tests/deploy/seedPassword.test.ts > seed password guard > allows the local demo password outside production
+ ✓ tests/deploy/seedPassword.test.ts > seed password guard > refuses the published example password in production
+ ✓ tests/deploy/seedPassword.test.ts > seed password guard > refuses a short password in production
+ ✓ tests/deploy/seedPassword.test.ts > seed password guard > accepts a long non-example password in production
+ ✓ tests/deploy/seedPassword.test.ts > seed password guard > never puts the password in the error message
+ ✓ tests/deploy/seedPassword.test.ts > which environment variables hold the seed passwords (managed environment names) > uses SEED_DEFAULT_PASSWORD for every account when it is the only one set
+ ✓ tests/deploy/seedPassword.test.ts > which environment variables hold the seed passwords (managed environment names) > uses DEMO_USER_PASSWORD for the demo accounts and ADMIN_PASSWORD for the administrator
+ ✓ tests/deploy/seedPassword.test.ts > which environment variables hold the seed passwords (managed environment names) > SEED_DEFAULT_PASSWORD wins over DEMO_USER_PASSWORD for the demo accounts
+ ✓ tests/deploy/seedPassword.test.ts > which environment variables hold the seed passwords (managed environment names) > never gives the administrator password to the demo accounts: with only ADMIN_PASSWORD, no demo accounts are seeded
+ ✓ tests/deploy/seedPassword.test.ts > which environment variables hold the seed passwords (managed environment names) > fails with the variable names, and without any value, when no password is set
+stdout | tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms
+TEST-89 measured median 6.9 ms, max 17.6 ms over 20 calls, 200 requests
+
+ ✓ tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-89 / AC-54: the list of 200 requests has a median response time under 500 ms 777ms
+stdout | tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored
+TEST-90 70 simultaneous calls finished in 59 ms
+
+ ✓ tests/q/performance.test.ts > NFR-12 early smoke checks (this is not a load test) > TEST-90 / AC-55: 50 simultaneous list calls and 20 simultaneous creates all succeed and exactly 20 are stored 503ms
+ ✓ tests/q/regression.test.ts > Regression: one journey through the features > TEST-91 / AC-56: create, edit, submit, list, queue, approve, detail, second decision refused, outsider refused, administrator reads 1885ms
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > serves index.html at /
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > serves a client route (/requests/5) as index.html so a page reload works
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > serves a built asset, cached for a long time because its name carries a hash
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > never serves index.html for an unknown /api path: a JSON 404 instead
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > keeps API routes defined before it working
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > does not let a path escape the site folder
+ ✓ tests/deploy/staticSite.test.ts > serving the built client from the API container > does not answer POST with the page
+ ✓ tests/deploy/ready.test.ts > deployment readiness route > GET /api/ready proves the database answers and reveals nothing else
+ ✓ tests/deploy/ready.test.ts > deployment readiness route > GET /api/ready needs no login and no origin header
+ ✓ tests/deploy/ready.test.ts > deployment readiness route > GET /api/ready returns 503 and { status: not_ready } when the database query fails, without leaking the error
+ ✓ tests/deploy/ready.test.ts > deployment readiness route > GET /api/ready answers 200 again once the database is back
+ ✓ tests/f01/protected-routes.test.ts > NFR-01 anonymous access > TEST-12 / AC-08: every protected route returns 401 with no data when there is no session
+ ✓ tests/deploy/version.test.ts > GET /api/version shows which commit is running > returns the commit set at deploy time, with no login and no origin header
+ ✓ tests/deploy/version.test.ts > GET /api/version shows which commit is running > returns 'unknown' when no commit was set (local development)
+ ✓ tests/deploy/version.test.ts > GET /api/version shows which commit is running > never echoes a value that is not a commit SHA
+ ✓ tests/f01/password.test.ts > F-01 password handling > TEST-08 / AC-06: hashPassword produces a bcrypt hash (cost >= 10) that verifies only the right password 1377ms
+ ✓ tests/f01/password.test.ts > F-01 password handling > TEST-09 / AC-06: seeded users hold bcrypt hashes, never the plaintext password 479ms
+ ✓ tests/f09/attachment-rules.test.ts > F-09 attachment rules > TEST-152 / AC-121 (unit): the file name header is decoded, trimmed and checked
+ ✓ tests/f09/attachment-rules.test.ts > F-09 attachment rules > TEST-150 / AC-119 (unit): the content must match the extension
+ ✓ tests/f03/transitions.test.ts > F-03 status transitions (unit) > TEST-46 / AC-31: only DRAFT to SUBMITTED, SUBMITTED to APPROVED and SUBMITTED to REJECTED are allowed
+
+ Test Files  21 passed (21)
+      Tests  151 passed (151)
+   Start at  18:35:28
+   Duration  109.12s (transform 267ms, setup 0ms, collect 2.60s, tests 102.53s, environment 3ms, prepare 950ms)
+

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
+import Attachments from "./Attachments";
 import { useAuth } from "./AuthContext";
 import { CATEGORY_LABEL, formatBaht, formatDateTime, StatusBadge } from "./format";
 import RequestForm from "./RequestForm";
@@ -87,6 +88,8 @@ export default function RequestDetail() {
       {canEdit && <SubmitPanel request={request} onDone={reload} />}
       {canCancel && <CancelPanel request={request} onDone={reload} />}
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
+
+      <Attachments requestId={request.id} canChange={canEdit} />
 
       <h2 className="h6 mt-4">History</h2>
       <ol className="list-unstyled" data-testid="history">

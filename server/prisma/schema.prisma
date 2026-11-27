@@ -48,6 +48,7 @@ model User {
   sessions       Session[]
   requests       PurchaseRequest[]
   historyEntries RequestHistory[]
+  attachments    Attachment[]
 }
 
 model Session {
@@ -77,6 +78,7 @@ model PurchaseRequest {
   decidedAt       DateTime?
   requester       User             @relation(fields: [requesterId], references: [id], onDelete: Restrict)
   history         RequestHistory[]
+  attachments     Attachment[]
 
   @@index([requesterId])
   @@index([status, submittedAt])
@@ -95,4 +97,20 @@ model RequestHistory {
   actor      User            @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
   @@index([requestId, createdAt])
+}
+
+// F-09: files on a request (BR-22, BR-23). Select "content" only for a download.
+model Attachment {
+  id           Int             @id @default(autoincrement())
+  requestId    Int
+  fileName     String
+  fileType     String
+  sizeBytes    Int
+  content      Bytes
+  uploadedById Int
+  createdAt    DateTime        @default(now())
+  request      PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  uploadedBy   User            @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([requestId])
 }
