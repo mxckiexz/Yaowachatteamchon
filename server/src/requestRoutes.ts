@@ -7,6 +7,7 @@ import { getPrisma } from "./prisma.js";
 import { HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
 import { validateRequestInput } from "./validation.js";
+import { visibilityWhere } from "./visibility.js";
 
 export const requestRouter = Router();
 
@@ -246,14 +247,6 @@ requestRouter.post(
     res.json({ request: serializeRequest(full) });
   })
 );
-
-// F-04: who may read a request (BR-12). The owner; an approver for every request that is not a draft;
-// the administrator for all. Everyone else gets "not found".
-function visibilityWhere(user: { id: number; role: string }) {
-  if (user.role === "ADMIN") return {};
-  if (user.role === "APPROVER") return { OR: [{ requesterId: user.id }, { status: { not: "DRAFT" as const } }] };
-  return { requesterId: user.id };
-}
 
 // F-04: lists. scope=mine (default), scope=review (approvers: submitted requests of others), scope=all (administrator).
 requestRouter.get(

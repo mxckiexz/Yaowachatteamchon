@@ -19,13 +19,17 @@ export class ApiError extends Error {
 }
 
 // All calls go to /api on the same origin (Vite proxies to the API in development).
-export async function api<T>(path: string, options: { method?: string; body?: unknown } = {}): Promise<T> {
-  const response = await fetch(`/api${path}`, {
-    method: options.method ?? "GET",
-    credentials: "include",
-    headers: options.body !== undefined ? { "Content-Type": "application/json" } : undefined,
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
-  });
+export async function api<T>(path: string, options: { method?: string; body?: unknown; file?: File } = {}): Promise<T> {
+  let headers: Record<string, string> | undefined;
+  let body: BodyInit | undefined;
+  if (options.file) {
+    headers = { "Content-Type": "application/octet-stream", "X-File-Name": encodeURIComponent(options.file.name) };
+    body = options.file;
+  } else if (options.body !== undefined) {
+    headers = { "Content-Type": "application/json" };
+    body = JSON.stringify(options.body);
+  }
+  const response = await fetch(`/api${path}`, { method: options.method ?? "GET", credentials: "include", headers, body });
   if (response.status === 204) return undefined as T;
   let data: any = null;
   try {
@@ -131,3 +135,19 @@ export const cancelRequest = (id: number) =>
 export const listUsers = () => api<{ users: AdminUser[] }>("/admin/users");
 export const updateUser = (id: number, patch: { isActive?: boolean; role?: Role }) =>
   api<{ user: AdminUser }>(`/admin/users/${id}`, { method: "PATCH", body: patch });
+
+// F-09: the file goes as the raw body and its name in a header, so the name is not part of a URL.
+export interface Attachment {
+  id: number;
+  fileName: string;
+  fileType: string;
+  sizeBytes: number;
+  uploadedBy: { id: number; name: string };
+  createdAt: string;
+}
+export const attachmentUrl = (requestId: number, attachmentId: number) => `/api/requests/${requestId}/attachments/${attachmentId}`;
+export const listAttachments = (requestId: number) => api<{ attachments: Attachment[] }>(`/requests/${requestId}/attachments`);
+export const deleteAttachment = (requestId: number, attachmentId: number) =>
+  api<void>(`/requests/${requestId}/attachments/${attachmentId}`, { method: "DELETE" });
+export const uploadAttachment = (requestId: number, file: File) =>
+  api<{ attachment: Attachment }>(`/requests/${requestId}/attachments`, { method: "POST", file });

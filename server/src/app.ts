@@ -15,6 +15,7 @@ import {
 } from "./auth.js";
 import { getPrisma } from "./prisma.js";
 import { adminRouter } from "./adminRoutes.js";
+import { attachmentRouter } from "./attachmentRoutes.js";
 import { requestRouter } from "./requestRoutes.js";
 import { serveBuiltClient } from "./staticSite.js";
 
@@ -101,6 +102,7 @@ app.get("/api/auth/me", requireAuth, (req: AuthedRequest, res) => {
 });
 
 app.use("/api", requestRouter);
+app.use("/api", attachmentRouter);
 app.use("/api", adminRouter);
 
 // Deployment: in the container STATIC_DIR points at the built client. Locally it is unset and Vite serves the client.
