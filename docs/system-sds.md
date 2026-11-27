@@ -83,6 +83,7 @@ Endpoint list (details are in the feature contracts):
 | `POST /api/requests`, `PATCH /api/requests/:id`, `POST /api/requests/:id/submit` | F-02 |
 | `POST /api/requests/:id/approve`, `POST /api/requests/:id/reject` | F-03 |
 | `GET /api/requests?scope=mine\|review\|all`, `GET /api/requests/:id`, `GET /api/requests/:id/history` | F-04 |
+| `GET /api/dashboard`, `/dashboard` | F-08 |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
