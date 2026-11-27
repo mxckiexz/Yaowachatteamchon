@@ -1,5 +1,185 @@
-F-08 red evidence against the pre-implementation staging code
 
-Command: npm test -- --run tests/f08-dashboard.test.ts
-Baseline: staging before the F-08 implementation.
-Result: 9 failed, 0 passed. Each failure was an expected missing `/api/dashboard` route or dashboard behavior. The same test file passed 9/9 after implementation.
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f08-dashboard.test.ts
+
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
+
+ ❯ tests/f08-dashboard.test.ts (9 tests | 9 failed) 6236ms
+   × F-08 dashboard > TEST-132 / AC-100: requester receives only own status counts 774ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-134 / AC-102: approver gets own counts and review waiting 1082ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-135 / AC-103: administrator counts match database groupBy 329ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-137 / AC-105: anonymous access returns 401 without data 4ms
+     → expected 401 "Unauthorized", got 404 "Not Found"
+   × F-08 dashboard > TEST-138 / AC-106: response contains counts only for requester 326ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-133 / AC-101: unknown query parameters cannot change scope 341ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-136 / AC-104: every status key is present and numeric 331ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-146 / AC-115: a new requester starts with five zero counts 975ms
+     → expected 200 "OK", got 404 "Not Found"
+   × F-08 dashboard > TEST-147 / AC-116: status transitions move dashboard counts 695ms
+     → Cannot read properties of undefined (reading 'DRAFT')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-132 / AC-100: requester receives only own status counts
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:31:56
+     29|     const own = await createDraft(owner, { itemName: "F08 own dashboar…
+     30|     await createDraft(await loginAgent(OTHER), { itemName: "F08 other …
+     31|     const response = await owner.get("/api/dashboard").expect(200);
+       |                                                        ^
+     32|     expect(response.body).toEqual({ counts: { DRAFT: 1, SUBMITTED: 0, …
+     33|     expect(own.id).toBeGreaterThan(0);
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-134 / AC-102: approver gets own counts and review waiting
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:42:59
+
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-135 / AC-103: administrator counts match database groupBy
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:52:56
+     50|     const grouped = await getPrisma().purchaseRequest.groupBy({ by: ["…
+     51|     const expected = Object.fromEntries(["DRAFT", "SUBMITTED", "APPROV…
+     52|     const response = await admin.get("/api/dashboard").expect(200);
+       |                                                        ^
+     53|     expect(response.body).toEqual({ counts: expected });
+     54|   });
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-137 / AC-105: anonymous access returns 401 without data
+Error: expected 401 "Unauthorized", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:57:85
+     55| 
+     56|   it("TEST-137 / AC-105: anonymous access returns 401 without data", a…
+     57|     const response = await request(app).get("/api/dashboard").set("Ori…
+       |                                                                                     ^
+     58|     expect(response.body).not.toHaveProperty("counts");
+     59|     expect(response.body).not.toHaveProperty("requests");
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-138 / AC-106: response contains counts only for requester
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:64:78
+     62|   it("TEST-138 / AC-106: response contains counts only for requester",…
+     63|     for (const [email, keys] of [[OWNER, ["counts"]], [ADMIN, ["counts…
+     64|       const response = await (await loginAgent(email)).get("/api/dashb…
+       |                                                                              ^
+     65|       expect(Object.keys(response.body).sort()).toEqual([...keys].sort…
+     66|       expect(response.body).not.toHaveProperty("requests");
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-133 / AC-101: unknown query parameters cannot change scope
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:72:53
+     70|   it("TEST-133 / AC-101: unknown query parameters cannot change scope"…
+     71|     const owner = await loginAgent(OWNER);
+     72|     const plain = await owner.get("/api/dashboard").expect(200);
+       |                                                     ^
+     73|     const overridden = await owner.get("/api/dashboard?userId=999&role…
+     74|     expect(overridden.body).toEqual(plain.body);
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-136 / AC-104: every status key is present and numeric
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:78:76
+     76| 
+     77|   it("TEST-136 / AC-104: every status key is present and numeric", asy…
+     78|     const response = await (await loginAgent(OWNER)).get("/api/dashboa…
+       |                                                                            ^
+     79|     expect(Object.keys(response.body.counts).sort()).toEqual(["APPROVE…
+     80|     for (const value of Object.values(response.body.counts)) expect(ty…
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-146 / AC-115: a new requester starts with five zero counts
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ tests/f08-dashboard.test.ts:88:76
+     86|     await createUser(fresh, { name: "F08 fresh" });
+     87|     await createUser(freshApprover, { role: "APPROVER", name: "F08 fre…
+     88|     const response = await (await loginAgent(fresh)).get("/api/dashboa…
+       |                                                                            ^
+     89|     expect(response.body.counts).toEqual({ DRAFT: 0, SUBMITTED: 0, APP…
+     90|     const freshApproverId = (await getPrisma().user.findUniqueOrThrow(…
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:535:14
+ ❯ node_modules/supertest/lib/test.js:591:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:568:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:432:23
+ ❯ localAssert node_modules/supertest/lib/test.js:382:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:126:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  tests/f08-dashboard.test.ts > F-08 dashboard > TEST-147 / AC-116: status transitions move dashboard counts
+TypeError: Cannot read properties of undefined (reading 'DRAFT')
+ ❯ tests/f08-dashboard.test.ts:104:24
+    102|     const draft = await createDraft(owner, { itemName: "F08 transition…
+    103|     const afterCreate = (await owner.get("/api/dashboard")).body.count…
+    104|     expect(afterCreate.DRAFT).toBe(beforeSubmit.DRAFT + 1);
+       |                        ^
+    105|     await owner.post(`/api/requests/${draft.id}/submit`).set("Origin",…
+    106|     const afterSubmit = (await owner.get("/api/dashboard")).body.count…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+ Test Files  1 failed (1)
+      Tests  9 failed (9)
+   Start at  21:57:39
+   Duration  7.14s (transform 172ms, setup 0ms, collect 610ms, tests 6.24s, environment 1ms, prepare 117ms)
+

@@ -1,13 +1,65 @@
-Command: npx playwright test e2e/requests/dashboard.spec.ts
-Environment: local web servers, seeded temporary PostgreSQL database, Chromium.
+[WebServer] (node:35328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:35688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:7256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:31944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
-Running 7 tests using 1 worker
-  ✓ TEST-139 / AC-107: role-specific dashboard cards and groups (2.6s)
-  ✓ TEST-140 / AC-108: dashboard is keyboard accessible and has no serious axe violations (1.7s)
-  ✓ TEST-141 / AC-109: dashboard has no horizontal document overflow (1.2s)
-  ✓ TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact message (1.4s)
-  ✓ TEST-143 / AC-111: zero cards remain visible as zero with a scoped link (959ms)
-  ✓ TEST-144 / AC-112: card counts equal rows in each linked list for every role (4.5s)
-  ✓ TEST-145 / AC-114: dashboard navigation and anonymous redirect (2.3s)
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
 
-7 passed (21.9s)
+Seeded demo accounts.
+
+Running 30 tests using 1 worker
+
+(node:5868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › e2e\admin\users.spec.ts:4:5 › TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected (3.8s)
+  ok  2 [chromium] › e2e\f01\login.spec.ts:4:5 › TEST-70 / AC-12: wrong login shows an error, correct login reaches the role's first screen, logout returns to login (1.9s)
+  ok  3 [chromium] › e2e\f01\login.spec.ts:24:5 › AC-12: an anonymous visit to a protected route is redirected to login (310ms)
+  ok  4 [chromium] › e2e\f01\login.spec.ts:29:5 › AC-12: an approver sees the review link and an administrator lands on the users screen (1.5s)
+axe login: 0 violations
+axe login with error: 0 violations
+axe my requests: 0 violations
+axe new request: 0 violations
+axe new request with errors: 0 violations
+axe draft detail with edit and submit: 0 violations
+axe submitted detail: 0 violations
+axe review queue: 0 violations
+axe decision panel (reject): 0 violations
+axe administrator users: 0 violations
+axe administrator all requests: 0 violations
+  ok  5 [chromium] › e2e\quality\accessibility.spec.ts:26:5 › TEST-87 / AC-52: the main screens of the three roles have no serious or critical accessibility violations (9.6s)
+  ok  6 [chromium] › e2e\quality\responsive-keyboard.spec.ts:12:5 › TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone (9.7s)
+  ok  7 [chromium] › e2e\quality\xss.spec.ts:5:5 › TEST-86 / AC-51: HTML and script typed into text is shown as text and never executed (2.4s)
+  ok  8 [chromium] › e2e\requests\approver-journey.spec.ts:5:5 › TEST-72 / AC-32: an approver approves one request and rejects another (first without a reason); the requester sees both (4.1s)
+  ok  9 [chromium] › e2e\requests\approver-journey.spec.ts:57:5 › TEST-73 / AC-26, AC-32: a requester has no decision buttons and the API refuses them (1.5s)
+  ok 10 [chromium] › e2e\requests\approver-journey.spec.ts:75:5 › an approver cannot approve their own request, and another requester cannot open it (2.0s)
+  ok 11 [chromium] › e2e\requests\cancel-request.spec.ts:5:5 › TEST-104 / AC-71, AC-73: owner sees Cancel, confirms it, and sees the cancelled history (1.3s)
+  ok 12 [chromium] › e2e\requests\cancel-request.spec.ts:22:5 › TEST-105 / AC-72: a non-owner and an owner of an approved request do not see Cancel (2.8s)
+  ok 13 [chromium] › e2e\requests\dashboard.spec.ts:7:5 › TEST-139 / AC-107: role-specific dashboard cards and groups (2.5s)
+  ok 14 [chromium] › e2e\requests\dashboard.spec.ts:22:5 › TEST-140 / AC-108: dashboard is keyboard accessible and has no serious axe violations (1.6s)
+  ok 15 [chromium] › e2e\requests\dashboard.spec.ts:32:5 › TEST-141 / AC-109: dashboard has no horizontal document overflow (1.2s)
+  ok 16 [chromium] › e2e\requests\dashboard.spec.ts:41:5 › TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact message (1.4s)
+  ok 17 [chromium] › e2e\requests\dashboard.spec.ts:53:5 › TEST-143 / AC-111: zero cards remain visible as zero with a scoped link (996ms)
+  ok 18 [chromium] › e2e\requests\dashboard.spec.ts:64:5 › TEST-144 / AC-112: card counts equal rows in each linked list for every role (4.9s)
+  ok 19 [chromium] › e2e\requests\dashboard.spec.ts:79:5 › TEST-145 / AC-114: dashboard navigation and anonymous redirect (2.2s)
+  ok 20 [chromium] › e2e\requests\requester-journey.spec.ts:5:5 › TEST-71 / AC-23: a requester creates a draft, edits it, is refused an incomplete submit, completes it and submits (1.4s)
+  ok 21 [chromium] › e2e\requests\requester-journey.spec.ts:44:5 › TEST-71 / AC-14 in the UI: server validation messages appear beside the fields (1.1s)
+  ok 22 [chromium] › e2e\requests\requester-journey.spec.ts:54:5 › TEST-74 / AC-38: saved data is still there after reloading the detail page and the list (1.7s)
+  ok 23 [chromium] › e2e\requests\search-filter.spec.ts:22:5 › TEST-119 / AC-87: filters work with keyboard and Enter (1.1s)
+  ok 24 [chromium] › e2e\requests\search-filter.spec.ts:43:5 › TEST-120 / AC-88: labels and review controls are present (1.1s)
+  ok 25 [chromium] › e2e\requests\search-filter.spec.ts:56:5 › TEST-121 / AC-89: Clear filters removes query parameters (1.0s)
+  ok 26 [chromium] › e2e\requests\search-filter.spec.ts:66:5 › TEST-122 / AC-90: empty state and forbidden scope control (1.0s)
+  ok 27 [chromium] › e2e\requests\search-filter.spec.ts:74:5 › TEST-123 / AC-91: live result announcement (850ms)
+  ok 28 [chromium] › e2e\requests\search-filter.spec.ts:80:5 › TEST-129 / AC-97: the page has no horizontal overflow at supported widths (1.2s)
+  ok 29 [chromium] › e2e\requests\search-filter.spec.ts:89:5 › TEST-130 / AC-98: axe reports no filter-toolbar violations (3.8s)
+  ok 30 [chromium] › e2e\requests\search-filter.spec.ts:102:5 › TEST-131 / AC-99: reload and Back restore URL filters (1.5s)
+
+  30 passed (1.4m)

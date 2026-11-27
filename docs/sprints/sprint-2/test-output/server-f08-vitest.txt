@@ -1,11 +1,22 @@
-Command: npm test -- --run tests/f08-dashboard.test.ts
-Environment: temporary PostgreSQL database; Windows 11; Node.js 22.14.0; PostgreSQL 16.16.
 
 > purchaseflow-server@1.0.0 test
 > vitest run tests/f08-dashboard.test.ts
 
- RUN  v2.1.9
- ✓ tests/f08-dashboard.test.ts (9 tests) 7537ms
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
+
+ ✓ tests/f08-dashboard.test.ts (9 tests) 7497ms
+   ✓ F-08 dashboard > TEST-132 / AC-100: requester receives only own status counts 770ms
+   ✓ F-08 dashboard > TEST-134 / AC-102: approver gets own counts and review waiting 1091ms
+   ✓ F-08 dashboard > TEST-135 / AC-103: administrator counts match database groupBy 338ms
+   ✓ F-08 dashboard > TEST-138 / AC-106: response contains counts only for requester 1030ms
+   ✓ F-08 dashboard > TEST-133 / AC-101: unknown query parameters cannot change scope 339ms
+   ✓ F-08 dashboard > TEST-136 / AC-104: every status key is present and numeric 337ms
+   ✓ F-08 dashboard > TEST-146 / AC-115: a new requester starts with five zero counts 1348ms
+   ✓ F-08 dashboard > TEST-147 / AC-116: status transitions move dashboard counts 868ms
+
  Test Files  1 passed (1)
- Tests  9 passed (9)
- Result: server F-08 tests passed.
+      Tests  9 passed (9)
+   Start at  21:57:52
+   Duration  8.30s (transform 160ms, setup 0ms, collect 515ms, tests 7.50s, environment 0ms, prepare 98ms)
+

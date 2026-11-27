@@ -51,13 +51,13 @@ test("TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact me
 });
 
 test("TEST-143 / AC-111: zero cards remain visible as zero with a scoped link", async ({ page }) => {
-  await loginAs(page, ACCOUNTS.requester);
+  await loginAs(page, ACCOUNTS.approver);
   await page.goto("/dashboard");
-  const zero = page.locator("a").filter({ has: page.locator("p", { hasText: /^0$/ }) }).first();
-  await expect(zero).toBeVisible();
-  await expect(zero.locator("p")).toHaveText("0");
-  await zero.click();
-  await expect(page).toHaveURL(/\/requests\?status=/);
+  const card = page.locator("a[href='/requests?status=REJECTED']");
+  await expect(card.locator("p")).toHaveText("0");
+  await card.click();
+  await expect(page).toHaveURL(/\/requests\?status=REJECTED$/);
+  await expect(page.getByRole("status")).toHaveText("0 results");
   await expect(page.locator("tbody tr")).toHaveCount(0);
 });
 
@@ -69,7 +69,7 @@ test("TEST-144 / AC-112: card counts equal rows in each linked list for every ro
     const hrefs = await links.evaluateAll((els) => els.map((el) => ({ href: (el as HTMLAnchorElement).href, count: Number(el.querySelector("p")?.textContent) })));
     for (const item of hrefs) {
       await page.goto(item.href);
-      await expect(page.locator("h1")).toBeVisible();
+      await expect(page.getByRole("status")).toHaveText(`${item.count} results`);
       await expect(page.locator("tbody tr")).toHaveCount(item.count);
     }
     await logout(page);
