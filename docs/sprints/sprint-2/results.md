@@ -99,3 +99,30 @@ Merge commit `91286fc`, 27 November 2026, same environment. The F-08 and F-09 ch
 | Client (`test-output/client-f09-merged.txt`) | 17 passed, 0 failed; build passed |
 | Browser, all files (`test-output/browser-f09-merged-playwright.txt`) | 36 passed, 0 failed |
 | Server type check and build | passed |
+
+## F-10 comments
+
+Branch `feature/F-10-comments` from `staging` at `7d50cdc`, 27 November 2026, run before review. Implementation commit: `71936a5`. The server, client and full browser suites ran on the files of this commit before it was created; the F-10 server and browser tests ran again on the commit. Contract: `F-10-comments.md` v1.1. Environment: Apple M2, 8 GB RAM, macOS 26.6, Node.js v24.19.0, PostgreSQL 16.15, a separate local test database.
+
+| AC | Implementation | Test | Actual result |
+|---|---|---|---|
+| AC-141 to AC-143 | `commentRoutes.ts`, `POST` route | TEST-172 to TEST-174 | Passed, including the nine posts across all statuses |
+| AC-144, AC-145 | `commentRules.ts`, CHECK constraint on `Comment.text` | TEST-175 (unit and API), TEST-176 | Passed, including 1000 and 1001 characters |
+| AC-146 to AC-148 | `requireAuth`, `requireRole`, `visibilityWhere` (BR-12), in this order | TEST-177 to TEST-179 | Passed |
+| AC-149, AC-150 | `GET` route | TEST-180, TEST-181 | Passed |
+| AC-151 to AC-154 | Only `text` is read from the body; no change or delete route; one insert only | TEST-182 to TEST-185 (and TEST-182 in the browser) | Passed |
+| AC-155 to AC-159 | `Comments.tsx` on the request page | TEST-186 to TEST-190 | Passed in Chromium |
+
+| Suite | Result |
+|---|---|
+| Server, all files (`test-output/server-f10-full-vitest.txt`) | 175 passed, 0 failed. Of these 15 are F-10: 14 API tests and 1 unit test (TEST-175) |
+| Client (`test-output/client-f10.txt`) | 17 passed, 0 failed; build passed |
+| Browser, all files (`test-output/browser-f10-full-playwright.txt`) | 42 passed, 0 failed. Of these 6 are F-10 |
+| Server type check and build | passed |
+
+Migration: the `Comment` migration was applied to a temporary local database that already held seeded users and one request. Row counts and checksums of `User`, `PurchaseRequest`, `RequestHistory` and `Attachment` were the same before and after (the last two tables were empty). The CHECK constraint refused 0 and 1001 characters and accepted 1000.
+
+Known limitations: there is no paging (see the contract). A text that contains an unpaired UTF-16 surrogate, which can be sent by calling the API directly, answers 500 with the safe error body instead of 422. The contract does not list this case; the existing request fields answer the same way. It is not changed here.
+
+Not done: a run of the migration against a copy of the deployed data, and any deployment. F-10 has no client unit tests; its UI is covered by the browser tests.
+

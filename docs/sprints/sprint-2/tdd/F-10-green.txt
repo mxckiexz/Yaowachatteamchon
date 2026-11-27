@@ -1,0 +1,32 @@
+
+> purchaseflow-server@1.0.0 test
+> vitest run --run tests/f10
+
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow-f10/server
+
+ ✓ tests/f10/comments.test.ts (14 tests) 4478ms
+   ✓ F-10 comments API > TEST-185 / AC-154: comments stay after status changes and a new session 500ms
+ ✓ tests/f10/comment-rules.test.ts (1 test) 2ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  23:00:06
+   Duration  5.10s (transform 105ms, setup 0ms, collect 264ms, tests 4.48s, environment 0ms, prepare 89ms)
+
+
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
+
+Seeded demo accounts.
+
+Running 6 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/requests/comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text (1.6s)
+  ✓  2 [chromium] › e2e/requests/comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request (4.0s)
+  ✓  3 [chromium] › e2e/requests/comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form (1.9s)
+  ✓  4 [chromium] › e2e/requests/comments.spec.ts:83:5 › TEST-188 / AC-157: loading, empty, load error, post errors and a double click (2.0s)
+  ✓  5 [chromium] › e2e/requests/comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus (1.3s)
+  ✓  6 [chromium] › e2e/requests/comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation (3.3s)
+
+  6 passed (17.7s)
