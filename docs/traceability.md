@@ -21,7 +21,7 @@ Version 2.4. Requirement, feature or responsibility, sprint, acceptance criteria
 | FR-15 | F-05 | 1 | AC-39 to AC-44 | TEST-61 to 67, 75 |
 | FR-16 | F-01 | 1 | AC-01 to AC-05, AC-12 | TEST-01 to 07, 70 |
 | FR-17 | F-07 | 2 | AC-74 to AC-99 | TEST-106 to TEST-131 |
-| FR-18 | F-08 | 2 | planned | planned |
+| FR-18 | F-08 | 2 | AC-100 to AC-116 | TEST-132 to TEST-147 |
 | FR-19 | F-09 | 2 | planned | planned |
 | FR-20 | F-10 | 2 | planned | planned |
 | FR-21 | F-11 | 2 | planned | planned |
@@ -69,4 +69,4 @@ Version 2.4. Requirement, feature or responsibility, sprint, acceptance criteria
 
 ## Uncovered requirements
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 to F-28, BR-19 and BR-20 and their later feature tests remain planned because their sprints have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 contract AC-100 to AC-116 and TEST-132 to TEST-147 are planned pending contract review; implementation has not started. F-09 to F-28, BR-19 and BR-20 and their later feature tests remain planned because their sprints have not started. This is planned, not forgotten.
