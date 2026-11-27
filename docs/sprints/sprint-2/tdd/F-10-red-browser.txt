@@ -1,0 +1,223 @@
+
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
+
+Seeded demo accounts.
+
+Running 6 tests using 1 worker
+
+  ✘  1 [chromium] › e2e/requests/comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text (2.0s)
+  ✘  2 [chromium] › e2e/requests/comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request (30.1s)
+  ✘  3 [chromium] › e2e/requests/comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form (1.2s)
+  ✘  4 [chromium] › e2e/requests/comments.spec.ts:83:5 › TEST-188 / AC-157: loading, empty, load error, post errors and a double click (6.3s)
+  ✘  5 [chromium] › e2e/requests/comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus (6.2s)
+  ✘  6 [chromium] › e2e/requests/comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation (1.2s)
+
+
+  1) [chromium] › e2e/requests/comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 404
+
+      13 | async function addViaApi(page: Page, requestId: number, text: string) {
+      14 |   const res = await page.request.post(`/api/requests/${requestId}/comments`, { headers: { Origin: ORIGIN }, data: { text } });
+    > 15 |   expect(res.status()).toBe(201);
+         |                        ^
+      16 | }
+      17 |
+      18 | async function postViaUi(page: Page, text: string) {
+        at addViaApi (/Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:15:24)
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:32:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-182-71e1d-characters-is-shown-as-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-182-71e1d-characters-is-shown-as-text-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-182-71e1d-characters-is-shown-as-text-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-182-71e1d-characters-is-shown-as-text-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/requests/comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Comments' }).getByLabel('Add a comment')
+
+
+      17 |
+      18 | async function postViaUi(page: Page, text: string) {
+    > 19 |   await box(page).fill(text);
+         |                   ^
+      20 |   await postButton(page).click();
+      21 | }
+      22 |
+        at postViaUi (/Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:19:19)
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:44:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-186-5cf34-talk-on-a-submitted-request-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-186-5cf34-talk-on-a-submitted-request-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-186-5cf34-talk-on-a-submitted-request-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-186-5cf34-talk-on-a-submitted-request-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/requests/comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 404
+
+      13 | async function addViaApi(page: Page, requestId: number, text: string) {
+      14 |   const res = await page.request.post(`/api/requests/${requestId}/comments`, { headers: { Origin: ORIGIN }, data: { text } });
+    > 15 |   expect(res.status()).toBe(201);
+         |                        ^
+      16 | }
+      17 |
+      18 | async function postViaUi(page: Page, text: string) {
+        at addViaApi (/Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:15:24)
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:73:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-187-d137e-ds-comments-and-has-no-form-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-187-d137e-ds-comments-and-has-no-form-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-187-d137e-ds-comments-and-has-no-form-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-187-d137e-ds-comments-and-has-no-form-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/requests/comments.spec.ts:83:5 › TEST-188 / AC-157: loading, empty, load error, post errors and a double click 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Comments' }).getByText('Loading comments...')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Comments' }).getByText('Loading comments...') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Comments' }).getByText('Loading comments...')
+
+
+       95 |   });
+       96 |   await page.reload();
+    >  97 |   await expect(section(page).getByText("Loading comments...")).toBeVisible();
+          |                                                                ^
+       98 |   release();
+       99 |   await expect(section(page).getByText("Unable to load comments.")).toBeVisible();
+      100 |   await expect(page.getByRole("button", { name: "Submit request" })).toBeVisible();
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:97:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-188-9656c-t-errors-and-a-double-click-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-188-9656c-t-errors-and-a-double-click-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-188-9656c-t-errors-and-a-double-click-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-188-9656c-t-errors-and-a-double-click-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/requests/comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Comments' }).getByText('No comments yet.')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Comments' }).getByText('No comments yet.') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Comments' }).getByText('No comments yet.')
+
+
+      150 |   await loginAs(page, ACCOUNTS.requester);
+      151 |   await createDraftViaUi(page, uniqueName("Comment keyboard"));
+    > 152 |   await expect(section(page).getByText("No comments yet.")).toBeVisible();
+          |                                                             ^
+      153 |   const status = section(page).getByRole("status");
+      154 |   await expect(status).toBeAttached();
+      155 |   await expect(box(page)).toHaveAccessibleDescription("Up to 1000 characters.");
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:152:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-189-795f1-nnouncement-error-and-focus-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-189-795f1-nnouncement-error-and-focus-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-189-795f1-nnouncement-error-and-focus-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-189-795f1-nnouncement-error-and-focus-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/requests/comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 404
+
+      13 | async function addViaApi(page: Page, requestId: number, text: string) {
+      14 |   const res = await page.request.post(`/api/requests/${requestId}/comments`, { headers: { Origin: ORIGIN }, data: { text } });
+    > 15 |   expect(res.status()).toBe(201);
+         |                        ^
+      16 | }
+      17 |
+      18 | async function postViaUi(page: Page, text: string) {
+        at addViaApi (/Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:15:24)
+        at /Users/aphisamai/Downloads/buyflow-f10/e2e/requests/comments.spec.ts:185:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-190-587ac--finds-no-serious-violation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-comments-TEST-190-587ac--finds-no-serious-violation-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-comments-TEST-190-587ac--finds-no-serious-violation-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-comments-TEST-190-587ac--finds-no-serious-violation-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [chromium] › e2e/requests/comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text 
+    [chromium] › e2e/requests/comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request 
+    [chromium] › e2e/requests/comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form 
+    [chromium] › e2e/requests/comments.spec.ts:83:5 › TEST-188 / AC-157: loading, empty, load error, post errors and a double click 
+    [chromium] › e2e/requests/comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus 
+    [chromium] › e2e/requests/comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation 

@@ -164,3 +164,14 @@ export interface DashboardResponse {
   reviewWaiting?: number;
 }
 export const getDashboard = () => api<DashboardResponse>("/dashboard");
+
+// F-10: comments are only listed and added. "Comment" is already a DOM type, hence the longer name.
+export interface RequestComment {
+  id: number;
+  text: string;
+  author: { id: number; name: string };
+  createdAt: string;
+}
+export const listComments = (requestId: number) => api<{ comments: RequestComment[] }>(`/requests/${requestId}/comments`);
+export const addComment = (requestId: number, text: string) =>
+  api<{ comment: RequestComment }>(`/requests/${requestId}/comments`, { method: "POST", body: { text } });
