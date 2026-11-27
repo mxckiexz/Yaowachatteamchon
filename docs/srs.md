@@ -1,7 +1,7 @@
 # PurchaseFlow Software Requirements Specification (SRS)
 
 PurchaseFlow: Equipment Purchase Approval System. Theme 5: Workflow and Approval System.
-Document version 2.1. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, and version 2.1 records the approved BR-21 baseline addition for F-06 (see the change log).
+Document version 2.2. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, version 2.1 records the approved BR-21 baseline addition for F-06, and version 2.2 adds BR-22 and BR-23 for F-09 (see the change log).
 
 ## 1. Stakeholder problem and context
 
@@ -113,6 +113,8 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-19 | A request that needs several steps must be approved by different approvers at each step, none of whom is the requester. | 3 |
 | BR-20 | The approval route depends on the total amount; the thresholds are decided in the Sprint 3 contract. | 3 |
 | BR-21 | Only the request owner can cancel a DRAFT or SUBMITTED request; APPROVED, REJECTED and CANCELLED requests cannot be cancelled. | 2 |
+| BR-22 | An attachment is a PDF, PNG or JPEG file of 1 to 5,242,880 bytes (5 MB) whose extension and content agree. A request has at most 5 attachments. | 2 |
+| BR-23 | Only the request owner can add or remove an attachment, and only while the request is a DRAFT. Reading attachments follows BR-12. | 2 |
 
 ## 8. Non-functional requirements (NFR)
 
@@ -167,3 +169,4 @@ NFR-01 to NFR-08 are those of the proposal, with measurable targets and a verifi
 | 1.0, 1.1 | Sprint 1 planning | Earlier design called BuyFlow (several items per request, one assigned approver, two roles). Kept in the repository under the tag `archive/buyflow-v1`. |
 | 2.0 | 2026-11-15, before any 2.0 code | The team's proposal (PurchaseFlow) became the baseline. Differences: one item per request; status names DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED; any approver decides; request numbers and categories; an administrator role; separate approve and reject endpoints. Added FR-16, BR-15 to BR-18, NFR-09 to NFR-13. Reason: the proposal is the agreed scope of the pair. Contracts and tests were rewritten for 2.0 before the new code. |
 | 2.1 | 2026-11-25 | Added BR-21 for F-06: only the request owner may cancel a DRAFT or SUBMITTED request. Reason: the confirmed Sprint 2 cancellation decision makes ownership explicit and prevents another user, approver or administrator from changing the request's lifecycle. |
+| 2.2 | 2026-11-27 | Added BR-22 and BR-23 for F-09 attachments. Reason: FR-19 did not define which files are allowed, their limits, or who may change them. |
