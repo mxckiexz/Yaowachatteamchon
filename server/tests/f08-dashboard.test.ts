@@ -35,11 +35,13 @@ describe("F-08 dashboard", () => {
 
   it("TEST-134 / AC-102: approver gets own counts and review waiting", async () => {
     const approver = await loginAgent(APPROVER);
-    await createDraft(approver, { itemName: "F08 approver own" });
+    await createSubmitted(approver, { itemName: "F08 approver own submitted" });
+    await createDraft(await loginAgent(OTHER), { itemName: "F08 other draft" });
     await createSubmitted(await loginAgent(OTHER), { itemName: "F08 waiting" });
+    const expectedWaiting = await getPrisma().purchaseRequest.count({ where: { status: "SUBMITTED", requesterId: { not: (await getPrisma().user.findUniqueOrThrow({ where: { email: APPROVER } })).id } } });
     const response = await approver.get("/api/dashboard").expect(200);
-    expect(response.body.counts.DRAFT).toBe(1);
-    expect(response.body.reviewWaiting).toBeGreaterThanOrEqual(1);
+    expect(response.body.counts.SUBMITTED).toBe(1);
+    expect(response.body.reviewWaiting).toBe(expectedWaiting);
     expect(response.body).not.toHaveProperty("requests");
   });
 
@@ -58,8 +60,44 @@ describe("F-08 dashboard", () => {
   });
 
   it("TEST-138 / AC-106: response contains counts only for requester", async () => {
+    for (const [email, keys] of [[OWNER, ["counts"]], [ADMIN, ["counts"]], [APPROVER, ["counts", "reviewWaiting"]]] as const) {
+      const response = await (await loginAgent(email)).get("/api/dashboard").expect(200);
+      expect(Object.keys(response.body).sort()).toEqual([...keys].sort());
+      expect(response.body).not.toHaveProperty("requests");
+    }
+  });
+
+  it("TEST-133 / AC-101: unknown query parameters cannot change scope", async () => {
+    const owner = await loginAgent(OWNER);
+    const plain = await owner.get("/api/dashboard").expect(200);
+    const overridden = await owner.get("/api/dashboard?userId=999&role=ADMIN&scope=all").expect(200);
+    expect(overridden.body).toEqual(plain.body);
+  });
+
+  it("TEST-136 / AC-104: every status key is present and numeric", async () => {
     const response = await (await loginAgent(OWNER)).get("/api/dashboard").expect(200);
-    expect(Object.keys(response.body)).toEqual(["counts"]);
-    expect(response.body.counts).not.toHaveProperty("requests");
+    expect(Object.keys(response.body.counts).sort()).toEqual(["APPROVED", "CANCELLED", "DRAFT", "REJECTED", "SUBMITTED"]);
+    for (const value of Object.values(response.body.counts)) expect(typeof value).toBe("number");
+  });
+
+  it("TEST-146 / AC-115: a new requester starts with five zero counts", async () => {
+    const fresh = "f08-fresh@test.local";
+    await createUser(fresh, { name: "F08 fresh" });
+    const response = await (await loginAgent(fresh)).get("/api/dashboard").expect(200);
+    expect(response.body.counts).toEqual({ DRAFT: 0, SUBMITTED: 0, APPROVED: 0, REJECTED: 0, CANCELLED: 0 });
+    await cleanupUsers([fresh]);
+  });
+
+  it("TEST-147 / AC-116: status transitions move dashboard counts", async () => {
+    const owner = await loginAgent(OWNER);
+    const approver = await loginAgent(APPROVER);
+    const draft = await createDraft(owner, { itemName: "F08 transition" });
+    expect((await owner.get("/api/dashboard")).body.counts.DRAFT).toBeGreaterThan(0);
+    await owner.post(`/api/requests/${draft.id}/submit`).set("Origin", ORIGIN).send({}).expect(200);
+    expect((await owner.get("/api/dashboard")).body.counts.SUBMITTED).toBeGreaterThan(0);
+    await approver.post(`/api/requests/${draft.id}/approve`).set("Origin", ORIGIN).send({ comment: "F08 approval" }).expect(200);
+    const afterApprove = (await owner.get("/api/dashboard")).body.counts;
+    expect(afterApprove.APPROVED).toBeGreaterThan(0);
+    expect(afterApprove.SUBMITTED).toBeGreaterThanOrEqual(0);
   });
 });

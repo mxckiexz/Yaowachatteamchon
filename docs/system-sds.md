@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.2. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10.
+Version 2.3. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen.
 
 ## 1. Architecture and stack
 
@@ -85,7 +85,7 @@ Endpoint list (details are in the feature contracts):
 | `POST /api/requests`, `PATCH /api/requests/:id`, `POST /api/requests/:id/submit` | F-02 |
 | `POST /api/requests/:id/approve`, `POST /api/requests/:id/reject` | F-03 |
 | `GET /api/requests?scope=mine\|review\|all`, `GET /api/requests/:id`, `GET /api/requests/:id/history` | F-04 |
-| `GET /api/dashboard`, `/dashboard` | F-08 |
+| `GET /api/dashboard`, `/dashboard` | F-08 (implemented) |
 | `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (planned) |
 | `GET`, `POST /api/requests/:id/comments` | F-10 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |

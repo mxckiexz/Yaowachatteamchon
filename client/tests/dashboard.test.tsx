@@ -19,9 +19,9 @@ describe("F-08 dashboard", () => {
   it("CT-08 / AC-107: requester sees five labelled cards and exact filtered links", async () => {
     renderDashboard(REQUESTER);
     expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
-    for (const status of ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "CANCELLED"]) {
-      const link = screen.getByRole("link", { name: new RegExp(status) });
-      expect(link).toHaveAttribute("href", `/requests?status=${status}`);
+    for (const [label, value] of [["Draft", "DRAFT"], ["Submitted", "SUBMITTED"], ["Approved", "APPROVED"], ["Rejected", "REJECTED"], ["Cancelled", "CANCELLED"]] as const) {
+      const link = screen.getByRole("link", { name: new RegExp(label) });
+      expect(link).toHaveAttribute("href", `/requests?status=${value}`);
     }
     await waitFor(() => expect(screen.getByText("5")).toBeInTheDocument());
   });
@@ -31,12 +31,12 @@ describe("F-08 dashboard", () => {
     expect(await screen.findByRole("heading", { name: "My requests" })).toBeInTheDocument();
     const waiting = (await screen.findByRole("heading", { name: "Waiting for review" })).parentElement!;
     expect(within(waiting).getByText("6")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /SUBMITTED from other users/ })).toHaveAttribute("href", "/reviews");
+    expect(screen.getByRole("link", { name: /Submitted from other users/ })).toHaveAttribute("href", "/reviews");
   });
 
   it("CT-10 / AC-103: administrator cards link to all requests", async () => {
     renderDashboard(ADMIN);
     await screen.findByRole("heading", { name: "Dashboard" });
-    expect(screen.getByRole("link", { name: /APPROVED/ })).toHaveAttribute("href", "/all-requests?status=APPROVED");
+    expect(screen.getByRole("link", { name: /Approved/ })).toHaveAttribute("href", "/all-requests?status=APPROVED");
   });
 });

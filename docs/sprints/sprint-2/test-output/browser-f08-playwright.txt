@@ -1,0 +1,2 @@
+Command: npx playwright test e2e/requests/dashboard.spec.ts
+Result in this local checkout: the web-server-backed run was started but did not complete successfully because the local browser environment did not reach the seeded application within the test timeout. No passing browser result is claimed here; rerun against the deployed or fully started local app before merge and replace this file with the complete terminal output.

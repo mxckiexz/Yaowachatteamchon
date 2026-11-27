@@ -1,0 +1,3 @@
+F-08 red evidence
+
+The dashboard tests were authored before the dashboard route and UI were available. The pre-implementation run must be repeated in a staging worktree before merge; this file is intentionally marked as pending rather than claiming a result that was not captured in this checkout.
