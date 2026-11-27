@@ -49,14 +49,14 @@ Implementation and coverage commit: `fc0189f` (27 November 2026). The server F-0
 
 ## F-08 dashboard counts
 
-Implementation commit: `a96d999` plus the follow-up fixes in this branch. The endpoint returns role-scoped counts only; approvers also receive `reviewWaiting`. The dashboard cards link to the corresponding filtered list, and the client tests and browser checks cover the role explanations, labels, loading/error/retry states, responsive layout and anonymous redirect.
+Implementation and acceptance-coverage commit: `85ef900`. The endpoint returns role-scoped counts only; approvers also receive `reviewWaiting`. The dashboard cards link to the corresponding filtered list, and the client tests and browser checks cover the role explanations, labels, loading/error/retry states, responsive layout and anonymous redirect.
 
 | AC | Implementation | Test | Actual result | Commit |
 |---|---|---|---|---|
-| AC-100 to AC-106 | `GET /api/dashboard` role scope and response shape | TEST-132 to TEST-138 | Requester own counts, approver own plus exact review count, administrator all counts, ignored unknown parameters, numeric status keys and no data leakage passed | `a96d999` |
-| AC-107 to AC-111 | Dashboard cards, labelled status badges, role explanation and loading/error states | TEST-139 to TEST-143, CT-08 to CT-10 | Component and browser checks cover role groups, keyboard access, responsive widths, exact error announcement, retry and zero-state cards | pending final commit |
-| AC-112 | Card count equals linked list rows | TEST-144 | Browser check compares each requester card with its filtered list | pending final commit |
-| AC-113 to AC-116 | Live success/failure announcement, navigation and state transitions | TEST-142, TEST-145, TEST-146, TEST-147 | Retry announcement, anonymous redirect, fresh-user five zeros and submit/approve count movement covered | pending final commit |
+| AC-100 to AC-106 | `GET /api/dashboard` role scope and response shape | TEST-132 to TEST-138 | Requester own counts, approver own plus exact review count, administrator all counts, ignored unknown parameters, numeric status keys and no data leakage passed | `85ef900` |
+| AC-107 to AC-111 | Dashboard cards, labelled status badges, role explanation and loading/error states | TEST-139 to TEST-143, CT-08 to CT-10 | Component and browser checks cover role groups, keyboard access, responsive widths, exact error announcement, retry and zero-state cards | `85ef900` |
+| AC-112 | Card count equals linked list rows for requester, approver and administrator | TEST-144 | Browser check compares all six approver cards (including review queue) and every other role card with its filtered list | `85ef900` |
+| AC-113 to AC-116 | Live success/failure announcement, navigation and state transitions | TEST-142, TEST-145, TEST-146, TEST-147 | Retry announcement, anonymous redirect and unchanged landing paths for all roles, fresh requester/approver counts, and exact submit/approve/reject/cancel count movement passed | `85ef900` |
 
 ### F-08 suite totals
 
@@ -65,4 +65,4 @@ Implementation commit: `a96d999` plus the follow-up fixes in this branch. The en
 | Server F-08 | 9 passed, 0 failed |
 | Client | 17 passed, 0 failed |
 | Build and type check | passed |
-| Browser F-08 | tests added; raw run recorded in `test-output/browser-f08-playwright.txt` |
+| Browser F-08 | 7 passed, 0 failed; raw terminal output in `test-output/browser-f08-playwright.txt` |
