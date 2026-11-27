@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.1. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints.
+Version 2.2. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10.
 
 ## 1. Architecture and stack
 
@@ -27,6 +27,7 @@ User 1 ---- * PurchaseRequest   (as requester)
 PurchaseRequest 1 ---- * RequestHistory
 User 1 ---- * RequestHistory    (as actor)
 Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attachment (uploader)
+Comment (Sprint 2): PurchaseRequest 1 ---- * Comment, User 1 ---- * Comment (author)
 ```
 
 | Entity | Fields | Constraints and ownership |
@@ -36,6 +37,7 @@ Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attach
 | PurchaseRequest | id, requestNumber, requesterId, itemName, description, quantity, unitPriceSatang, totalSatang, reason, category (nullable), status (DRAFT, SUBMITTED, APPROVED, REJECTED, CANCELLED), rejectionReason (nullable), createdAt, updatedAt, submittedAt, decidedAt | requestNumber unique (format `PR-YYYY-NNNN` from the database sequence `request_number_seq`); requesterId is the owner; totalSatang is calculated by the server; quantity between 1 and 1000 and unitPriceSatang above 0 are CHECK constraints |
 | RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-06 adds the CANCELLED transition |
 | Attachment (Sprint 2) | id, requestId, fileName, fileType, sizeBytes, content (bytes), uploadedById, createdAt | planned in F-09; at most 5 per request, 1 to 5,242,880 bytes each (CHECK on sizeBytes); content is never selected by list or detail queries; only the owner of a DRAFT adds or removes |
+| Comment (Sprint 2) | id, requestId, authorId, text, createdAt | planned in F-10; 1 to 1000 characters (CHECK); append only, the API has no update or delete |
 
 Money is stored as integer satang (1 baht = 100 satang). The API sends and receives baht as decimal numbers and converts at the boundary.
 
@@ -85,6 +87,7 @@ Endpoint list (details are in the feature contracts):
 | `GET /api/requests?scope=mine\|review\|all`, `GET /api/requests/:id`, `GET /api/requests/:id/history` | F-04 |
 | `GET /api/dashboard`, `/dashboard` | F-08 |
 | `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (planned) |
+| `GET`, `POST /api/requests/:id/comments` | F-10 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
@@ -100,6 +103,8 @@ Endpoint list (details are in the feature contracts):
 | All requests (`scope=all`) | 401 | 403 | 403 | all, read only |
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
+| Read comments (F-10, planned) | 401 | own request (other: 404) | requests the approver may read | all |
+| Add a comment (F-10, planned) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | 403 |
 | List users, change a user | 401 | 403 | 403 | yes, except one's own account (409) |
 
 Ownership link: `PurchaseRequest.requesterId` is the owner. Owner-only operations treat everyone else as "not found". A hidden button in the UI is not authorization: every protected route checks session, role and ownership on the server.
