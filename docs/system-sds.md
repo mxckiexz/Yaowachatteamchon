@@ -104,6 +104,7 @@ Endpoint list (details are in the feature contracts):
 | All requests (`scope=all`) | 401 | 403 | 403 | all, read only |
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
+| Return for editing (F-11, planned) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |
 | Add or delete an attachment (F-09) | 401 | own draft only (other: 404, not a draft: 409) | own draft only (other: 404, not a draft: 409) | 404 |
 | Read comments (F-10) | 401 | own request (other: 404) | requests the approver may read | all |

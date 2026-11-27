@@ -2,7 +2,7 @@
 
 Contract version 1.1, 28 November 2026. Contract only; implementation follows after review. Tracks Issue #64 and implements FR-21.
 
-Linked requirements: FR-21, BR-11, BR-12, BR-17, NFR-01, NFR-02, NFR-04, NFR-06, NFR-07 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), and F-06 (cancelled requests cannot be returned). If a later feature changes the editable statuses or adds another approver role, this contract must be revised.
+Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-06, NFR-07, NFR-09 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), F-06 (cancelled requests cannot be returned), and F-09 (owner can change attachments on a returned draft). If a later feature changes the editable statuses or adds another approver role, this contract must be revised.
 
 ## Change log
 
@@ -29,7 +29,7 @@ The transition is atomic with its history insert. Against a concurrent return, a
 
 On a request detail page, an approver sees a **Return for editing** action only for another user's `SUBMITTED` request. The action opens a form with a labelled **Reason** textarea and **Confirm return** and **Keep submitted** buttons. The reason is shown before confirmation and must be 5 to 500 characters after trimming. On success the approver is sent to the review queue, which announces `{request number} was returned to the requester.` and moves focus to the page heading; the 200 body is the last time that approver receives the request. The requester sees no return control.
 
-The controls are keyboard reachable in reading order. While the request is being returned, the submit button is disabled. Errors are shown in a `role="alert"` region without clearing the typed reason. After success, focus moves to the request status heading; after cancelling the form, focus returns to the action button.
+The controls are keyboard reachable in reading order. While the request is being returned, the submit button is disabled. Errors are shown in a `role="alert"` region without clearing the typed reason. After cancelling the form, focus returns to the action button.
 
 ## 3. API specification
 
@@ -48,7 +48,7 @@ Checks run in this order:
 3. Caller is not an approver: `403 FORBIDDEN`.
 4. Request is missing, hidden, or owned by the caller: `404 NOT_FOUND`.
 5. A visible request in `APPROVED`, `REJECTED` or `CANCELLED` is not returnable: `409 ILLEGAL_TRANSITION`. A `DRAFT` is hidden from an approver and therefore returns `404`.
-6. Missing, blank, shorter than 5 or longer than 500 characters: `422 VALIDATION_ERROR` with `fields.reason`.
+6. Missing, blank, shorter than 5, longer than 500 characters, or containing U+0000: `422 VALIDATION_ERROR` with `fields.reason`.
 7. A concurrent state change wins: `409 ILLEGAL_TRANSITION`; no return history is written.
 
 The request status update and `RETURNED` history insert run in one transaction. A malformed JSON body is handled by the existing parser before session checks and may return `400`; a foreign Origin is still rejected first. Unexpected errors return the existing safe `500` body.
@@ -78,7 +78,7 @@ The `RequestStatus` enum already contains `DRAFT` and `SUBMITTED`. `HistoryActio
 | AC-174 | At 375, 768 and 1280 px the page has no horizontal scrolling, including the return reason form. |
 | AC-175 | The return section has no serious or critical axe-core violation. |
 | AC-176 | The UI announces the successful return and displays the return reason as text, never HTML. |
-| AC-177 | The status lifecycle documentation and transition guard include the SUBMITTED-to-DRAFT return without weakening the existing three decision transitions. |
+| AC-177 | F-11 revises AC-31 and TEST-46 of F-03: the allowed transitions become four, adding `SUBMITTED` to `DRAFT`; the existing three decision transitions remain unchanged. |
 | AC-178 | The contract and Definition of Done identify Aphisaimai as the required reviewer before merge. |
 | AC-179 | A reason containing U+0000 is rejected with 422 and no history is written. |
 
