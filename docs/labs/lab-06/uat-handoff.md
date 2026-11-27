@@ -15,11 +15,12 @@ This handoff covers Sprint 1 only: authentication, purchase requests, approval/r
 | Repository | https://github.com/mxckiexz/Yaowachatteamchon |
 | Release tag | `sprint-1-release` |
 | Release commit | `1fa292ce9169a98f57d6cfbab710b3a8cbbfc282` |
+| Deployed commit | `06d290a1f1578b5ebcc1826d388c60027f522e72` (shown by `/api/version`) |
 | Cloud Run revision | `sad61263d-00005-rqz` (100% traffic) |
 | Production URL | `https://sad61263d-4d7hbszvwq-as.a.run.app` |
 | Test date/time | **TO FILL by the UAT tester** |
 
-Do not replace the release commit with a later development commit. If the deployed revision or URL changes, update this table before testing.
+The deployed commit differs from `sprint-1-release` only in the Lab 5 deployment files: `server/src/app.ts` (`/api/version` and `/api/ready`), `server/src/seedData.ts` (portal secret names), and `server/src/staticSite.ts` (built-client serving). Sprint 1 functionality is unchanged. Test only the deployed commit above; if `/api/version` shows anything else, stop and tell the product team. If the deployed revision or URL changes, update this table before testing.
 
 ## 3. People and test accounts
 
