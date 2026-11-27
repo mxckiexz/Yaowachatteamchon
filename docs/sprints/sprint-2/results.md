@@ -126,3 +126,14 @@ Known limitations: there is no paging (see the contract). A text that contains a
 
 Not done: a run of the migration against a copy of the deployed data, and any deployment. F-10 has no client unit tests; its UI is covered by the browser tests.
 
+## F-11 return for editing
+
+Implementation commit: pending. Contract: `F-11-return-editing.md` v1.1. The API and UI implement the approver return flow, the atomic `RETURNED` history transition, owner edit/resubmit, and cross-feature visibility rules.
+
+| AC | Implementation | Test | Actual result | Commit |
+|---|---|---|---|---|
+| AC-160 to AC-172 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 to TEST-199 | 9 server tests passed locally; owner, approver, visibility, validation, history and race behavior verified | pending |
+| AC-173 to AC-179 | Return form, success announcement, focus, responsive/accessibility behavior and additive `RETURNED` migration | TEST-200 to TEST-208 | Browser and final evidence are pending; no deployment claimed | pending |
+
+Known limitation: Playwright coverage for F-11 is not yet added in this implementation step.
+
