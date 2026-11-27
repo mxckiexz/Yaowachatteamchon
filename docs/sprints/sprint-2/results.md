@@ -128,12 +128,12 @@ Not done: a run of the migration against a copy of the deployed data, and any de
 
 ## F-11 return for editing
 
-Implementation commit: pending. Contract: `F-11-return-editing.md` v1.1. The API and UI implement the approver return flow, the atomic `RETURNED` history transition, owner edit/resubmit, and cross-feature visibility rules.
+Implementation commit: `127536e`. Contract: `F-11-return-editing.md` v1.1. The API and UI implement the approver return flow, the atomic `RETURNED` history transition, owner edit/resubmit, and cross-feature visibility rules.
 
 | AC | Implementation | Test | Actual result | Commit |
 |---|---|---|---|---|
-| AC-160 to AC-172 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 to TEST-199 | 9 server tests passed locally; owner, approver, visibility, validation, history and race behavior verified | pending |
-| AC-173 to AC-179 | Return form, success announcement, focus, responsive/accessibility behavior and additive `RETURNED` migration | TEST-200 to TEST-208 | Browser and final evidence are pending; no deployment claimed | pending |
+| AC-160 to AC-172 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 to TEST-199 | 9 server tests passed locally; owner, approver, visibility, validation, history and race behavior verified | `127536e` |
+| AC-173 to AC-179 | Return form, success announcement, focus, responsive/accessibility behavior and additive `RETURNED` migration | TEST-200 to TEST-201 | 2 browser tests passed; migration applied to the local test database; remaining responsive/axe/cross-feature checks are pending | `127536e` |
 
-Known limitation: Playwright coverage for F-11 is not yet added in this implementation step.
+Known limitation: the full AC-173 to AC-179 browser/accessibility matrix is not yet complete; no production deployment has been performed.
 
