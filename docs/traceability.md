@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.10. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review.
+Version 2.11. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 contract v1.1 is proposed in this branch.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -24,7 +24,7 @@ Version 2.10. Requirement, feature or responsibility, sprint, acceptance criteri
 | FR-18 | F-08 | 2 | AC-100 to AC-116 | TEST-132 to TEST-147 |
 | FR-19 | F-09 | 2 | AC-117 to AC-140 | TEST-148 to TEST-171 |
 | FR-20 | F-10 | 2 | AC-141 to AC-159 | TEST-172 to 190 |
-| FR-21 | F-11 | 2 | planned | planned |
+| FR-21 | F-11 | 2 | AC-160 to AC-179 | TEST-191 to TEST-208 |
 | FR-22 | F-12 | 2 | planned | planned |
 | FR-23 | F-13 | 3 | planned | planned |
 | FR-24 | F-14 | 3 | planned | planned |
@@ -57,20 +57,21 @@ Version 2.10. Requirement, feature or responsibility, sprint, acceptance criteri
 | BR-23 | F-09 | 2 | AC-124 to AC-127, AC-132, AC-137 | TEST-155 to 158, 163, 168 |
 | BR-24 | F-10 | 2 | AC-141 to AC-146 | TEST-172 to TEST-177 |
 | BR-25 | F-10 | 2 | AC-152, AC-153 | TEST-183, 184 |
-| NFR-01 | F-01, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-84, AC-105, AC-114, AC-126, AC-127, AC-146 to AC-148 | TEST-12, 39, 53, 58, 62, 101, 116, 137, 145, 157, 158, 177 to 179 |
-| NFR-02 | F-04, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-35, AC-70, AC-73, AC-80, AC-84, AC-102, AC-103, AC-106, AC-112, AC-126, AC-129, AC-131, AC-147, AC-149, AC-150 | TEST-55, 56, 103, 104, 112, 116, 134, 135, 138, 144, 157, 160, 162, 178, 180, 181 |
+| BR-26 | F-11 | 2 | AC-160 to AC-179 | TEST-191 to TEST-208 |
+| NFR-01 | F-01, F-06, F-07, F-08, F-09, F-10, F-11 | 1, 2 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-105, AC-114, AC-126, AC-127, AC-146 to AC-148, AC-168 | TEST-12, 39, 53, 58, 62, 101, 116, 137, 145, 157, 158, 177 to 179, 197 |
+| NFR-02 | F-04, F-06, F-07, F-08, F-09, F-10, F-11 | 1, 2 | AC-35, AC-70, AC-73, AC-80, AC-84, AC-102, AC-103, AC-106, AC-112, AC-126, AC-129, AC-131, AC-147, AC-149, AC-150, AC-167, AC-172 | TEST-55, 56, 103, 104, 112, 116, 134, 135, 138, 144, 157, 160, 162, 167, 178, 180, 181, 196, 201 |
 | NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |
-| NFR-04 | R-02, F-07, F-09, F-10 | 1, 2 | AC-10, AC-14, AC-48, AC-83, AC-119 to AC-122, AC-144 | TEST-14, 18 to 21, 83, 115, 150 to 153, 175 |
-| NFR-05 | R-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-53, AC-87, AC-88, AC-97, AC-109, AC-140, AC-159 | TEST-88, 119, 120, 129, 141, 171, 190 |
-| NFR-06 | F-02, F-03, F-06 | 1, 2 | AC-18, AC-24, AC-25, AC-29, AC-31, AC-64, AC-66, AC-70 | TEST-26, 36, 37, 42 to 44, 46, 97, 99, 103 |
-| NFR-07 | F-04, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-33, AC-38, AC-61, AC-70, AC-73, AC-80, AC-85, AC-100, AC-101, AC-102, AC-103, AC-104, AC-112, AC-115, AC-116, AC-134, AC-154 | TEST-51, 74, 95, 103, 104, 112, 117, 132, 133, 134, 135, 136, 144, 146, 147, 165, 185 |
+| NFR-04 | R-02, F-07, F-09, F-10, F-11 | 1, 2 | AC-10, AC-14, AC-48, AC-83, AC-119 to AC-122, AC-144, AC-166, AC-168 | TEST-14, 18 to 21, 83, 115, 150 to 153, 175, 195, 197 |
+| NFR-05 | R-06, F-07, F-08, F-09, F-10, F-11 | 1, 2 | AC-53, AC-87, AC-88, AC-97, AC-109, AC-140, AC-159, AC-174 | TEST-88, 119, 120, 129, 141, 171, 190, 203 |
+| NFR-06 | F-02, F-03, F-06, F-11 | 1, 2 | AC-18, AC-24, AC-25, AC-29, AC-31, AC-64, AC-66, AC-70, AC-169, AC-177 | TEST-26, 36, 37, 42 to 44, 46, 97, 99, 103, 198, 206 |
+| NFR-07 | F-04, F-06, F-07, F-08, F-09, F-10, F-11 | 1, 2 | AC-33, AC-38, AC-61, AC-70, AC-73, AC-80, AC-85, AC-100, AC-101, AC-102, AC-103, AC-104, AC-112, AC-115, AC-116, AC-134, AC-154, AC-162, AC-172 | TEST-51, 74, 95, 103, 104, 112, 117, 132, 133, 134, 135, 136, 144, 146, 147, 165, 185, 192, 201 |
 | NFR-08 | F-02 | 1 | AC-21 | TEST-30 |
-| NFR-09 | R-02, R-05, F-07, F-09, F-10 | 1, 2 | AC-45 to AC-51, AC-92, AC-130, AC-133, AC-151 | TEST-80 to 86, 124, 161, 164, 182 |
-| NFR-10 | R-06, F-06, F-07, F-08, F-09, F-10 | 1, 2 | AC-52, AC-53, AC-71 to AC-73, AC-87, AC-88, AC-91, AC-98, AC-108, AC-110, AC-139, AC-140, AC-158, AC-159 | TEST-87, 88, 104, 105, 119, 120, 123, 130, 140, 142, 170, 171, 189, 190 |
+| NFR-09 | R-02, R-05, F-07, F-09, F-10, F-11 | 1, 2 | AC-45 to AC-51, AC-92, AC-130, AC-133, AC-151, AC-176 | TEST-80 to 86, 124, 161, 164, 182, 205 |
+| NFR-10 | R-06, F-06, F-07, F-08, F-09, F-10, F-11 | 1, 2 | AC-52, AC-53, AC-71 to AC-73, AC-87, AC-88, AC-91, AC-98, AC-108, AC-110, AC-139, AC-140, AC-158, AC-159, AC-171, AC-175 | TEST-87, 88, 104, 105, 119, 120, 123, 130, 140, 142, 170, 171, 189, 190, 200, 204 |
 | NFR-11 | R-01 | 1 | AC-11 | TEST-15, manual check M-01 |
 | NFR-12 | R-03, F-07, R-05 | 2 (early check in 1) | AC-54, AC-55 (early), AC-86 | TEST-89, 90 (early), TEST-118 |
 | NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 AC-117 to AC-140 are implemented, TEST-148 to TEST-171 passed, and the branch was merged into `staging` (merge commit `7d50cdc`). F-10 AC-141 to AC-159 are implemented and TEST-172 to TEST-190 passed on branch `feature/F-10-comments`, pending review and merge. F-11 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 AC-117 to AC-140 are implemented, TEST-148 to TEST-171 passed, and the branch was merged into `staging` (merge commit `7d50cdc`). F-10 AC-141 to AC-159 are implemented and TEST-172 to TEST-190 passed on branch `feature/F-10-comments`, pending review and merge. F-11 contract v1.1 proposes AC-160 to AC-179 and TEST-191 to TEST-208; implementation has not started. F-12 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.

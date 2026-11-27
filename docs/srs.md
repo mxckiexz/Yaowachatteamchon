@@ -1,7 +1,7 @@
 # PurchaseFlow Software Requirements Specification (SRS)
 
 PurchaseFlow: Equipment Purchase Approval System. Theme 5: Workflow and Approval System.
-Document version 2.3. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, version 2.1 records the approved BR-21 baseline addition for F-06, version 2.2 adds BR-22 and BR-23 for F-09, and version 2.3 adds BR-24 and BR-25 for F-10 (see the change log).
+Document version 2.4. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, version 2.1 records the approved BR-21 baseline addition for F-06, version 2.2 adds BR-22 and BR-23 for F-09, version 2.3 adds BR-24 and BR-25 for F-10, and version 2.4 adds BR-26 for F-11 (see the change log).
 
 ## 1. Stakeholder problem and context
 
@@ -38,6 +38,7 @@ In scope for the whole product: login with seeded accounts and server-side permi
 DRAFT
   | Submit
 SUBMITTED
+  |-- Return for editing -> DRAFT
   |-- Approve -> APPROVED
   |-- Reject  -> REJECTED
   |-- Cancel  -> CANCELLED   (Sprint 2)
@@ -117,6 +118,7 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-23 | Only the request owner can add or remove an attachment, and only while the request is a DRAFT. Reading attachments follows BR-12. | 2 |
 | BR-24 | A requester or an approver who may see a request (BR-12) can add a comment to it in any status. The administrator reads comments only. A comment is 1 to 1000 characters after trimming. | 2 |
 | BR-25 | A comment cannot be edited or deleted. Adding a comment does not change the request status or its history. | 2 |
+| BR-26 | Only an approver who is not the requester may return a SUBMITTED request to DRAFT. A trimmed reason of 5 to 500 characters is required; the transition records RETURNED history and clears submittedAt and decidedAt. DRAFT requests are hidden from approvers, while APPROVED, REJECTED and CANCELLED requests return a state conflict. | 2 |
 
 ## 8. Non-functional requirements (NFR)
 
@@ -173,3 +175,4 @@ NFR-01 to NFR-08 are those of the proposal, with measurable targets and a verifi
 | 2.1 | 2026-11-25 | Added BR-21 for F-06: only the request owner may cancel a DRAFT or SUBMITTED request. Reason: the confirmed Sprint 2 cancellation decision makes ownership explicit and prevents another user, approver or administrator from changing the request's lifecycle. |
 | 2.2 | 2026-11-27 | Added BR-22 and BR-23 for F-09 attachments. Reason: FR-19 did not define which files are allowed, their limits, or who may change them. |
 | 2.3 | 2026-11-27 | Added BR-24 and BR-25 for F-10 comments. Reason: FR-20 did not define who may write, when, the text limit, or whether a comment can change. |
+| 2.4 | 2026-11-28 | Added BR-26 for F-11 return for editing. Reason: FR-21 did not define the approver permission, return reason, status/history transition, timestamp reset or concurrent behavior. |
