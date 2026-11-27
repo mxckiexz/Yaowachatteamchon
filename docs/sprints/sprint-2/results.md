@@ -88,3 +88,14 @@ Branch `feature/F-09-attachments`, 27 November 2026, run before review. Implemen
 | Server type check and build | passed |
 
 Not done: virus scanning (out of scope in the contract), a run of the migration against a copy of the deployed data, and any deployment. F-09 has no client unit tests; its UI is covered by the browser tests.
+
+### After merging `staging` (with F-08)
+
+Merge commit `91286fc`, 27 November 2026, same environment. The F-08 and F-09 changes conflicted in `api.ts`, `app.ts` and four documents; both sides were kept. All suites were run again on the merge commit. The earlier totals above are for `bf1c4ee`.
+
+| Suite | Result |
+|---|---|
+| Server, all files (`test-output/server-f09-merged-vitest.txt`) | 160 passed, 0 failed |
+| Client (`test-output/client-f09-merged.txt`) | 17 passed, 0 failed; build passed |
+| Browser, all files (`test-output/browser-f09-merged-playwright.txt`) | 36 passed, 0 failed |
+| Server type check and build | passed |
