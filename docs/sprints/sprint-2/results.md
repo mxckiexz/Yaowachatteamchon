@@ -46,3 +46,24 @@ Implementation and coverage commit: `fc0189f` (27 November 2026). The server F-0
 |---|---|
 | Server F-07 | 18 passed, 0 failed |
 | Browser F-07 | 8 passed, 0 failed |
+
+## F-09 attachments
+
+Branch `feature/F-09-attachments`, 27 November 2026, run before review. Implementation commit: `bf1c4ee`. The suites below ran on the files of this commit before it was created. Contract: `F-09-attachments.md` v1.0. Environment: Apple M2, 8 GB RAM, macOS 26.6, Node.js v24.19.0, PostgreSQL 16.15, a separate local test database.
+
+| AC | Implementation | Test | Actual result |
+|---|---|---|---|
+| AC-117 to AC-123 | `attachmentRules.ts`, upload route, size CHECK constraint | TEST-148 to TEST-154 | Passed, including the 5,242,880-byte boundary and simultaneous uploads (3 rounds) |
+| AC-124 to AC-127 | Ownership and draft checks before the body is read; row lock and second check in the transaction | TEST-155 to TEST-158 | Passed; TEST-156 waits for a real row lock |
+| AC-128 to AC-132 | List, download and delete routes with `visibilityWhere` (BR-12) | TEST-159 to TEST-163 | Passed |
+| AC-133 to AC-135 | Server-owned fields, text rendering, no history or status change | TEST-164 to TEST-166 (and TEST-164 in the browser) | Passed |
+| AC-136 to AC-140 | `Attachments.tsx` on the request page | TEST-167 to TEST-171 | Passed in Chromium |
+
+| Suite | Result |
+|---|---|
+| Server, all files (`test-output/server-f09-full-vitest.txt`) | 151 passed, 0 failed. Of these 21 are F-09: 19 API tests and 2 unit tests (TEST-150 and TEST-152) |
+| Client (`test-output/client-f09.txt`) | 14 passed, 0 failed; build passed |
+| Browser, all files (`test-output/browser-f09-full-playwright.txt`) | 29 passed, 0 failed. Of these 6 are F-09 |
+| Server type check and build | passed |
+
+Not done: virus scanning (out of scope in the contract), a run of the migration against a copy of the deployed data, and any deployment. F-09 has no client unit tests; its UI is covered by the browser tests.

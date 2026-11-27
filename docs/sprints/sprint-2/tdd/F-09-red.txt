@@ -1,0 +1,438 @@
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow-f09/server
+
+ ❯ tests/f09/attachments.test.ts (19 tests | 19 failed) 3983ms
+   × F-09 attachments API > TEST-148 / AC-117: the owner uploads a PDF to a draft 32ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-149 / AC-118: PNG, JPEG and upper-case extensions are accepted 8ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-150 / AC-119: other types and mismatched content are refused 7ms
+     → notes.txt: expected 404 to be 422 // Object.is equality
+   × F-09 attachments API > TEST-151 / AC-120: the size limit is 5,242,880 bytes 19ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-152 / AC-121: file name rules 11ms
+     → null: expected 404 to be 422 // Object.is equality
+   × F-09 attachments API > TEST-153 / AC-122: only application/octet-stream is accepted 7ms
+     → application/pdf: expected 404 to be 415 // Object.is equality
+   × F-09 attachments API > TEST-154 / AC-123: at most 5 files, also with simultaneous uploads 6ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-155 / AC-124: nothing changes on a request that is not a draft 9ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-156 / AC-125: a change that waits behind a submit is refused 6ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-157 / AC-126: only the owner can add or remove 12ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-158 / AC-127: anonymous calls and foreign origins are refused 6ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-159 / AC-128: the list has only the attachment fields, oldest first 6ms
+     → expected {} to deeply equal { attachments: [] }
+   × F-09 attachments API > TEST-160 / AC-129: reading follows request visibility 10ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-161 / AC-130: a download returns the same bytes with safe headers 5ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-162 / AC-131: an attachment id works only under its own request 16ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-163 / AC-132: the owner deletes a file of a draft 4ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-164 / AC-133: server-owned fields cannot be set and names stay text 6ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-165 / AC-134: files stay through the request lifecycle and a new session 4ms
+     → expected 404 to be 201 // Object.is equality
+   × F-09 attachments API > TEST-166 / AC-135: files change no status or history and do not affect submit 11ms
+     → expected 404 to be 201 // Object.is equality
+ ❯ tests/f09/attachment-rules.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f09/attachment-rules.test.ts [ tests/f09/attachment-rules.test.ts ]
+Error: Failed to load url ../../src/attachmentRules.js (resolved id: ../../src/attachmentRules.js) in /Users/aphisamai/Downloads/buyflow-f09/server/tests/f09/attachment-rules.test.ts. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51969:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-148 / AC-117: the owner uploads a PDF to a draft
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f09/attachments.test.ts:134:24
+    132|     const content = pdf(1000);
+    133|     const res = await upload(owner, draft.id, { name: "quotation.pdf",…
+    134|     expect(res.status).toBe(201);
+       |                        ^
+    135|     expect(Object.keys(res.body.attachment).sort()).toEqual(["createdA…
+    136|     expect(res.body.attachment).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-149 / AC-118: PNG, JPEG and upper-case extensions are accepted
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:156:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-150 / AC-119: other types and mismatched content are refused
+AssertionError: notes.txt: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f09/attachments.test.ts:170:32
+    168|     for (const [name, content] of cases) {
+    169|       const res = await upload(owner, draft.id, { name, content });
+    170|       expect(res.status, name).toBe(422);
+       |                                ^
+    171|       expect(res.body.code).toBe("VALIDATION_ERROR");
+    172|       expect(res.body.fields.file).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-151 / AC-120: the size limit is 5,242,880 bytes
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f09/attachments.test.ts:180:28
+    178|     const draft = await createDraft(owner);
+    179|     const atLimit = await upload(owner, draft.id, { content: pdf(MB5) …
+    180|     expect(atLimit.status).toBe(201);
+       |                            ^
+    181|     expect(atLimit.body.attachment.sizeBytes).toBe(MB5);
+    182|     const over = await upload(owner, draft.id, { content: pdf(MB5 + 1)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-152 / AC-121: file name rules
+AssertionError: null: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/f09/attachments.test.ts:204:43
+    202|     for (const rawName of bad) {
+    203|       const res = await upload(owner, draft.id, { rawName });
+    204|       expect(res.status, String(rawName)).toBe(422);
+       |                                           ^
+    205|       expect(res.body.fields.fileName).toBeTruthy();
+    206|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-153 / AC-122: only application/octet-stream is accepted
+AssertionError: application/pdf: expected 404 to be 415 // Object.is equality
+
+- Expected
++ Received
+
+- 415
++ 404
+
+ ❯ tests/f09/attachments.test.ts:217:32
+    215|     for (const type of ["application/pdf", "text/plain"]) {
+    216|       const res = await upload(owner, draft.id, { type });
+    217|       expect(res.status, type).toBe(415);
+       |                                ^
+    218|       expect(res.body.code).toBe("UNSUPPORTED_MEDIA_TYPE");
+    219|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-154 / AC-123: at most 5 files, also with simultaneous uploads
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:225:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-155 / AC-124: nothing changes on a request that is not a draft
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ make tests/f09/attachments.test.ts:93:18
+ ❯ nonDraftRequests tests/f09/attachments.test.ts:96:21
+ ❯ tests/f09/attachments.test.ts:240:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-156 / AC-125: a change that waits behind a submit is refused
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:256:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-157 / AC-126: only the owner can add or remove
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:273:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-158 / AC-127: anonymous calls and foreign origins are refused
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:292:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-159 / AC-128: the list has only the attachment fields, oldest first
+AssertionError: expected {} to deeply equal { attachments: [] }
+
+- Expected
++ Received
+
+- Object {
+-   "attachments": Array [],
+- }
++ Object {}
+
+ ❯ tests/f09/attachments.test.ts:313:51
+    311|   it("TEST-159 / AC-128: the list has only the attachment fields, olde…
+    312|     const draft = await createDraft(owner);
+    313|     expect((await owner.get(url(draft.id))).body).toEqual({ attachment…
+       |                                                   ^
+    314|     for (const name of ["1.pdf", "2.pdf", "3.pdf"]) await uploaded(own…
+    315|     const res = await owner.get(url(draft.id));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-160 / AC-129: reading follows request visibility
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:327:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-161 / AC-130: a download returns the same bytes with safe headers
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:359:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-162 / AC-131: an attachment id works only under its own request
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:377:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-163 / AC-132: the owner deletes a file of a draft
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:386:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-164 / AC-133: server-owned fields cannot be set and names stay text
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/f09/attachments.test.ts:407:24
+    405|       .set("X-Uploaded-By", "1")
+    406|       .send(content);
+    407|     expect(res.status).toBe(201);
+       |                        ^
+    408|     expect(res.body.attachment).toMatchObject({ fileName: name, fileTy…
+    409|     expect(res.body.attachment.uploadedBy.id).toBe(ownerId);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-165 / AC-134: files stay through the request lifecycle and a new session
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ make tests/f09/attachments.test.ts:93:18
+ ❯ nonDraftRequests tests/f09/attachments.test.ts:96:21
+ ❯ tests/f09/attachments.test.ts:414:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/20]⎯
+
+ FAIL  tests/f09/attachments.test.ts > F-09 attachments API > TEST-166 / AC-135: files change no status or history and do not affect submit
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ uploaded tests/f09/attachments.test.ts:85:22
+     83| async function uploaded(agent: Agent, requestId: number, options: Uplo…
+     84|   const res = await upload(agent, requestId, options);
+     85|   expect(res.status).toBe(201);
+       |                      ^
+     86|   return res.body.attachment as { id: number; fileName: string; fileTy…
+     87| }
+ ❯ tests/f09/attachments.test.ts:434:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/20]⎯
+
+ Test Files  2 failed (2)
+      Tests  19 failed (19)
+   Start at  18:26:15
+   Duration  4.68s (transform 106ms, setup 0ms, collect 250ms, tests 3.98s, environment 0ms, prepare 125ms)
+

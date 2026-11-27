@@ -1,0 +1,249 @@
+F-09 red run: final browser tests against the code without the feature (staging 5f26d9f), 27 November 2026
+Command: npx playwright test e2e/requests/attachments.spec.ts --timeout=15000
+[WebServer] (node:54428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:54429) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:54456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
+
+Seeded demo accounts.
+
+Running 6 tests using 1 worker
+
+(node:54487) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/requests/attachments.spec.ts:26:5 › TEST-164 / AC-133: a file name with HTML characters is shown as text (1.6s)
+(node:54493) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › e2e/requests/attachments.spec.ts:43:5 › TEST-167 / AC-136: the owner uploads, keeps and deletes a file (6.1s)
+(node:54499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › e2e/requests/attachments.spec.ts:68:5 › TEST-168 / AC-137: read-only views have Download and no add or delete (15.1s)
+(node:54516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [chromium] › e2e/requests/attachments.spec.ts:91:5 › TEST-169 / AC-138: loading, load error with Retry, action error and the 5-file limit (6.3s)
+(node:54522) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [chromium] › e2e/requests/attachments.spec.ts:134:5 › TEST-170 / AC-139: upload, download and delete with the keyboard (6.2s)
+(node:54528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [chromium] › e2e/requests/attachments.spec.ts:170:5 › TEST-171 / AC-140: long file names fit three widths and axe finds no serious violation (1.2s)
+
+
+  1) [chromium] › e2e/requests/attachments.spec.ts:26:5 › TEST-164 / AC-133: a file name with HTML characters is shown as text 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 404
+
+      16 |     data: PDF,
+      17 |   });
+    > 18 |   expect(res.status()).toBe(201);
+         |                        ^
+      19 | }
+      20 |
+      21 | async function uploadViaUi(page: Page, name: string) {
+        at addViaApi (/private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:18:24)
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:35:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--73111-characters-is-shown-as-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--73111-characters-is-shown-as-text-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--73111-characters-is-shown-as-text-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--73111-characters-is-shown-as-text-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/requests/attachments.spec.ts:43:5 › TEST-167 / AC-136: the owner uploads, keeps and deletes a file 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Attachments' }).getByText('No attachments.')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Attachments' }).getByText('No attachments.') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Attachments' }).getByText('No attachments.')
+
+
+      44 |   await loginAs(page, ACCOUNTS.requester);
+      45 |   await createDraftViaUi(page, uniqueName("Attachment owner"));
+    > 46 |   await expect(section(page).getByText("No attachments.")).toBeVisible();
+         |                                                            ^
+      47 |   await expect(section(page).getByRole("button", { name: "Upload" })).toBeDisabled();
+      48 |   await uploadViaUi(page, "quotation.pdf");
+      49 |   await expect(rows(page)).toHaveCount(1);
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:46:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--c7774-ds-keeps-and-deletes-a-file-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--c7774-ds-keeps-and-deletes-a-file-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--c7774-ds-keeps-and-deletes-a-file-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--c7774-ds-keeps-and-deletes-a-file-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/requests/attachments.spec.ts:68:5 › TEST-168 / AC-137: read-only views have Download and no add or delete 
+
+    Test timeout of 15000ms exceeded.
+
+    Error: locator.setInputFiles: Test timeout of 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Attachments' }).getByLabel('Add attachment')
+
+
+      20 |
+      21 | async function uploadViaUi(page: Page, name: string) {
+    > 22 |   await section(page).getByLabel("Add attachment").setInputFiles(pdfFile(name));
+         |   ^
+      23 |   await section(page).getByRole("button", { name: "Upload" }).click();
+      24 | }
+      25 |
+        at uploadViaUi (/private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:22:3)
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:71:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--73352-wnload-and-no-add-or-delete-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--73352-wnload-and-no-add-or-delete-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--73352-wnload-and-no-add-or-delete-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--73352-wnload-and-no-add-or-delete-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/requests/attachments.spec.ts:91:5 › TEST-169 / AC-138: loading, load error with Retry, action error and the 5-file limit 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Attachments' }).getByText('Loading attachments...')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Attachments' }).getByText('Loading attachments...') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Attachments' }).getByText('Loading attachments...')
+
+
+      102 |   });
+      103 |   await page.reload();
+    > 104 |   await expect(section(page).getByText("Loading attachments...")).toBeVisible();
+          |                                                                   ^
+      105 |   release();
+      106 |   await expect(section(page).getByText("Unable to load attachments.")).toBeVisible();
+      107 |   await expect(page.getByRole("button", { name: "Submit request" })).toBeVisible();
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:104:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--dd5f4--error-and-the-5-file-limit-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--dd5f4--error-and-the-5-file-limit-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--dd5f4--error-and-the-5-file-limit-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--dd5f4--error-and-the-5-file-limit-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/requests/attachments.spec.ts:134:5 › TEST-170 / AC-139: upload, download and delete with the keyboard 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Attachments' }).getByText('No attachments.')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Attachments' }).getByText('No attachments.') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Attachments' }).getByText('No attachments.')
+
+
+      135 |   await loginAs(page, ACCOUNTS.requester);
+      136 |   await createDraftViaUi(page, uniqueName("Attachment keyboard"));
+    > 137 |   await expect(section(page).getByText("No attachments.")).toBeVisible();
+          |                                                            ^
+      138 |
+      139 |   const input = section(page).getByLabel("Add attachment");
+      140 |   await input.focus();
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:137:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--59135-nd-delete-with-the-keyboard-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--59135-nd-delete-with-the-keyboard-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--59135-nd-delete-with-the-keyboard-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--59135-nd-delete-with-the-keyboard-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/requests/attachments.spec.ts:170:5 › TEST-171 / AC-140: long file names fit three widths and axe finds no serious violation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 404
+
+      16 |     data: PDF,
+      17 |   });
+    > 18 |   expect(res.status()).toBe(201);
+         |                        ^
+      19 | }
+      20 |
+      21 | async function uploadViaUi(page: Page, name: string) {
+        at addViaApi (/private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:18:24)
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f09red/e2e/requests/attachments.spec.ts:173:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--7ee03--finds-no-serious-violation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-attachments-TEST--7ee03--finds-no-serious-violation-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-attachments-TEST--7ee03--finds-no-serious-violation-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-attachments-TEST--7ee03--finds-no-serious-violation-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [chromium] › e2e/requests/attachments.spec.ts:26:5 › TEST-164 / AC-133: a file name with HTML characters is shown as text 
+    [chromium] › e2e/requests/attachments.spec.ts:43:5 › TEST-167 / AC-136: the owner uploads, keeps and deletes a file 
+    [chromium] › e2e/requests/attachments.spec.ts:68:5 › TEST-168 / AC-137: read-only views have Download and no add or delete 
+    [chromium] › e2e/requests/attachments.spec.ts:91:5 › TEST-169 / AC-138: loading, load error with Retry, action error and the 5-file limit 
+    [chromium] › e2e/requests/attachments.spec.ts:134:5 › TEST-170 / AC-139: upload, download and delete with the keyboard 
+    [chromium] › e2e/requests/attachments.spec.ts:170:5 › TEST-171 / AC-140: long file names fit three widths and axe finds no serious violation 

@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.7. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08, F-09 and F-10 remain planned pending implementation.
+Version 2.8. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-09 server and browser tests passed on branch `feature/F-09-attachments`, pending review. F-08 and F-10 remain planned pending implementation.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -73,4 +73,4 @@ Version 2.7. Requirement, feature or responsibility, sprint, acceptance criteria
 
 ## Uncovered requirements
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 contract AC-100 to AC-116 and TEST-132 to TEST-147 are approved; implementation has not started. F-09 contract AC-117 to AC-140 and TEST-148 to TEST-171 are approved; implementation has not started. F-10 contract AC-141 to AC-159 and TEST-172 to TEST-190 are planned pending contract review. F-11 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 contract AC-100 to AC-116 and TEST-132 to TEST-147 are approved; implementation has not started. F-09 AC-117 to AC-140 are implemented and TEST-148 to TEST-171 passed on branch `feature/F-09-attachments`, pending review and merge. F-10 contract AC-141 to AC-159 and TEST-172 to TEST-190 are approved; implementation has not started. F-11 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.
