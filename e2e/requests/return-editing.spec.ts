@@ -45,6 +45,10 @@ test("TEST-202 / AC-173: returned drafts remain usable by the owner", async ({ p
   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200);
   await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
   await expect(page.getByRole("region", { name: "Edit draft" })).toBeVisible();
+  await page.goto("/dashboard");
+  await expect(page.getByRole("link", { name: /Draft/ })).toBeVisible();
+  await page.goto(`/requests/${id}`);
+  await expect(page.getByRole("region", { name: "Attachments" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Cancel request", exact: true })).toBeVisible();
 });
 

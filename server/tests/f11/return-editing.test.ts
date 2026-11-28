@@ -20,7 +20,7 @@ beforeAll(async () => {
 afterAll(async () => { await cleanupUsers(ALL); await getPrisma().$disconnect(); });
 
 async function returned(agent: any, id: number, reason = "Please add the missing details") {
-  return agent.post(`/api/requests/${id}/return`).set("Origin", ORIGIN).send({ reason });
+  return agent.post(`/api/requests/${id}/return`).set("Origin", ORIGIN).send({ reason, status: "APPROVED", decidedAt: "2000-01-01T00:00:00.000Z" });
 }
 
 describe("F-11 return for editing", () => {
