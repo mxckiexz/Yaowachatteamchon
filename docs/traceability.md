@@ -18,7 +18,7 @@ Version 2.18. Requirement, feature or responsibility, sprint, acceptance criteri
 | FR-12 | F-04 | 1 | AC-35 | TEST-56 |
 | FR-13 | F-03 | 1 | AC-26, AC-32 | TEST-39, 73 |
 | FR-14 | F-02 | 1 | AC-17 | TEST-25 |
-| FR-15 | F-05 | 1 | AC-39 to AC-44 | TEST-61 to 67, 75 |
+| FR-15 | F-05 | 1, 3 | AC-39 to AC-45 | TEST-61 to 68, 75 |
 | FR-16 | F-01 | 1 | AC-01 to AC-05, AC-12 | TEST-01 to 07, 70 |
 | FR-17 | F-07 | 2 | AC-74 to AC-99 | TEST-106 to TEST-131 |
 | FR-18 | F-08 | 2 | AC-100 to AC-116 | TEST-132 to TEST-147 |
@@ -60,7 +60,7 @@ Version 2.18. Requirement, feature or responsibility, sprint, acceptance criteri
 | BR-26 | F-11 | 2 | AC-160 to AC-179 | TEST-191 to TEST-208 |
 | BR-27 | F-12 | 2 | AC-180 to AC-187 | TEST-211 to TEST-218 |
 | BR-28 | F-12 | 2 | AC-188 to AC-192 | TEST-219 to TEST-223 |
-| BR-29 | F-13 | 3 | AC-201 to AC-216 | TEST-232 to TEST-247 (planned) |
+| BR-29 | F-13 | 3 | AC-201 to AC-221 | TEST-232 to TEST-252 (planned) |
 | NFR-01 | F-01, F-06, F-07, F-08, F-09, F-10, F-11, F-12, F-13 | 1, 2, 3 | AC-08, AC-26, AC-34, AC-37, AC-39, AC-68, AC-84, AC-105, AC-114, AC-126, AC-127, AC-146 to AC-148, AC-168, AC-193, AC-202 | TEST-12, 39, 53, 58, 62, 101, 116, 137, 145, 157, 158, 177 to 179, 197, 224, 233 |
 | NFR-02 | F-04, F-06, F-07, F-08, F-09, F-10, F-11, F-12, F-13 | 1, 2, 3 | AC-35, AC-70, AC-73, AC-80, AC-84, AC-102, AC-103, AC-106, AC-112, AC-126, AC-129, AC-131, AC-147, AC-149, AC-150, AC-167, AC-172, AC-188, AC-189, AC-191, AC-216 | TEST-55, 56, 103, 104, 112, 116, 134, 135, 138, 144, 157, 160, 162, 167, 178, 180, 181, 196, 201, 219, 220, 222, 247 |
 | NFR-03 | F-01 | 1 | AC-06 | TEST-08, 09 |

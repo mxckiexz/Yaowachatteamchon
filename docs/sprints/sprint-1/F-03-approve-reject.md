@@ -1,8 +1,14 @@
 # Feature contract F-03: Approve or reject a request
 
-Contract version 2.0. Written before implementation.
+Contract version 2.1. Written before implementation.
 
 Linked requirements: FR-07, FR-08, FR-09, FR-11, FR-13. Rules: BR-07, BR-08, BR-09, BR-11, BR-17. NFR-06. Depends on: F-02.
+
+## Change log
+| Version | Date | Change |
+|---|---|---|
+| 2.0 | Before implementation | Initial approve/reject contract. |
+| 2.1 | 28 November 2026 | F-13 revision: AC-28/TEST-41 legacy any-approver behavior applies only when no approval chain is configured. |
 
 ## 1. Feature design
 
