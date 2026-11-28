@@ -5,19 +5,25 @@
 
  RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
 
- ✓ tests/f11/return-editing.test.ts (9 tests) 8122ms
-   ✓ F-11 return for editing > TEST-191 / AC-160: approver returns another user's submitted request 796ms
-   ✓ F-11 return for editing > TEST-192 / AC-161, AC-162: only an approver can return and only another owner is eligible 1088ms
-   ✓ F-11 return for editing > TEST-193 / AC-163, AC-164, AC-165: reason boundaries and status errors 890ms
-   ✓ F-11 return for editing > TEST-194 / AC-166: requester can edit and resubmit a returned draft 740ms
-   ✓ F-11 return for editing > TEST-195 / AC-167: approver cannot read the returned draft after success 714ms
-   ✓ F-11 return for editing > TEST-196 / AC-168, AC-169: invalid origin and unauthenticated calls are refused 360ms
-   ✓ F-11 return for editing > TEST-197 / AC-170: return and a decision are mutually exclusive 707ms
-   ✓ F-11 return for editing > TEST-198 / AC-171: return preserves existing data and appends one history row 723ms
-   ✓ F-11 return for editing > TEST-199 / AC-172: returned request is visible to its owner and not the review queue 719ms
+stderr | tests/f11/return-editing.test.ts > F-11 return for editing > TEST-199 / AC-170: history failure rolls back status
+Error: forced history failure
+    at Object.history.create (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\tests\f11\return-editing.test.ts:82:265)
+    at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\src\requestRoutes.ts:285:33
+    at Proxy._transactionWithCallback (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:130:8000)
+
+ ✓ tests/f11/return-editing.test.ts (9 tests) 8706ms
+   ✓ F-11 return for editing > TEST-191 / AC-160 to AC-162: valid return updates status and records history 785ms
+   ✓ F-11 return for editing > TEST-192 / AC-163: owner edits and resubmits a returned request 747ms
+   ✓ F-11 return for editing > TEST-193 / AC-164: only another approver may return 1085ms
+   ✓ F-11 return for editing > TEST-194 / AC-165: draft is hidden and terminal statuses return 409 788ms
+   ✓ F-11 return for editing > TEST-195 / AC-166 and AC-179: valid boundaries pass and invalid reasons fail 872ms
+   ✓ F-11 return for editing > TEST-196 / AC-167: hidden, unknown and non-numeric ids return 404 737ms
+   ✓ F-11 return for editing > TEST-197 / AC-168: origin, session and malformed JSON checks are enforced 402ms
+   ✓ F-11 return for editing > TEST-198 / AC-169: concurrent returns and cancel have only contract-allowed outcomes 1223ms
+   ✓ F-11 return for editing > TEST-199 / AC-170: history failure rolls back status 705ms
 
  Test Files  1 passed (1)
       Tests  9 passed (9)
-   Start at  01:04:51
-   Duration  8.96s (transform 169ms, setup 0ms, collect 564ms, tests 8.12s, environment 0ms, prepare 103ms)
+   Start at  14:04:58
+   Duration  9.64s (transform 210ms, setup 0ms, collect 646ms, tests 8.71s, environment 0ms, prepare 113ms)
 

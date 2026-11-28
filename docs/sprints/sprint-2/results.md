@@ -132,8 +132,16 @@ Implementation commit: `127536e`. Contract: `F-11-return-editing.md` v1.1. The A
 
 | AC | Implementation | Test | Actual result | Commit |
 |---|---|---|---|---|
-| AC-160 to AC-172 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 to TEST-199 | 9 server tests passed locally; owner, approver, visibility, validation, history and race behavior verified | `127536e` |
-| AC-173 to AC-179 | Return form, success announcement, focus, responsive/accessibility behavior and additive `RETURNED` migration | TEST-200 to TEST-201 | 2 browser tests passed; migration applied to the local test database; remaining responsive/axe/cross-feature checks are pending | `127536e` |
+| AC-160 to AC-162 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 | Server passed; valid return, timestamps and `RETURNED` history verified | `127536e` |
+| AC-163 | Owner edit and resubmit | TEST-192 | Server passed | `127536e` |
+| AC-164 | Approver and ownership permission checks | TEST-193 | Server passed | `127536e` |
+| AC-165 | Draft hidden and terminal statuses rejected | TEST-194 | Server passed | `127536e` |
+| AC-166, AC-179 | Reason boundaries and U+0000 rejection | TEST-195 | Server passed | `127536e` |
+| AC-167 | Hidden, unknown and non-numeric ids | TEST-196 | Server passed | `127536e` |
+| AC-168 | Origin, session and malformed JSON checks | TEST-197 | Server passed | `127536e` |
+| AC-169 | Concurrent return/decision and return/cancel | TEST-198 | Server passed with contract-allowed race outcomes | `127536e` |
+| AC-170 | Atomic history failure rollback | TEST-199 | Server passed; status remained SUBMITTED after forced failure | `127536e` |
+| AC-171 to AC-176 | Return form, focus, counts/cross-feature checks, responsive, axe and text announcement | TEST-200 to TEST-205 | 6 browser tests passed; no horizontal overflow at 375/768/1280, axe no serious/critical violations, success announcement and text rendering verified | `127536e` |
 
-Known limitation: the full AC-173 to AC-179 browser/accessibility matrix is not yet complete; no production deployment has been performed.
+Full local suites: server 184 passed, client 17 passed, full Playwright 48 passed. Raw output is in `test-output/server-f11-full-vitest.txt` and `test-output/browser-f11-full-playwright.txt`. No production deployment has been performed.
 

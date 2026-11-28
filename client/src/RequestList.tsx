@@ -25,6 +25,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
   const [draft, setDraft] = useState({ q, status, category });
   const [requests, setRequests] = useState<RequestSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState("");
 
   function load() {
     setError(null);
@@ -38,8 +39,12 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
     load();
   }, [scope, q, status, category]);
   useEffect(() => {
-    if (scope === "review" && new URLSearchParams(location.search).has("returned")) heading.current?.focus();
-  }, [scope, location.search]);
+    if (scope === "review" && (location.state as { returnedRequestNumber?: string } | null)?.returnedRequestNumber) heading.current?.focus();
+  }, [scope, location.state]);
+  useEffect(() => {
+    const returned = (location.state as { returnedRequestNumber?: string } | null)?.returnedRequestNumber;
+    if (returned) setAnnouncement(`${returned} was returned to the requester.`);
+  }, [location.state]);
 
   function applyFilters(event?: FormEvent) {
     event?.preventDefault();
@@ -85,8 +90,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
           <button className="btn btn-outline-secondary" type="button" onClick={clearFilters}>Clear filters</button>
         </div>
       </form>
-      <p className="visually-hidden" role="status" aria-live="polite">{requests == null ? "Loading results" : requests.length ? `${requests.length} results` : "0 results"}</p>
-      {scope === "review" && new URLSearchParams(location.search).has("returned") && <p role="status" className="alert alert-success">{new URLSearchParams(location.search).get("returned")} was returned to the requester.</p>}
+      <p className="visually-hidden" role="status" aria-live="polite">{announcement || (requests == null ? "Loading results" : requests.length ? `${requests.length} results` : "0 results")}</p>
       {error && (
         <div role="alert" className="alert alert-danger">
           {error} <button className="btn btn-sm btn-outline-danger ms-2" onClick={load}>Retry</button>

@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.12. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation is on this branch; final browser evidence remains pending.
+Version 2.13. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation is on this branch; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|

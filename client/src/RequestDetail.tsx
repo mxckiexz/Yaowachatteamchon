@@ -91,7 +91,7 @@ export default function RequestDetail() {
       {canEdit && <SubmitPanel request={request} onDone={reload} />}
       {canCancel && <CancelPanel request={request} onDone={reload} />}
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
-      {canReturn && <ReturnPanel request={request} onReturned={() => navigate(`/reviews?returned=${encodeURIComponent(request.requestNumber)}`)} />}
+      {canReturn && <ReturnPanel request={request} onReturned={() => navigate("/reviews", { state: { returnedRequestNumber: request.requestNumber } })} />}
 
       <Attachments requestId={request.id} canChange={canEdit} />
 
@@ -116,6 +116,7 @@ function ReturnPanel({ request, onReturned }: { request: Detail; onReturned: () 
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const reasonRef = useRef<HTMLTextAreaElement>(null);
+  const actionButton = useRef<HTMLButtonElement>(null);
   async function confirm() {
     setBusy(true); setError(null);
     try {
@@ -128,10 +129,10 @@ function ReturnPanel({ request, onReturned }: { request: Detail; onReturned: () 
   }
   return <section className="border rounded p-3 mb-3" aria-label="Return for editing">
     <h2 className="h6">Return for editing</h2>
-    {!open ? <button className="btn btn-outline-warning" onClick={() => { setOpen(true); setTimeout(() => reasonRef.current?.focus(), 0); }}>Return for editing</button> : <>
+    {!open ? <button ref={actionButton} className="btn btn-outline-secondary" onClick={() => { setOpen(true); setTimeout(() => reasonRef.current?.focus(), 0); }}>Return for editing</button> : <>
       <label className="form-label" htmlFor="returnReason">Reason</label>
       <textarea ref={reasonRef} id="returnReason" className="form-control mb-2" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} />
-      <div className="d-flex gap-2"><button className="btn btn-warning" disabled={busy} onClick={confirm}>Confirm return</button><button className="btn btn-outline-secondary" disabled={busy} onClick={() => { setOpen(false); setError(null); }}>Keep submitted</button></div>
+      <div className="d-flex gap-2"><button className="btn btn-warning" disabled={busy} onClick={confirm}>Confirm return</button><button className="btn btn-outline-secondary" disabled={busy} onClick={() => { setOpen(false); setError(null); setTimeout(() => actionButton.current?.focus(), 0); }}>Keep submitted</button></div>
     </>}
     {error && <div role="alert" className="alert alert-danger mt-2 mb-0">{error}</div>}
   </section>;
