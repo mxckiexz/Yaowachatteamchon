@@ -1,0 +1,198 @@
+$ npx playwright test e2e/requests/reports.spec.ts   (code: staging ab1efd8 without F-17, final test file; 2026-11-29 01:34 +0700)
+
+> purchaseflow-server@1.0.0 prisma:seed
+> tsx --env-file-if-exists=.env prisma/seed.ts
+
+Seeded demo accounts.
+
+Running 5 tests using 1 worker
+
+  ✘  1 [chromium] › e2e/requests/reports.spec.ts:69:5 › TEST-346 / AC-315: every role has the report, with the API's values and filters kept in the address (30.3s)
+  ✘  2 [chromium] › e2e/requests/reports.spec.ts:100:5 › TEST-347 / AC-316: loading, load error with Retry, empty, filter errors and an export error (6.3s)
+  ✘  3 [chromium] › e2e/requests/reports.spec.ts:158:5 › TEST-348 / AC-317: the export matches the applied filters, not the unapplied form (30.1s)
+  ✘  4 [chromium] › e2e/requests/reports.spec.ts:183:5 › TEST-349 / AC-318: keyboard only, with labels, focus and announcements (6.3s)
+  ✘  5 [chromium] › e2e/requests/reports.spec.ts:217:5 › TEST-350 / AC-319: three widths without page scrolling, and axe finds no serious violation (6.0s)
+
+
+  1) [chromium] › e2e/requests/reports.spec.ts:69:5 › TEST-346 / AC-315: every role has the report, with the API's values and filters kept in the address 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('navigation').getByRole('link', { name: 'Reports', exact: true })
+
+
+      71 |     await loginAs(page, account);
+      72 |     if (account !== ACCOUNTS.admin) await createViaApi(page, uniqueName("Report roles"), "SOFTWARE");
+    > 73 |     await navLink(page).click();
+         |                         ^
+      74 |     await expect(page.getByRole("heading", { level: 1, name: "Reports" })).toBeVisible();
+      75 |     await expectShows(page, await apiSummary(page));
+      76 |
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:73:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-346--51d6a-filters-kept-in-the-address-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-reports-TEST-346--51d6a-filters-kept-in-the-address-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-346--51d6a-filters-kept-in-the-address-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-reports-TEST-346--51d6a-filters-kept-in-the-address-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/requests/reports.spec.ts:100:5 › TEST-347 / AC-316: loading, load error with Retry, empty, filter errors and an export error 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Loading report...')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Loading report...') with timeout 5000ms
+      - waiting for getByText('Loading report...')
+
+
+      111 |   });
+      112 |   await page.goto("/reports");
+    > 113 |   await expect(page.getByText("Loading report...")).toBeVisible();
+          |                                                     ^
+      114 |   await expect(exportButton(page)).toBeDisabled();
+      115 |   release();
+      116 |   await expect(page.getByText("Unable to load the report.")).toBeVisible();
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:113:53
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-347--b097e--errors-and-an-export-error-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-reports-TEST-347--b097e--errors-and-an-export-error-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-347--b097e--errors-and-an-export-error-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-reports-TEST-347--b097e--errors-and-an-export-error-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/requests/reports.spec.ts:158:5 › TEST-348 / AC-317: the export matches the applied filters, not the unapplied form 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Status', { exact: true })
+
+
+      166 |
+      167 |   await page.goto("/reports");
+    > 168 |   await page.getByLabel("Status", { exact: true }).selectOption("DRAFT");
+          |                                                    ^
+      169 |   await applyButton(page).click();
+      170 |   await expect(page).toHaveURL(/status=DRAFT$/);
+      171 |   await expect(exportButton(page)).toBeEnabled();
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:168:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-348--a2dc7-ters-not-the-unapplied-form-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-reports-TEST-348--a2dc7-ters-not-the-unapplied-form-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-348--a2dc7-ters-not-the-unapplied-form-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-reports-TEST-348--a2dc7-ters-not-the-unapplied-form-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/requests/reports.spec.ts:183:5 › TEST-349 / AC-318: keyboard only, with labels, focus and announcements 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation').getByRole('link', { name: 'Reports', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation').getByRole('link', { name: 'Reports', exact: true }) with timeout 5000ms
+      - waiting for getByRole('navigation').getByRole('link', { name: 'Reports', exact: true })
+
+
+      59 | // Presses the key until the element has the focus, so the test only works if it is reachable by keyboard.
+      60 | async function keyTo(page: Page, target: Locator, key: "Tab" | "Shift+Tab" = "Tab") {
+    > 61 |   await expect(target).toBeVisible();
+         |                        ^
+      62 |   for (let i = 0; i < 40; i++) {
+      63 |     await page.keyboard.press(key);
+      64 |     if (await target.evaluate((el) => el === document.activeElement)) return;
+        at keyTo (/private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:61:24)
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:187:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-349--3c0c4-els-focus-and-announcements-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-reports-TEST-349--3c0c4-els-focus-and-announcements-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-349--3c0c4-els-focus-and-announcements-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-reports-TEST-349--3c0c4-els-focus-and-announcements-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/requests/reports.spec.ts:217:5 › TEST-350 / AC-319: three widths without page scrolling, and axe finds no serious violation 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('table', { name: 'By status' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('table', { name: 'By status' }) with timeout 5000ms
+      - waiting for getByRole('table', { name: 'By status' })
+
+
+      220 |     if (account === ACCOUNTS.approver) await createViaApi(page, uniqueName("Report widths"), "STATIONERY");
+      221 |     await page.goto("/reports");
+    > 222 |     await expect(table(page, "By status")).toBeVisible();
+          |                                            ^
+      223 |     await expect(table(page, "By category")).toBeVisible();
+      224 |     for (const width of [375, 768, 1280]) {
+      225 |       await page.setViewportSize({ width, height: 800 });
+        at /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/e2e/requests/reports.spec.ts:222:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-350--d29ec--finds-no-serious-violation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/requests-reports-TEST-350--d29ec--finds-no-serious-violation-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/requests-reports-TEST-350--d29ec--finds-no-serious-violation-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/requests-reports-TEST-350--d29ec--finds-no-serious-violation-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [chromium] › e2e/requests/reports.spec.ts:69:5 › TEST-346 / AC-315: every role has the report, with the API's values and filters kept in the address 
+    [chromium] › e2e/requests/reports.spec.ts:100:5 › TEST-347 / AC-316: loading, load error with Retry, empty, filter errors and an export error 
+    [chromium] › e2e/requests/reports.spec.ts:158:5 › TEST-348 / AC-317: the export matches the applied filters, not the unapplied form 
+    [chromium] › e2e/requests/reports.spec.ts:183:5 › TEST-349 / AC-318: keyboard only, with labels, focus and announcements 
+    [chromium] › e2e/requests/reports.spec.ts:217:5 › TEST-350 / AC-319: three widths without page scrolling, and axe finds no serious violation 
