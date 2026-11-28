@@ -1,12 +1,12 @@
-[WebServer] (node:26712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:33952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:12940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:27516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:29612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:33900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:34516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:3904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:20700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:27556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
 > purchaseflow-server@1.0.0 prisma:seed
@@ -16,14 +16,14 @@ Seeded demo accounts.
 
 Running 48 tests using 1 worker
 
-(node:7776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:21068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:7776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:21068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ok  1 [chromium] › e2e\admin\users.spec.ts:4:5 › TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected (3.5s)
-  ok  2 [chromium] › e2e\f01\login.spec.ts:4:5 › TEST-70 / AC-12: wrong login shows an error, correct login reaches the role's first screen, logout returns to login (2.0s)
-  ok  3 [chromium] › e2e\f01\login.spec.ts:24:5 › AC-12: an anonymous visit to a protected route is redirected to login (306ms)
-  ok  4 [chromium] › e2e\f01\login.spec.ts:29:5 › AC-12: an approver sees the review link and an administrator lands on the users screen (1.4s)
+  ok  1 [chromium] › e2e\admin\users.spec.ts:4:5 › TEST-75 / AC-44: the administrator deactivates a user, who cannot log in; the own row is locked; others are redirected (4.6s)
+  ok  2 [chromium] › e2e\f01\login.spec.ts:4:5 › TEST-70 / AC-12: wrong login shows an error, correct login reaches the role's first screen, logout returns to login (2.7s)
+  ok  3 [chromium] › e2e\f01\login.spec.ts:24:5 › AC-12: an anonymous visit to a protected route is redirected to login (411ms)
+  ok  4 [chromium] › e2e\f01\login.spec.ts:29:5 › AC-12: an approver sees the review link and an administrator lands on the users screen (1.5s)
 axe login: 0 violations
 axe login with error: 0 violations
 axe my requests: 0 violations
@@ -35,49 +35,49 @@ axe review queue: 0 violations
 axe decision panel (reject): 0 violations
 axe administrator users: 0 violations
 axe administrator all requests: 0 violations
-  ok  5 [chromium] › e2e\quality\accessibility.spec.ts:26:5 › TEST-87 / AC-52: the main screens of the three roles have no serious or critical accessibility violations (12.1s)
-  ok  6 [chromium] › e2e\quality\responsive-keyboard.spec.ts:12:5 › TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone (10.2s)
-  ok  7 [chromium] › e2e\quality\xss.spec.ts:5:5 › TEST-86 / AC-51: HTML and script typed into text is shown as text and never executed (2.7s)
-  ok  8 [chromium] › e2e\requests\approver-journey.spec.ts:5:5 › TEST-72 / AC-32: an approver approves one request and rejects another (first without a reason); the requester sees both (4.6s)
-  ok  9 [chromium] › e2e\requests\approver-journey.spec.ts:57:5 › TEST-73 / AC-26, AC-32: a requester has no decision buttons and the API refuses them (1.4s)
-  ok 10 [chromium] › e2e\requests\approver-journey.spec.ts:75:5 › an approver cannot approve their own request, and another requester cannot open it (2.0s)
-  ok 11 [chromium] › e2e\requests\attachments.spec.ts:26:5 › TEST-164 / AC-133: a file name with HTML characters is shown as text (1.4s)
+  ok  5 [chromium] › e2e\quality\accessibility.spec.ts:26:5 › TEST-87 / AC-52: the main screens of the three roles have no serious or critical accessibility violations (13.5s)
+  ok  6 [chromium] › e2e\quality\responsive-keyboard.spec.ts:12:5 › TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone (16.3s)
+  ok  7 [chromium] › e2e\quality\xss.spec.ts:5:5 › TEST-86 / AC-51: HTML and script typed into text is shown as text and never executed (3.5s)
+  ok  8 [chromium] › e2e\requests\approver-journey.spec.ts:5:5 › TEST-72 / AC-32: an approver approves one request and rejects another (first without a reason); the requester sees both (5.0s)
+  ok  9 [chromium] › e2e\requests\approver-journey.spec.ts:57:5 › TEST-73 / AC-26, AC-32: a requester has no decision buttons and the API refuses them (1.6s)
+  ok 10 [chromium] › e2e\requests\approver-journey.spec.ts:75:5 › an approver cannot approve their own request, and another requester cannot open it (2.2s)
+  ok 11 [chromium] › e2e\requests\attachments.spec.ts:26:5 › TEST-164 / AC-133: a file name with HTML characters is shown as text (1.3s)
   ok 12 [chromium] › e2e\requests\attachments.spec.ts:43:5 › TEST-167 / AC-136: the owner uploads, keeps and deletes a file (1.9s)
-  ok 13 [chromium] › e2e\requests\attachments.spec.ts:68:5 › TEST-168 / AC-137: read-only views have Download and no add or delete (3.0s)
-  ok 14 [chromium] › e2e\requests\attachments.spec.ts:91:5 › TEST-169 / AC-138: loading, load error with Retry, action error and the 5-file limit (2.9s)
+  ok 13 [chromium] › e2e\requests\attachments.spec.ts:68:5 › TEST-168 / AC-137: read-only views have Download and no add or delete (3.3s)
+  ok 14 [chromium] › e2e\requests\attachments.spec.ts:91:5 › TEST-169 / AC-138: loading, load error with Retry, action error and the 5-file limit (2.8s)
   ok 15 [chromium] › e2e\requests\attachments.spec.ts:134:5 › TEST-170 / AC-139: upload, download and delete with the keyboard (1.5s)
-  ok 16 [chromium] › e2e\requests\attachments.spec.ts:170:5 › TEST-171 / AC-140: long file names fit three widths and axe finds no serious violation (3.3s)
-  ok 17 [chromium] › e2e\requests\cancel-request.spec.ts:5:5 › TEST-104 / AC-71, AC-73: owner sees Cancel, confirms it, and sees the cancelled history (1.4s)
+  ok 16 [chromium] › e2e\requests\attachments.spec.ts:170:5 › TEST-171 / AC-140: long file names fit three widths and axe finds no serious violation (3.1s)
+  ok 17 [chromium] › e2e\requests\cancel-request.spec.ts:5:5 › TEST-104 / AC-71, AC-73: owner sees Cancel, confirms it, and sees the cancelled history (1.5s)
   ok 18 [chromium] › e2e\requests\cancel-request.spec.ts:22:5 › TEST-105 / AC-72: a non-owner and an owner of an approved request do not see Cancel (2.9s)
-  ok 19 [chromium] › e2e\requests\comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text (1.4s)
-  ok 20 [chromium] › e2e\requests\comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request (3.8s)
-  ok 21 [chromium] › e2e\requests\comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form (2.0s)
+  ok 19 [chromium] › e2e\requests\comments.spec.ts:23:5 › TEST-182 / AC-151: comment text with HTML characters is shown as text (1.3s)
+  ok 20 [chromium] › e2e\requests\comments.spec.ts:40:5 › TEST-186 / AC-155: the owner and an approver talk on a submitted request (3.9s)
+  ok 21 [chromium] › e2e\requests\comments.spec.ts:70:5 › TEST-187 / AC-156: the administrator reads comments and has no form (1.9s)
   ok 22 [chromium] › e2e\requests\comments.spec.ts:83:5 › TEST-188 / AC-157: loading, empty, load error, post errors and a double click (2.3s)
-  ok 23 [chromium] › e2e\requests\comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus (1.8s)
-  ok 24 [chromium] › e2e\requests\comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation (4.1s)
-  ok 25 [chromium] › e2e\requests\dashboard.spec.ts:7:5 › TEST-139 / AC-107: role-specific dashboard cards and groups (2.5s)
-  ok 26 [chromium] › e2e\requests\dashboard.spec.ts:22:5 › TEST-140 / AC-108: dashboard is keyboard accessible and has no serious axe violations (1.5s)
-  ok 27 [chromium] › e2e\requests\dashboard.spec.ts:32:5 › TEST-141 / AC-109: dashboard has no horizontal document overflow (1.2s)
-  ok 28 [chromium] › e2e\requests\dashboard.spec.ts:41:5 › TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact message (1.5s)
-  ok 29 [chromium] › e2e\requests\dashboard.spec.ts:53:5 › TEST-143 / AC-111: zero cards remain visible as zero with a scoped link (1.0s)
-  ok 30 [chromium] › e2e\requests\dashboard.spec.ts:64:5 › TEST-144 / AC-112: card counts equal rows in each linked list for every role (5.4s)
-  ok 31 [chromium] › e2e\requests\dashboard.spec.ts:79:5 › TEST-145 / AC-114: dashboard navigation and anonymous redirect (2.3s)
+  ok 23 [chromium] › e2e\requests\comments.spec.ts:149:5 › TEST-189 / AC-158: a two-line comment with the keyboard only, announcement, error and focus (1.7s)
+  ok 24 [chromium] › e2e\requests\comments.spec.ts:182:5 › TEST-190 / AC-159: a long word fits three widths and axe finds no serious violation (4.0s)
+  ok 25 [chromium] › e2e\requests\dashboard.spec.ts:7:5 › TEST-139 / AC-107: role-specific dashboard cards and groups (2.6s)
+  ok 26 [chromium] › e2e\requests\dashboard.spec.ts:22:5 › TEST-140 / AC-108: dashboard is keyboard accessible and has no serious axe violations (1.6s)
+  ok 27 [chromium] › e2e\requests\dashboard.spec.ts:32:5 › TEST-141 / AC-109: dashboard has no horizontal document overflow (1.3s)
+  ok 28 [chromium] › e2e\requests\dashboard.spec.ts:41:5 › TEST-142 / AC-110, AC-113: dashboard error and retry announce the exact message (1.4s)
+  ok 29 [chromium] › e2e\requests\dashboard.spec.ts:53:5 › TEST-143 / AC-111: zero cards remain visible as zero with a scoped link (966ms)
+  ok 30 [chromium] › e2e\requests\dashboard.spec.ts:64:5 › TEST-144 / AC-112: card counts equal rows in each linked list for every role (5.3s)
+  ok 31 [chromium] › e2e\requests\dashboard.spec.ts:79:5 › TEST-145 / AC-114: dashboard navigation and anonymous redirect (2.2s)
   ok 32 [chromium] › e2e\requests\requester-journey.spec.ts:5:5 › TEST-71 / AC-23: a requester creates a draft, edits it, is refused an incomplete submit, completes it and submits (2.3s)
-  ok 33 [chromium] › e2e\requests\requester-journey.spec.ts:44:5 › TEST-71 / AC-14 in the UI: server validation messages appear beside the fields (1.3s)
+  ok 33 [chromium] › e2e\requests\requester-journey.spec.ts:44:5 › TEST-71 / AC-14 in the UI: server validation messages appear beside the fields (1.1s)
   ok 34 [chromium] › e2e\requests\requester-journey.spec.ts:54:5 › TEST-74 / AC-38: saved data is still there after reloading the detail page and the list (2.0s)
   ok 35 [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (4.6s)
-  ok 36 [chromium] › e2e\requests\return-editing.spec.ts:40:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (3.1s)
-  ok 37 [chromium] › e2e\requests\return-editing.spec.ts:58:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (3.5s)
-  ok 38 [chromium] › e2e\requests\return-editing.spec.ts:79:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (2.3s)
-  ok 39 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (2.7s)
-  ok 40 [chromium] › e2e\requests\return-editing.spec.ts:90:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (3.0s)
-  ok 41 [chromium] › e2e\requests\search-filter.spec.ts:22:5 › TEST-119 / AC-87: filters work with keyboard and Enter (1.5s)
-  ok 42 [chromium] › e2e\requests\search-filter.spec.ts:43:5 › TEST-120 / AC-88: labels and review controls are present (1.2s)
+  ok 36 [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (2.9s)
+  ok 37 [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (3.4s)
+  ok 38 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (2.2s)
+  ok 39 [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (2.7s)
+  ok 40 [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (2.9s)
+  ok 41 [chromium] › e2e\requests\search-filter.spec.ts:22:5 › TEST-119 / AC-87: filters work with keyboard and Enter (1.8s)
+  ok 42 [chromium] › e2e\requests\search-filter.spec.ts:43:5 › TEST-120 / AC-88: labels and review controls are present (1.3s)
   ok 43 [chromium] › e2e\requests\search-filter.spec.ts:56:5 › TEST-121 / AC-89: Clear filters removes query parameters (1.2s)
-  ok 44 [chromium] › e2e\requests\search-filter.spec.ts:66:5 › TEST-122 / AC-90: empty state and forbidden scope control (1.1s)
-  ok 45 [chromium] › e2e\requests\search-filter.spec.ts:74:5 › TEST-123 / AC-91: live result announcement (858ms)
-  ok 46 [chromium] › e2e\requests\search-filter.spec.ts:80:5 › TEST-129 / AC-97: the page has no horizontal overflow at supported widths (1.4s)
-  ok 47 [chromium] › e2e\requests\search-filter.spec.ts:89:5 › TEST-130 / AC-98: axe reports no filter-toolbar violations (4.4s)
-  ok 48 [chromium] › e2e\requests\search-filter.spec.ts:102:5 › TEST-131 / AC-99: reload and Back restore URL filters (1.6s)
+  ok 44 [chromium] › e2e\requests\search-filter.spec.ts:66:5 › TEST-122 / AC-90: empty state and forbidden scope control (1.2s)
+  ok 45 [chromium] › e2e\requests\search-filter.spec.ts:74:5 › TEST-123 / AC-91: live result announcement (909ms)
+  ok 46 [chromium] › e2e\requests\search-filter.spec.ts:80:5 › TEST-129 / AC-97: the page has no horizontal overflow at supported widths (1.6s)
+  ok 47 [chromium] › e2e\requests\search-filter.spec.ts:89:5 › TEST-130 / AC-98: axe reports no filter-toolbar violations (4.6s)
+  ok 48 [chromium] › e2e\requests\search-filter.spec.ts:102:5 › TEST-131 / AC-99: reload and Back restore URL filters (1.7s)
 
-  48 passed (2.3m)
+  48 passed (2.5m)

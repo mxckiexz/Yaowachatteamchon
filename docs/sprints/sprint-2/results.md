@@ -145,5 +145,5 @@ Implementation commit: `8e9f028`. Contract: `F-11-return-editing.md` v1.1. The A
 | AC-177 | Four lifecycle transitions including `SUBMITTED` to `DRAFT` | TEST-46 (revised) | Server transition unit test passed | `8e9f028` |
 | AC-178 | Required reviewer named in Definition of Done | Documentation review | Aphisaimai listed as required reviewer | `8e9f028` |
 
-Full local suites at commit `8e9f028`: server 184 passed, client 17 passed, full Playwright 48 passed. Raw output is in `test-output/server-f11-full-vitest.txt` and `test-output/browser-f11-full-playwright.txt`. No production deployment has been performed.
+Full local suites at commit `78e0ec0`: server 184 passed, client 17 passed, full Playwright 48 passed. Raw output is in `test-output/server-f11-full-vitest.txt` and `test-output/browser-f11-full-playwright.txt`. No production deployment has been performed.
 
