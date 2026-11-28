@@ -126,3 +126,24 @@ Known limitations: there is no paging (see the contract). A text that contains a
 
 Not done: a run of the migration against a copy of the deployed data, and any deployment. F-10 has no client unit tests; its UI is covered by the browser tests.
 
+## F-11 return for editing
+
+Implementation commit: `8e9f028`. Contract: `F-11-return-editing.md` v1.1. The API and UI implement the approver return flow, the atomic `RETURNED` history transition, owner edit/resubmit, and cross-feature visibility rules.
+
+| AC | Implementation | Test | Actual result | Commit |
+|---|---|---|---|---|
+| AC-160 to AC-162 | `POST /api/requests/:id/return`, transition and history handling | TEST-191 | Server passed; valid return, timestamps, approver actor and `RETURNED` history verified | `8e9f028` |
+| AC-163 | Owner edit and resubmit | TEST-192 | Server passed | `8e9f028` |
+| AC-164 | Approver and ownership permission checks | TEST-193 | Server passed, including administrator forbidden | `8e9f028` |
+| AC-165 | Draft hidden and terminal statuses rejected | TEST-194 | Server passed | `8e9f028` |
+| AC-166, AC-179 | Reason boundaries and U+0000 rejection | TEST-195 | Server passed; invalid reason returns fields and writes no history | `8e9f028` |
+| AC-167 | Hidden, unknown and non-numeric ids | TEST-196 | Server passed; post-return detail/history and queue visibility are 404/absent | `8e9f028` |
+| AC-168 | Origin, session and malformed JSON checks | TEST-197 | Server passed | `8e9f028` |
+| AC-169 | Concurrent return/decision and return/cancel | TEST-198 | Server passed; winner, final status and matching history are asserted for return/approve and return/reject, with contract-allowed outcomes asserted for return/return and return/cancel | `8ca0b20` |
+| AC-170 | Atomic history failure rollback | TEST-199 | Server passed; status remained SUBMITTED after forced failure | `8e9f028` |
+| AC-171 to AC-176 | Return form, focus, counts/cross-feature checks, responsive, axe and text announcement | TEST-200 to TEST-205 | 6 browser tests passed; focus, preserved error text, post-return 404/queue removal, zero-result announcement, owner and review count movement, attachment add/delete, cancel, responsive, axe and text announcement verified | `8ca0b20` |
+| AC-177 | Four lifecycle transitions including `SUBMITTED` to `DRAFT` | TEST-46 (revised) | Server transition unit test passed | `8e9f028` |
+| AC-178 | Required reviewer named in Definition of Done | Documentation review | Aphisaimai listed as required reviewer | `8e9f028` |
+
+Full local suites at commit `78e0ec0`: server 184 passed, client 17 passed, full Playwright 48 passed. Raw output is in `test-output/server-f11-full-vitest.txt` and `test-output/browser-f11-full-playwright.txt`. No production deployment has been performed.
+
