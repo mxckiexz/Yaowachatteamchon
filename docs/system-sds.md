@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.8. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition. Version 2.7 (28 November 2026) records the F-11 return endpoint and RETURNED history transition. Version 2.8 (28 November 2026) adds the planned Notification entity, endpoints and permissions of F-12.
+Version 2.7. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition. Version 2.7 (28 November 2026) records the F-11 return endpoint and RETURNED history transition on this implementation branch.
 
 ## 1. Architecture and stack
 
@@ -28,7 +28,6 @@ PurchaseRequest 1 ---- * RequestHistory
 User 1 ---- * RequestHistory    (as actor)
 Attachment (Sprint 2): PurchaseRequest 1 ---- * Attachment, User 1 ---- * Attachment (uploader)
 Comment (Sprint 2): PurchaseRequest 1 ---- * Comment, User 1 ---- * Comment (author)
-Notification (Sprint 2): PurchaseRequest 1 ---- * Notification, User 1 ---- * Notification (recipient, actor)
 ```
 
 | Entity | Fields | Constraints and ownership |
@@ -39,7 +38,6 @@ Notification (Sprint 2): PurchaseRequest 1 ---- * Notification, User 1 ---- * No
 | RequestHistory | id, requestId, actorId, action (CREATED, SUBMITTED, APPROVED, REJECTED, CANCELLED, RETURNED), fromStatus (nullable), toStatus, comment (nullable), createdAt | append only; the API has no update or delete for it; F-11 adds the RETURNED transition from SUBMITTED to DRAFT |
 | Attachment (Sprint 2) | id, requestId, fileName, fileType, sizeBytes, content (bytes), uploadedById, createdAt | F-09; at most 5 per request, 1 to 5,242,880 bytes each (CHECK on sizeBytes); content is never selected by list or detail queries; only the owner of a DRAFT adds or removes |
 | Comment (Sprint 2) | id, requestId, authorId, text, createdAt | F-10; 1 to 1000 characters (CHECK); append only, the API has no update or delete |
-| Notification (Sprint 2) | id, recipientId, requestId, actorId, type (SUBMITTED, APPROVED, REJECTED, RETURNED), createdAt, readAt (nullable) | planned in F-12; created only by the server in the transaction of a status change; a user reads and marks only their own |
 
 Money is stored as integer satang (1 baht = 100 satang). The API sends and receives baht as decimal numbers and converts at the boundary.
 
@@ -91,7 +89,6 @@ Endpoint list (details are in the feature contracts):
 | `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (implemented) |
 | `GET`, `POST /api/requests/:id/comments` | F-10 (implemented) |
 | `POST /api/requests/:id/return` | F-11 |
-| `GET /api/notifications`, `POST /api/notifications/:id/read`, `POST /api/notifications/read-all` | F-12 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
@@ -108,7 +105,6 @@ Endpoint list (details are in the feature contracts):
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
 | Return for editing (F-11) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
-| List and mark notifications (F-12, planned) | 401 | own, for requests they may see (other: 404) | own, for requests they may see (other: 404) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |
 | Add or delete an attachment (F-09) | 401 | own draft only (other: 404, not a draft: 409) | own draft only (other: 404, not a draft: 409) | 404 |
 | Read comments (F-10) | 401 | own request (other: 404) | requests the approver may read | all |
