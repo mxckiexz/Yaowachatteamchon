@@ -1,7 +1,7 @@
-// F-11 revises F-03 AC-31/TEST-46: a submitted request may be returned to DRAFT.
+// BR-01, BR-08: the only legal status changes in Sprint 1. CANCELLED is reached in Sprint 2.
 const ALLOWED: Record<string, string[]> = {
   DRAFT: ["SUBMITTED"],
-  SUBMITTED: ["APPROVED", "REJECTED", "DRAFT"],
+  SUBMITTED: ["APPROVED", "REJECTED"],
   APPROVED: [],
   REJECTED: [],
   CANCELLED: [],

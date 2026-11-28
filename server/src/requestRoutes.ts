@@ -248,52 +248,6 @@ requestRouter.post(
   })
 );
 
-// F-11: an approver returns another user's submitted request for correction.
-// The request becomes a private DRAFT immediately; after the 200 response this approver
-// must use the review queue and can no longer read the request detail (BR-12, BR-26).
-requestRouter.post(
-  "/requests/:id/return",
-  requireAuth,
-  requireRole("APPROVER"),
-  asyncHandler(async (req: AuthedRequest, res) => {
-    const id = parseId(req.params.id);
-    if (id === null) return res.status(404).json(notFound);
-    const prisma = getPrisma();
-    const userId = req.user!.id;
-    const existing = await prisma.purchaseRequest.findUnique({ where: { id } });
-    // A caller's own request and another user's draft are not visible to this action.
-    if (!existing || existing.requesterId === userId || existing.status === "DRAFT") return res.status(404).json(notFound);
-    if (existing.status !== "SUBMITTED") {
-      return res.status(409).json({ error: "Only a submitted request can be returned.", code: "ILLEGAL_TRANSITION" });
-    }
-    const raw = req.body?.reason;
-    const reason = typeof raw === "string" ? raw.trim() : "";
-    if (typeof raw !== "string" || reason.length < MIN_REASON_LENGTH || reason.length > MAX_TEXT_LENGTH || reason.includes("\u0000")) {
-      return res.status(422).json({
-        error: "A return reason is required (5 to 500 characters).",
-        code: "VALIDATION_ERROR",
-        fields: { reason: "Use 5 to 500 characters and do not include U+0000." },
-      });
-    }
-
-    const changed = await prisma.$transaction(async (tx) => {
-      const result = await tx.purchaseRequest.updateMany({
-        where: { id, requesterId: { not: userId }, status: existing.status },
-        data: { status: "DRAFT", submittedAt: null, decidedAt: null },
-      });
-      if (result.count === 1) {
-        await tx.requestHistory.create({
-          data: { requestId: id, actorId: userId, action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: reason },
-        });
-      }
-      return result.count;
-    });
-    if (changed !== 1) return res.status(409).json({ error: "This request is no longer submitted.", code: "ILLEGAL_TRANSITION" });
-    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: { ...REQUEST_INCLUDE, ...HISTORY_INCLUDE } });
-    res.json({ request: serializeRequest(full) });
-  }),
-);
-
 // F-04: lists. scope=mine (default), scope=review (approvers: submitted requests of others), scope=all (administrator).
 requestRouter.get(
   "/requests",

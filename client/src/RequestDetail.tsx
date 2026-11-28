@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, returnRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
+import { useParams } from "react-router-dom";
+import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
 import Attachments from "./Attachments";
 import { useAuth } from "./AuthContext";
 import Comments from "./Comments";
 import { CATEGORY_LABEL, formatBaht, formatDateTime, StatusBadge } from "./format";
 import RequestForm from "./RequestForm";
 
-const ACTION_TEXT: Record<string, string> = { CREATED: "Created", SUBMITTED: "Submitted", RETURNED: "Returned for editing", APPROVED: "Approved", REJECTED: "Rejected", CANCELLED: "Cancelled" };
+const ACTION_TEXT: Record<string, string> = { CREATED: "Created", SUBMITTED: "Submitted", APPROVED: "Approved", REJECTED: "Rejected", CANCELLED: "Cancelled" };
 
 export default function RequestDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [request, setRequest] = useState<Detail | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -36,7 +35,6 @@ export default function RequestDetail() {
   const canEdit = isOwner && request.status === "DRAFT";
   const canCancel = isOwner && (request.status === "DRAFT" || request.status === "SUBMITTED");
   const canDecide = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
-  const canReturn = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
   // After a change the server's version, with its history, is loaded again.
   const reload = () => getRequest(request.id).then((r) => setRequest(r.request));
 
@@ -91,7 +89,6 @@ export default function RequestDetail() {
       {canEdit && <SubmitPanel request={request} onDone={reload} />}
       {canCancel && <CancelPanel request={request} onDone={reload} />}
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
-      {canReturn && <ReturnPanel request={request} onReturned={() => navigate("/reviews", { state: { returnedRequestNumber: request.requestNumber } })} />}
 
       <Attachments requestId={request.id} canChange={canEdit} />
 
@@ -108,34 +105,6 @@ export default function RequestDetail() {
       <Comments key={request.id} requestId={request.id} canComment={user.role !== "ADMIN"} />
     </>
   );
-}
-
-function ReturnPanel({ request, onReturned }: { request: Detail; onReturned: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const reasonRef = useRef<HTMLTextAreaElement>(null);
-  const actionButton = useRef<HTMLButtonElement>(null);
-  async function confirm() {
-    setBusy(true); setError(null);
-    try {
-      await returnRequest(request.id, reason);
-      onReturned();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not return the request.");
-      setBusy(false);
-    }
-  }
-  return <section className="border rounded p-3 mb-3" aria-label="Return for editing">
-    <h2 className="h6">Return for editing</h2>
-    {!open ? <button ref={actionButton} className="btn btn-outline-secondary" onClick={() => { setOpen(true); setTimeout(() => reasonRef.current?.focus(), 0); }}>Return for editing</button> : <>
-      <label className="form-label" htmlFor="returnReason">Reason</label>
-      <textarea ref={reasonRef} id="returnReason" className="form-control mb-2" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} />
-      <div className="d-flex gap-2"><button className="btn btn-warning" disabled={busy} onClick={confirm}>Confirm return</button><button className="btn btn-outline-secondary" disabled={busy} onClick={() => { setOpen(false); setError(null); setTimeout(() => actionButton.current?.focus(), 0); }}>Keep submitted</button></div>
-    </>}
-    {error && <div role="alert" className="alert alert-danger mt-2 mb-0">{error}</div>}
-  </section>;
 }
 
 function CancelPanel({ request, onDone }: { request: Detail; onDone: () => Promise<void> }) {

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { CATEGORIES, listRequests, type Category, type RequestSummary, type Scope, type Status } from "./api";
 import RequestTable from "./RequestTable";
 
@@ -16,8 +16,6 @@ interface Props {
 // One component for My requests, the review queue and All requests: loading, empty and error states included.
 export default function RequestList({ scope, title, emptyText, showRequester, dateLabel, withNewButton }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
-  const heading = useRef<HTMLHeadingElement>(null);
   const q = searchParams.get("q") ?? "";
   const status = (searchParams.get("status") ?? "") as Status | "";
   const category = (searchParams.get("category") ?? "") as Category | "";
@@ -25,7 +23,6 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
   const [draft, setDraft] = useState({ q, status, category });
   const [requests, setRequests] = useState<RequestSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [announcement, setAnnouncement] = useState("");
 
   function load() {
     setError(null);
@@ -38,13 +35,6 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
     setDraft({ q, status, category });
     load();
   }, [scope, q, status, category]);
-  useEffect(() => {
-    if (scope === "review" && (location.state as { returnedRequestNumber?: string } | null)?.returnedRequestNumber) heading.current?.focus();
-  }, [scope, location.state]);
-  useEffect(() => {
-    const returned = (location.state as { returnedRequestNumber?: string } | null)?.returnedRequestNumber;
-    setAnnouncement(returned ? `${returned} was returned to the requester.` : "");
-  }, [location.state]);
 
   function applyFilters(event?: FormEvent) {
     event?.preventDefault();
@@ -63,7 +53,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 ref={heading} tabIndex={-1} className="h4 mb-0">{title}</h1>
+        <h1 className="h4 mb-0">{title}</h1>
         {withNewButton && <Link className="btn btn-primary" to="/requests/new">New request</Link>}
       </div>
       <form className="row g-2 align-items-end mb-3" aria-label="Filter requests" onSubmit={applyFilters}>
@@ -90,7 +80,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
           <button className="btn btn-outline-secondary" type="button" onClick={clearFilters}>Clear filters</button>
         </div>
       </form>
-      <p className="visually-hidden" role="status" aria-live="polite">{announcement || (requests == null ? "Loading results" : requests.length ? `${requests.length} results` : "0 results")}</p>
+      <p className="visually-hidden" role="status" aria-live="polite">{requests == null ? "Loading results" : requests.length ? `${requests.length} results` : "0 results"}</p>
       {error && (
         <div role="alert" className="alert alert-danger">
           {error} <button className="btn btn-sm btn-outline-danger ms-2" onClick={load}>Retry</button>

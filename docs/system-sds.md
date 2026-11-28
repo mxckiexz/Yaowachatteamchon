@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 2.8. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition. Version 2.7 (28 November 2026) records the F-11 return endpoint and RETURNED history transition. Version 2.8 (28 November 2026) adds the planned Notification entity, endpoints and permissions of F-12.
+Version 2.7. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition. Version 2.7 (28 November 2026) adds the planned Notification entity, endpoints and permissions of F-12.
 
 ## 1. Architecture and stack
 
@@ -90,7 +90,7 @@ Endpoint list (details are in the feature contracts):
 | `GET /api/dashboard`, `/dashboard` | F-08 (implemented) |
 | `GET`, `POST /api/requests/:id/attachments`, `GET`, `DELETE /api/requests/:id/attachments/:attachmentId` | F-09 (implemented) |
 | `GET`, `POST /api/requests/:id/comments` | F-10 (implemented) |
-| `POST /api/requests/:id/return` | F-11 |
+| `POST /api/requests/:id/return` | F-11 (planned) |
 | `GET /api/notifications`, `POST /api/notifications/:id/read`, `POST /api/notifications/read-all` | F-12 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
@@ -107,7 +107,7 @@ Endpoint list (details are in the feature contracts):
 | All requests (`scope=all`) | 401 | 403 | 403 | all, read only |
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
-| Return for editing (F-11) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
+| Return for editing (F-11, planned) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
 | List and mark notifications (F-12, planned) | 401 | own, for requests they may see (other: 404) | own, for requests they may see (other: 404) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |
 | Add or delete an attachment (F-09) | 401 | own draft only (other: 404, not a draft: 409) | own draft only (other: 404, not a draft: 409) | 404 |

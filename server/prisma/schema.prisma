@@ -24,7 +24,6 @@ enum RequestStatus {
 enum HistoryAction {
   CREATED
   SUBMITTED
-  RETURNED
   APPROVED
   REJECTED
   CANCELLED

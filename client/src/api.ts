@@ -132,8 +132,6 @@ export const rejectRequest = (id: number, reason: string) =>
   api<{ request: RequestDetail }>(`/requests/${id}/reject`, { method: "POST", body: { reason } });
 export const cancelRequest = (id: number) =>
   api<{ request: RequestDetail }>(`/requests/${id}/cancel`, { method: "POST", body: {} });
-export const returnRequest = (id: number, reason: string) =>
-  api<{ request: RequestDetail }>(`/requests/${id}/return`, { method: "POST", body: { reason } });
 export const listUsers = () => api<{ users: AdminUser[] }>("/admin/users");
 export const updateUser = (id: number, patch: { isActive?: boolean; role?: Role }) =>
   api<{ user: AdminUser }>(`/admin/users/${id}`, { method: "PATCH", body: patch });
