@@ -192,3 +192,34 @@ export interface AppNotification {
 export const listNotifications = () => api<{ notifications: AppNotification[]; unreadCount: number }>("/notifications");
 export const markNotificationRead = (id: number) => api<{ notification: AppNotification }>(`/notifications/${id}/read`, { method: "POST" });
 export const markAllNotificationsRead = () => api<{ unreadCount: number }>("/notifications/read-all", { method: "POST" });
+
+// F-17: the report summary and the CSV export. "search" is the page's query string, with or without "?".
+export interface ReportAmount {
+  count: number;
+  total: number;
+}
+export interface ReportSummary extends ReportAmount {
+  byStatus: (ReportAmount & { status: Status })[];
+  byCategory: (ReportAmount & { category: Category | null })[];
+}
+const reportQuery = (search: string) => (search && !search.startsWith("?") ? `?${search}` : search);
+export const getReportSummary = (search: string) => api<{ summary: ReportSummary }>(`/reports/summary${reportQuery(search)}`);
+
+// The file is fetched here, not opened as a link, so an error from the server can be shown on the page.
+export async function downloadReport(search: string) {
+  const response = await fetch(`/api/reports/export.csv${reportQuery(search)}`, { credentials: "include" });
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new ApiError(response.status, data?.error ?? "Something went wrong.", data?.code, data?.fields);
+  }
+  const name = /filename="([^"]+)"/.exec(response.headers.get("Content-Disposition") ?? "")?.[1] ?? "purchase-requests.csv";
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  // The browser needs the address a moment longer than the click.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

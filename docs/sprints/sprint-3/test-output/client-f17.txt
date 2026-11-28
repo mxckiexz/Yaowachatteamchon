@@ -1,0 +1,26 @@
+$ npm test (client)   (commit fde6754, 2026-11-29 01:42 +0700)
+
+ RUN  v2.1.9 /Users/aphisamai/Downloads/buyflow-f10/client
+
+ ✓ tests/q/format.test.ts (2 tests) 35ms
+stderr | tests/f01/Login.test.tsx > F-01 login screen (component) > CT-01 / AC-10: shows the server error and keeps the e-mail when login fails
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | tests/requests/screens.test.tsx > request screens (component) > CT-04 / AC-23: the form shows an estimated total and the server's messages beside the fields
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | tests/dashboard.test.tsx > F-08 dashboard > CT-08 / AC-107: requester sees five labelled cards and exact filtered links
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ tests/dashboard.test.tsx (3 tests) 274ms
+ ✓ tests/f01/Login.test.tsx (3 tests) 390ms
+ ✓ tests/requests/screens.test.tsx (9 tests) 572ms
+
+ Test Files  4 passed (4)
+      Tests  17 passed (17)
+   Start at  01:42:19
+   Duration  2.05s (transform 329ms, setup 519ms, collect 1.18s, tests 1.27s, environment 2.53s, prepare 452ms)
+

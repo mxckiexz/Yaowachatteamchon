@@ -1,0 +1,372 @@
+$ npx vitest run tests/f17/reports.test.ts   (code: staging ab1efd8 without F-17, final test file; 2026-11-29 01:34 +0700)
+
+ RUN  v2.1.9 /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f17red/server
+
+ ❯ tests/f17/reports.test.ts (16 tests | 16 failed) 8389ms
+   × F-17 reports and export > TEST-331 / AC-300: a requester sees only their own requests, with exactly the listed fields 15ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-332 / AC-301: an approver sees own requests and others' that are not drafts 7ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-333 / AC-302: the administrator's summary covers every request 2ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-334 / AC-303: all statuses add up exactly, with rejected and cancelled in the total 11ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-335 / AC-304: status and category narrow and combine; no category never matches 6ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-336 / AC-305: the dates are whole Bangkok days, whatever the server time zone 6ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-337 / AC-306: wrong and repeated parameters give 422 on both routes; empty ones are ignored 2ms
+     → expected [ 'summary', 'from=2026-02-30', 404 ] to deeply equal [ 'summary', 'from=2026-02-30', 422 ]
+   × F-17 reports and export > TEST-338 / AC-307: no session gives 401, and extra parameters widen nothing 1ms
+     → expected 404 to be 401 // Object.is equality
+   × F-17 reports and export > TEST-339 / AC-308: headers, exact file name with the Bangkok date, line ends, order and the same set as the summary 1358ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-340 / AC-309: labels, money, Bangkok times, empty fields and quoting 7ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-341 / AC-310: text that a spreadsheet could run gets an apostrophe 13ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-342 / AC-311: no free text, attachment data or e-mail address is exported 9ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-343 / AC-312: 5,000 rows export, 5,001 are refused, and hidden rows do not count 909ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-344 / AC-313: reading and exporting change no row 9ms
+     → expected 404 to be 200 // Object.is equality
+   × F-17 reports and export > TEST-345 / AC-314: a failed read gives the safe 500 and no part of a file 3ms
+     → expected [ 'summary', +0 ] to deeply equal [ 'summary', 1 ]
+   × F-17 reports and export > TEST-351 / AC-320: the report follows submit, return, approve, reject and cancel 19ms
+     → expected 404 to be 200 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-331 / AC-300: a requester sees only their own requests, with exactly the listed fields
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/f17/reports.test.ts:166:24
+    164|     await seed({ requesterId: ids.other, createdAt: bkk(day), status: …
+    165|     const res = await owner.get(`/api/reports/summary?${onDay(day)}`);
+    166|     expect(res.status).toBe(200);
+       |                        ^
+    167|     expect(Object.keys(res.body)).toEqual(["summary"]);
+    168|     const s: Summary = res.body.summary;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-332 / AC-301: an approver sees own requests and others' that are not drafts
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ tests/f17/reports.test.ts:183:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-333 / AC-302: the administrator's summary covers every request
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ tests/f17/reports.test.ts:190:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-334 / AC-303: all statuses add up exactly, with rejected and cancelled in the total
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ tests/f17/reports.test.ts:206:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-335 / AC-304: status and category narrow and combine; no category never matches
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ pick tests/f17/reports.test.ts:232:17
+ ❯ tests/f17/reports.test.ts:235:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-336 / AC-305: the dates are whole Bangkok days, whatever the server time zone
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ total tests/f17/reports.test.ts:252:49
+ ❯ tests/f17/reports.test.ts:253:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-337 / AC-306: wrong and repeated parameters give 422 on both routes; empty ones are ignored
+AssertionError: expected [ 'summary', 'from=2026-02-30', 404 ] to deeply equal [ 'summary', 'from=2026-02-30', 422 ]
+
+- Expected
++ Received
+
+  Array [
+    "summary",
+    "from=2026-02-30",
+-   422,
++   404,
+  ]
+
+ ❯ tests/f17/reports.test.ts:287:43
+    285|       for (const [query, fields] of cases) {
+    286|         const res = await owner.get(`/api/reports/${path}?${query}`);
+    287|         expect([path, query, res.status]).toEqual([path, query, 422]);
+       |                                           ^
+    288|         expect(Object.keys(res.body).sort()).toEqual(["code", "error",…
+    289|         expect(res.body.code).toBe("VALIDATION_ERROR");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-338 / AC-307: no session gives 401, and extra parameters widen nothing
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/f17/reports.test.ts:301:26
+    299|     for (const path of ["summary", "export.csv"]) {
+    300|       const res = await request(app).get(`/api/reports/${path}`);
+    301|       expect(res.status).toBe(401);
+       |                          ^
+    302|       expect(res.body).toEqual({ error: "Authentication required." });
+    303|       expect(res.headers["content-disposition"]).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-339 / AC-308: headers, exact file name with the Bangkok date, line ends, order and the same set as the summary
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ exported tests/f17/reports.test.ts:151:22
+    149| async function exported(agent: Agent, query = "") {
+    150|   const res = await download(agent, query);
+    151|   expect(res.status).toBe(200);
+       |                      ^
+    152|   const bytes = res.body as Buffer;
+    153|   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+ ❯ tests/f17/reports.test.ts:328:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-340 / AC-309: labels, money, Bangkok times, empty fields and quoting
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ exported tests/f17/reports.test.ts:151:22
+    149| async function exported(agent: Agent, query = "") {
+    150|   const res = await download(agent, query);
+    151|   expect(res.status).toBe(200);
+       |                      ^
+    152|   const bytes = res.body as Buffer;
+    153|   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+ ❯ tests/f17/reports.test.ts:362:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-341 / AC-310: text that a spreadsheet could run gets an apostrophe
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ exported tests/f17/reports.test.ts:151:22
+    149| async function exported(agent: Agent, query = "") {
+    150|   const res = await download(agent, query);
+    151|   expect(res.status).toBe(200);
+       |                      ^
+    152|   const bytes = res.body as Buffer;
+    153|   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+ ❯ tests/f17/reports.test.ts:378:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-342 / AC-311: no free text, attachment data or e-mail address is exported
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ exported tests/f17/reports.test.ts:151:22
+    149| async function exported(agent: Agent, query = "") {
+    150|   const res = await download(agent, query);
+    151|   expect(res.status).toBe(200);
+       |                      ^
+    152|   const bytes = res.body as Buffer;
+    153|   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+ ❯ tests/f17/reports.test.ts:399:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-343 / AC-312: 5,000 rows export, 5,001 are refused, and hidden rows do not count
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ exported tests/f17/reports.test.ts:151:22
+    149| async function exported(agent: Agent, query = "") {
+    150|   const res = await download(agent, query);
+    151|   expect(res.status).toBe(200);
+       |                      ^
+    152|   const bytes = res.body as Buffer;
+    153|   expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+ ❯ tests/f17/reports.test.ts:412:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-344 / AC-313: reading and exporting change no row
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ tests/f17/reports.test.ts:436:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-345 / AC-314: a failed read gives the safe 500 and no part of a file
+AssertionError: expected [ 'summary', +0 ] to deeply equal [ 'summary', 1 ]
+
+- Expected
++ Received
+
+  Array [
+    "summary",
+-   1,
++   0,
+  ]
+
+ ❯ tests/f17/reports.test.ts:456:31
+    454|       try {
+    455|         const res = await owner.get(`/api/reports/${path}`).buffer(tru…
+    456|         expect([path, calls]).toEqual([path, 1]);
+       |                               ^
+    457|         expect([path, res.status]).toEqual([path, 500]);
+    458|         expect(res.headers["content-type"]).toMatch(/^application\/jso…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  tests/f17/reports.test.ts > F-17 reports and export > TEST-351 / AC-320: the report follows submit, return, approve, reject and cancel
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ summary tests/f17/reports.test.ts:101:22
+     99| async function summary(agent: Agent, query = ""): Promise<Summary> {
+    100|   const res = await agent.get(`/api/reports/summary?${query}`);
+    101|   expect(res.status).toBe(200);
+       |                      ^
+    102|   return res.body.summary;
+    103| }
+ ❯ read tests/f17/reports.test.ts:487:19
+ ❯ look tests/f17/reports.test.ts:490:23
+ ❯ tests/f17/reports.test.ts:492:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+ Test Files  1 failed (1)
+      Tests  16 failed (16)
+   Start at  01:34:46
+   Duration  8.83s (transform 110ms, setup 0ms, collect 248ms, tests 8.39s, environment 0ms, prepare 47ms)
+

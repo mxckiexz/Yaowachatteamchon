@@ -20,6 +20,7 @@ import { commentRouter } from "./commentRoutes.js";
 import { requestRouter } from "./requestRoutes.js";
 import { dashboardRouter } from "./dashboardRoutes.js";
 import { notificationRouter } from "./notificationRoutes.js";
+import { reportRouter } from "./reportRoutes.js";
 import { serveBuiltClient } from "./staticSite.js";
 
 export const app = express();
@@ -109,6 +110,7 @@ app.use("/api", attachmentRouter);
 app.use("/api", commentRouter);
 app.use("/api", dashboardRouter);
 app.use("/api", notificationRouter);
+app.use("/api", reportRouter);
 app.use("/api", adminRouter);
 
 // Deployment: in the container STATIC_DIR points at the built client. Locally it is unset and Vite serves the client.
