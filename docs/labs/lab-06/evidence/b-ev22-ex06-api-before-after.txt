@@ -1,0 +1,22 @@
+Evidence B-EV22: EX-06 API state before and after the edit (signed in as Creator A, james)
+Tested: https://serwongserway-vs56b635aq-as.a.run.app  (main @ 752a76a)
+Campaign: 2d1715e8-4ab7-40f2-ae45-d94eb7356b7e "UAT-Claude Main (EX)" (PUBLISHED)
+
+BEFORE  2026-11-26T16:04:45Z  GET /api/campaigns/:id/results -> 200
+  summary {totalSubmissions: 2, averageRating: 4.5}
+  Daniel Robinson: Overall satisfaction=4/5, What can we improve?=Daniel UAT answer
+  Amelia Clark:    Overall satisfaction=5/5, What can we improve?=Amelia concurrent A
+
+ACTION  2026-11-26T16:05Z  UI /campaigns/:id/edit ("Edit Survey Draft" page opened for a PUBLISHED survey
+        with 2 responses) -> Remove Question 2 -> Publish Survey. No warning or confirmation was shown.
+
+AFTER   2026-11-26T16:05:47Z  GET /api/campaigns/:id -> questions: [e0d7f793 "Overall satisfaction"]
+        GET /api/campaigns/:id/results -> 200
+  summary {totalSubmissions: 2, averageRating: 4.5}
+  Daniel Robinson: Overall satisfaction=4/5      (text answer gone)
+  Amelia Clark:    Overall satisfaction=5/5      (text answer gone)
+
+Root cause (from source, partner repo @ 752a76a):
+  server/src/routes/campaigns.ts PUT /:id -> tx.question.deleteMany({ where: { campaignId: id, id: { notIn: keepQuestionIds } } })
+  server/prisma/schema.prisma  model Answer -> question Question @relation(..., onDelete: Cascade)
+  PUT does not check whether the campaign already has submissions.

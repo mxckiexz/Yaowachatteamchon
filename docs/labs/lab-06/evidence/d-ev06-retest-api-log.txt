@@ -1,0 +1,11 @@
+UAT-SWSW-01 retest | tester: UAT Team, signed in as Creator A | 2026-11-28T07:31:11.072Z (14:31 +07) | origin https://serwongserway-vs56b635aq-as.a.run.app
+Version under test (reported by Product Team): main @ 9c7b9eb, Cloud Run revision serwongserway-00012-x7s
+1. BEFORE  GET results MAIN -> {"total":2,"avg":4.5,"answers":["Daniel Robinson: Overall satisfaction=4","Amelia Clark: Overall satisfaction=5"]}
+2. PUT MAIN (PUBLISHED), Q1 replaced by a new TEXT question -> 409 {"error":{"code":"CAMPAIGN_NOT_EDITABLE","message":"Only draft surveys can be edited."}}
+3. PUT MAIN, status DRAFT + questions [] -> 409 {"error":{"code":"CAMPAIGN_NOT_EDITABLE","message":"Only draft surveys can be edited."}}
+4. AFTER   GET results MAIN -> {"total":2,"avg":4.5,"answers":["Daniel Robinson: Overall satisfaction=4","Amelia Clark: Overall satisfaction=5"]}
+5. EX-03 survey db4f5be9… status CLOSED, closesAt 2026-11-26T15:44:53.192Z
+6. PUT EX-03 survey (closed by deadline) -> 409 {"error":{"code":"CAMPAIGN_NOT_EDITABLE","message":"Only draft surveys can be edited."}}
+7. POST DRAFT -> 201 id 9883b735-44fd-4a7f-8b66-92a182dfbb3c
+8. PUT DRAFT (rename + add question) -> 200 {"data":{"id":"9883b735-…","title":"UAT-Claude Retest Draft (regression) v2","description":"edited","status":"DRAFT",…}
+Unauthenticated check (curl): PUT /api/campaigns/2d1715e8… with no cookie -> 401

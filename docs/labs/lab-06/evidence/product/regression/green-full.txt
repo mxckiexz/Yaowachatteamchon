@@ -1,0 +1,10 @@
+Full verification after the fix, 2026-11-28 (local PostgreSQL)
+
+server: npm run typecheck   -> OK
+server: npm run build       -> OK
+server: npx vitest run      -> Test Files 18 passed (18), Tests 108 passed (108)
+client: npx vitest run      -> Test Files 4 passed (4), Tests 16 passed (16)
+client: npm run build       -> OK (dist/assets/index-*.js 184.88 kB)
+e2e:    npx playwright test -> 14 passed (27.1s)
+  admin/users TEST-75, f01/login TEST-70 + 2, quality TEST-87 / TEST-L6-E2E-01 / TEST-88 / TEST-86,
+  requests/approver-journey TEST-72 / TEST-73 / own-request, requests/requester-journey TEST-71 x2 / TEST-74

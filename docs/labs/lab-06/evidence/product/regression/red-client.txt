@@ -1,0 +1,11 @@
+   × Lab 6 UAT defects (component) > CT-L6-01 / DEF-03 (#69): an administrator who owns a draft sees it read-only, with no edit form and no Submit button 1014ms
+     → Unable to find an element by: [data-testid="total"]
+   × Lab 6 UAT defects (component) > CT-L6-02 / DEF-01 (#67): the request heading may break a long unbroken item name, so it cannot widen the page 30ms
+Expected the element to have class:
+Received:
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+TestingLibraryElementError: Unable to find an element by: [data-testid="total"]
+Expected the element to have class:
+Received:
+ Test Files  1 failed (1)
+      Tests  2 failed (2)

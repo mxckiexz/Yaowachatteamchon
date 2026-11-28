@@ -1,0 +1,20 @@
+Evidence B-EV14: Round 2 API checks (Respondent A, signed in through the UI session in Chrome)
+Tested: https://serwongserway-vs56b635aq-as.a.run.app  (main @ 752a76a)
+Executed: 2026-11-26T15:46:32Z (22:46 +07)  Tester: UAT Team
+MAIN = 2d1715e8-4ab7-40f2-ae45-d94eb7356b7e (UAT-Claude Main (EX), RATING_5* + TEXT*)
+SHORT = db4f5be9-51e9-4355-b2b3-b3c2825da405 (closed at 15:44:53Z)
+
+POST /submissions to SHORT (after closesAt)        -> 422 CAMPAIGN_NOT_OPEN
+POST MAIN rating 0                                 -> 400 BAD_REQUEST "Invalid answers."
+POST MAIN rating 6                                 -> 400 BAD_REQUEST
+POST MAIN rating 4.5                               -> 400 BAD_REQUEST
+POST MAIN missing required TEXT                    -> 400 BAD_REQUEST
+2x POST MAIN at the same time (rating 5)           -> [201 id 658e5085..., 409 DUPLICATE_SUBMISSION]
+POST MAIN again (rating 3)                         -> 409 DUPLICATE_SUBMISSION
+GET MAIN/results as RESPONDENT                     -> 403 code "FORBIDDEN" (no data)
+POST /api/campaigns as RESPONDENT                  -> 403 FORBIDDEN
+GET DRAFT campaign ...0001 as RESPONDENT           -> 403 (no data)
+GET closed SHORT campaign as RESPONDENT            -> 403
+GET MAIN detail: hasSubmitted=true, mySubmission = ["5 / 5 ★","Amelia concurrent A"]
+GET MAIN detail: creator fields = id, fullName, email  (the creator's email is visible to the respondent)
+GET /api/campaigns as RESPONDENT: 7 PUBLISHED campaigns; SHORT (closed) and DRAFTs are not listed

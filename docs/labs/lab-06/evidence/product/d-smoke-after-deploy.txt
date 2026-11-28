@@ -1,0 +1,8 @@
+Post-deployment smoke check | 2026-11-28T16:17:12Z (2026-11-28 23:17 +07) | https://sad61263d-4d7hbszvwq-as.a.run.app
+1. GET /api/version -> 200 {"commit":"2922c474fb38bde6719676c3f23fee1354beab66"}
+2. GET /api/ready -> 200 {"status":"ready","db":"connected"}
+3. GET /api/auth/me (no cookie) -> 401 {"error":"Authentication required."}
+4. GET /api/requests (no cookie) -> 401 {"error":"Authentication required."}
+5. GET / -> 200 bundle assets/index-CeRyV5iL.js
+6. bundle contains "h4 mb-0 text-break" (DEF-01 fix) -> 1 match(es)
+7. Cloud Run traffic -> {'latestRevision': True, 'percent': 100, 'revisionName': 'sad61263d-00006-9c4'}
