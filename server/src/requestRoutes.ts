@@ -129,6 +129,9 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id, requesterId: userId }, select: { status: true } });
+      if (!locked || locked.status !== "DRAFT") return 0;
       const chain = await activateApprovalSteps(tx, id);
       if (!chain.valid) return -1;
       const result = await tx.purchaseRequest.updateMany({
@@ -198,7 +201,14 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
     }
 
     const changed = await prisma.$transaction(async (tx) => {
-      const step = await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT", ...(currentStep ? { approverId: userId } : {}) }, orderBy: { stepNumber: "asc" } });
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== "SUBMITTED") return 0;
+      const configured = await tx.approvalStep.findFirst({ where: { requestId: id }, select: { id: true } });
+      const step = configured
+        ? await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT", approverId: userId }, orderBy: { stepNumber: "asc" } })
+        : null;
+      if (configured && !step) return 0;
       const next = step ? await tx.approvalStep.findFirst({ where: { requestId: id, stepNumber: step.stepNumber + 1 } }) : null;
       const targetStatus = step && decision === "APPROVED" && next ? "SUBMITTED" : decision;
       // The status condition makes two simultaneous decisions safe: only one update can match (BR-17).
@@ -211,7 +221,7 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
           await tx.approvalStep.update({ where: { id: step.id }, data: { status: decision === "REJECTED" ? "REJECTED" : "APPROVED", decidedAt: new Date(), decisionComment: text || null } });
           if (next && decision === "APPROVED") {
             await tx.approvalStep.update({ where: { id: next.id }, data: { status: "CURRENT" } });
-            await notifyApprover(tx, id, next.approverId, userId);
+            await notifyApprover(tx, id, next.approverId, locked.requesterId);
           }
         }
         await tx.requestHistory.create({
@@ -250,6 +260,9 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== existing.status) return 0;
       const result = await tx.purchaseRequest.updateMany({
         // Match the status read before the transaction so the history fromStatus
         // cannot become stale if submit races with cancellation.
@@ -305,12 +318,17 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== "SUBMITTED" || locked.requesterId === userId) return 0;
+      const current = await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } });
+      if (current && current.approverId !== userId) return 0;
       const result = await tx.purchaseRequest.updateMany({
-        where: { id, requesterId: { not: userId }, status: existing.status },
+        where: { id, requesterId: { not: userId }, status: "SUBMITTED" },
         data: { status: "DRAFT", submittedAt: null, decidedAt: null },
       });
       if (result.count === 1) {
-        if (configuredStep) {
+        if (current) {
           await tx.approvalStep.updateMany({ where: { requestId: id }, data: { status: "PLANNED", decidedAt: null, decisionComment: null } });
         }
         await tx.requestHistory.create({

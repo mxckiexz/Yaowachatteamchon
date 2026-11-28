@@ -35,16 +35,21 @@ approvalStepRouter.put("/requests/:id/approval-steps", requireAuth, requireRole(
   const prisma = getPrisma();
   const request = await prisma.purchaseRequest.findUnique({ where: { id }, select: { id: true, status: true, requesterId: true } });
   if (!request) return res.status(404).json(notFound);
-  if (request.status !== "DRAFT") return res.status(409).json({ error: "Approval steps can only be changed on a draft.", code: "NOT_EDITABLE" });
   const ids = req.body?.approverIds;
   if (!Array.isArray(ids) || ids.length > 5 || ids.some((v: unknown) => !Number.isInteger(v) || (v as number) <= 0)) return res.status(422).json(invalid({ approverIds: "Use an array of at most 5 user ids." }));
   if (new Set(ids).size !== ids.length) return res.status(422).json(invalid({ approverIds: "Each approver may appear only once." }));
   const users = await prisma.user.findMany({ where: { id: { in: ids as number[] } }, select: { id: true, name: true, role: true, isActive: true } });
   if (users.length !== ids.length || users.some((u) => u.role !== "APPROVER" || !u.isActive || u.id === request.requesterId)) return res.status(422).json(invalid({ approverIds: "Approvers must be distinct active APPROVER users and cannot be the requester." }));
   const steps = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+    const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true } });
+    if (!locked) return { kind: "not_found" as const };
+    if (locked.status !== "DRAFT") return { kind: "not_editable" as const };
     await tx.approvalStep.deleteMany({ where: { requestId: id } });
     if (ids.length) await tx.approvalStep.createMany({ data: (ids as number[]).map((approverId, i) => ({ requestId: id, approverId, stepNumber: i + 1, status: "PLANNED" as const })) });
-    return tx.approvalStep.findMany({ where: { requestId: id }, include: { approver: { select: { id: true, name: true } } }, orderBy: { stepNumber: "asc" } });
+    return { kind: "ok" as const, rows: await tx.approvalStep.findMany({ where: { requestId: id }, include: { approver: { select: { id: true, name: true } } }, orderBy: { stepNumber: "asc" } }) };
   });
-  res.json({ steps: steps.map(serialize) });
+  if (steps.kind === "not_found") return res.status(404).json(notFound);
+  if (steps.kind === "not_editable") return res.status(409).json({ error: "Approval steps can only be changed on a draft.", code: "NOT_EDITABLE" });
+  res.json({ steps: steps.rows.map(serialize) });
 }));

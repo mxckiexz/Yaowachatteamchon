@@ -46,12 +46,12 @@ adminRouter.patch(
     }
 
     const prisma = getPrisma();
-    const existing = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+    const existing = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true, isActive: true } });
     if (!existing) return res.status(404).json({ error: "User not found.", code: "NOT_FOUND" });
     if (id === req.user!.id) {
       return res.status(409).json({ error: "You cannot change your own account.", code: "SELF_CHANGE" });
     }
-    if (data.isActive === false || data.role !== undefined) {
+    if ((data.isActive === false && existing.isActive) || (data.role !== undefined && data.role !== existing.role)) {
       const inUse = await prisma.approvalStep.findFirst({
         where: { approverId: id, status: { in: ["CURRENT", "WAITING"] }, request: { status: "SUBMITTED" } },
         select: { id: true },
