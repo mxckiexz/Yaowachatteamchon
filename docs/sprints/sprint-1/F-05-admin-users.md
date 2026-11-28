@@ -44,7 +44,7 @@ Updates `User.isActive` and `User.role`. No schema change. Deactivation needs no
 |---|---|
 | AC-39 | The administrator lists the users without any password hash. A requester or an approver gets 403 and no data. |
 | AC-40 | After the administrator deactivates a user, that user cannot log in, and the session they already had returns 401 on the next call. |
-| AC-41 | The administrator can reactivate a user, who can then log in; and can change a role to a valid value; an invalid role gives 422. |
+| AC-41 | The administrator can reactivate a user, who can then log in; and can change a role to a valid value; an invalid role gives 422. A user who is the current assigned approver of an F-13 request cannot be deactivated or moved out of APPROVER until that step is no longer current (`409 APPROVER_IN_USE`). |
 | AC-42 | The administrator cannot deactivate or change the role of their own account (409 `SELF_CHANGE`); nothing changes. |
 | AC-43 | An unknown user id gives 404; an empty or invalid body gives 422. |
 | AC-44 | In the browser: the administrator sees the users, deactivates one and the status changes, and cannot change their own row; a requester who opens `/admin/users` is redirected and the API gives 403. |
