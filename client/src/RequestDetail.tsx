@@ -30,7 +30,8 @@ export default function RequestDetail() {
   if (!request || !user) return <p>Loading...</p>;
 
   const isOwner = request.requester.id === user.id;
-  const canEdit = isOwner && request.status === "DRAFT";
+  // DEF-03 (UAT #69): the administrator only reads requests, even a draft they created before a promotion.
+  const canEdit = isOwner && request.status === "DRAFT" && user.role !== "ADMIN";
   const canDecide = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
   // After a change the server's version, with its history, is loaded again.
   const reload = () => getRequest(request.id).then((r) => setRequest(r.request));
@@ -38,7 +39,8 @@ export default function RequestDetail() {
   return (
     <>
       <div className="d-flex align-items-center gap-3 flex-wrap mb-2">
-        <h1 className="h4 mb-0">{request.requestNumber}: {request.itemName}</h1>
+        {/* DEF-01 (UAT #67): text-break lets a long unbroken item name wrap instead of widening the page. */}
+        <h1 className="h4 mb-0 text-break">{request.requestNumber}: {request.itemName}</h1>
         <StatusBadge status={request.status} />
       </div>
       <p className="text-muted mb-1">Requested by {request.requester.name} on {formatDateTime(request.createdAt)}</p>

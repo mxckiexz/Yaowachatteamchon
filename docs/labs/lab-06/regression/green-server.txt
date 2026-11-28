@@ -1,0 +1,6 @@
+ ✓ tests/lab6/uat-defects.test.ts (7 tests) 3380ms
+   ✓ DEF-02 (#68): zero-width characters do not count as text > TEST-L6-01 / BR-01, BR-02: an item name or description made only of invisible characters is refused, and nothing is stored 320ms
+   ✓ DEF-02 (#68): zero-width characters do not count as text > TEST-L6-05 / BR-09: a rejection reason needs five visible characters; invisible ones are not counted 551ms
+   ✓ DEF-03 (#69): an administrator cannot edit or submit, even a draft created before the promotion > TEST-L6-06 / AC-17, BR-18: after promotion to ADMIN, PATCH and submit of the user's own draft return 404 and change nothing 549ms
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
