@@ -17,7 +17,7 @@ Version 2.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a s
 | F-09 | Attachments | The owner adds and removes PDF, PNG or JPEG files on a draft; everyone who may see the request can list and download them. | FR-19, BR-12, BR-22, BR-23, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-02, F-04 | 2 |
 | F-10 | Comments | Requesters and approvers who may see a request write comments on it; comments cannot be changed; the administrator reads them. | FR-20, BR-12, BR-24, BR-25, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-04 | 2 |
 | F-11 | Return for editing | The approver sends a SUBMITTED request back to the requester, which makes it a DRAFT; the requester edits and resubmits it. | FR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-03, F-04, F-06, F-09 | 2 |
-| F-12 | In-app notifications | Notify on submission, decision and return. | FR-22 | F-03, F-11 | 2 |
+| F-12 | In-app notifications | Approvers are told about submitted requests; requesters are told about approval, rejection and return. A user sees and marks only their own notifications. | FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-03, F-04, F-11 | 2 |
 | F-13 | Multi-step approval | A request can need several approval steps. | FR-23, BR-19 | F-03 | 3 |
 | F-14 | Approval by amount | The approval route depends on the total. | FR-24, BR-20 | F-13 | 3 |
 | F-15 | Departments | Users belong to departments. | FR-25 | F-05 | 3 |
