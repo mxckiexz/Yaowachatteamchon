@@ -1,6 +1,6 @@
 # Feature contract F-13: Multi-step approval
 
-Contract version 1.1, 28 November 2026. Contract only; implementation follows review of this contract. Tracks Issue #74 and FR-23.
+Contract version 1.2, 29 November 2026. Contract only; implementation follows review of this contract. Tracks Issue #74 and FR-23.
 
 Linked requirements: FR-23, BR-12, BR-17, BR-19, BR-29, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03, F-04, F-06, F-11 and F-12. F-14 may select the chain by amount, and F-16 may provide delegation, but both must preserve these step, actor and history rules.
 
@@ -9,11 +9,12 @@ Linked requirements: FR-23, BR-12, BR-17, BR-19, BR-29, NFR-01, NFR-02, NFR-04, 
 |---|---|---|
 | 1.0 | 28 November 2026 | Initial contract proposed. |
 | 1.1 | 28 November 2026 | Made administration the sole configurator; defined empty/legacy chains, step storage and reset, current-approver permissions, notifications, history, API checks, and cross-feature rules. |
+| 1.2 | 29 November 2026 | F-14 revision of BR-29: an empty chain uses the F-03 behaviour only when BR-42 needs no steps for the total. Legacy behaviour (AC-220) is otherwise unchanged. |
 
 ## 1. Feature design
 Only an administrator configures an ordered approval chain while a request is `DRAFT`. An empty chain means the legacy F-03 path: any eligible approver may decide a submitted request. A non-empty chain is snapshotted at submit and advances one current step at a time.
 
-**BR-29:** A configured chain has 1–5 distinct active approvers, none the requester. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. Rejection ends the chain. Return resets the saved chain to planned steps and resubmission starts step 1. F-05 refuses (`409 APPROVER_IN_USE`) to deactivate or change the role of an approver who has a `CURRENT` or `WAITING` step of a `SUBMITTED` request.
+**BR-29:** A configured chain has 1–5 distinct active approvers, none the requester. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. Rejection ends the chain. Return resets the saved chain to planned steps and resubmission starts step 1. F-05 refuses (`409 APPROVER_IN_USE`) to deactivate or change the role of an approver who has a `CURRENT` or `WAITING` step of a `SUBMITTED` request. For a total that needs approval steps, BR-42 (F-14) sets the shortest chain that can be submitted, and an empty chain is then not allowed.
 
 F-03 AC-28/TEST-41 is revised: the unrestricted “any other approver” rule applies only when no chain is configured; a configured request requires its current assigned approver. F-11 BR-26/AC-164 is likewise revised for configured requests: only the current assigned approver may return. Competing approve/reject/return/cancel operations follow existing conditional-update rules: one transition may win; a later hidden request can be `404`, a terminal request `409`, and return followed by cancel may legitimately produce two ordered history rows ending in `CANCELLED`.
 
