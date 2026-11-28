@@ -1,8 +1,8 @@
 # Feature contract F-12: In-app notifications
 
-Contract version 1.1, 28 November 2026. Contract only, for review before implementation. Tracks Issue #71 and implements FR-22.
+Contract version 1.2, 28 November 2026. Contract and implementation are merged into `staging`. Tracks Issue #71 and FR-22.
 
-Linked requirements: FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03 (decisions) and F-11 (return for editing, Issue #64), and uses the visibility rules of F-04. It follows F-11 contract v1.1, which was approved and merged in Pull Request 65. The F-11 implementation is a separate change, Pull Request 66, which is not merged at the time of this version. If F-11 changes its transition, history action or visibility, this contract must be revised.
+Linked requirements: FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03 (decisions) and F-11 (return for editing, Issue #64), and uses the visibility rules of F-04. It follows F-11 contract v1.1 and implementation PR #66, both merged. If F-11 changes its transition, history action or visibility, this contract must be revised.
 
 ## Change log
 
@@ -10,6 +10,7 @@ Linked requirements: FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, 
 |---|---|---|
 | 1.0 | 28 November 2026 | Initial F-12 contract proposed for review. |
 | 1.1 | 28 November 2026 | After review: AC-186 and TEST-217 include the return; TEST-211 counts the rows of one request against the active approvers; the effect of status and role changes on earlier notifications is stated, and AC-189 and TEST-220 cover it, including cancel; AC-192 and TEST-223 cover unread notifications beyond the 50; the answer to an unknown route and the administrator path `/admin/users` are named; the F-11 contract and implementation Pull Requests are distinguished. |
+| 1.2 | 28 November 2026 | F-13 revision: restored recipient/actor guarantees and added stepped notification behavior. |
 
 ## 1. Feature design
 
@@ -24,7 +25,7 @@ The system tells a user inside the application when a request needs their attent
 
 New business rules:
 
-- **BR-27:** For an unconfigured request, submit notifies every active approver except the requester. For a configured F-13 chain, submit notifies only the current step approver and each intermediate approval notifies the next step approver; final approval, rejection and return notify the requester. Notifications are created in the same transaction as the status change and its history entry. A refused or failed change creates none. Of simultaneous changes (BR-17) only successful changes create notifications.
+- **BR-27:** Recipients are chosen at the time of the event; no other action creates a notification. For an unconfigured request, submit notifies every active approver except the requester. For a configured F-13 chain, submit notifies only the current step approver and each intermediate approval notifies the next step approver; final approval, rejection and return notify the requester. Notifications are created in the same transaction as the status change and its history entry. A refused or failed change creates none. Of simultaneous changes (BR-17) only successful changes create notifications.
 - **BR-28:** A user reads and marks only their own notifications, and only those of requests they may see now (BR-12). Any other notification is not listed, not counted and answers as not found.
 
 BR-28 changes only what a user can see. A change of status or role never edits or deletes an existing notification row, and its `readAt` is kept. Only the events in the table above add rows. For an approver's earlier `SUBMITTED` notification of a request:
@@ -128,9 +129,9 @@ The `RETURNED` notification needs the F-11 route. The F-12 implementation theref
 
 | AC | Observable outcome |
 |---|---|
-| AC-180 | An unconfigured submit creates exactly one `SUBMITTED` notification for each active approver except the requester; a configured submit creates one only for the current step approver. |
+| AC-180 | An unconfigured submit creates exactly one `SUBMITTED` notification, with the requester as actor, for each active approver except the requester, and none for the requester, administrator, another requester or inactive approver; a configured submit creates exactly one for the current step approver. |
 | AC-181 | When an approver submits their own request, the other active approvers are notified and the submitter is not. |
-| AC-182 | Final approval creates one `APPROVED` notification and rejection one `REJECTED` notification for the requester; an intermediate F-13 approval notifies only the next step approver. |
+| AC-182 | Final approval creates exactly one `APPROVED` notification and rejection exactly one `REJECTED` notification for the requester, with the deciding approver as actor; an intermediate F-13 approval notifies only the next step approver. |
 | AC-183 | A return creates exactly one `RETURNED` notification for the requester, and submitting again creates new `SUBMITTED` notifications. |
 | AC-184 | A refused or invalid submit, decision or return creates no notification. |
 | AC-185 | Of simultaneous decisions and returns on one request, only the successful one creates a notification. |

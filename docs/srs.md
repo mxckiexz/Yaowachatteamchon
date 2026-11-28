@@ -17,7 +17,7 @@ The project covers only the purchase request workflow, so that Sprint 1 fits the
 |---|---|---|
 | Requester | `REQUESTER` | Logs in, creates a purchase request, edits it while it is a draft, submits it, follows its status, reads the reason for a rejection, cancels it before approval (Sprint 2). Cannot approve any request, cannot change a request after it is approved, cannot see other users' requests. |
 | Approver | `APPROVER` | Reviews submitted requests, approves, or rejects with a reason, reads the approval history. Cannot change the requester's original data, cannot approve their own request, cannot delete history. An approver is also a staff member and can raise requests of their own. |
-| Administrator | `ADMIN` | Manages user accounts: lists users, activates or deactivates them, sets their role, and reads all requests (read only). In Sprint 1 the Administrator is limited to user management and reading data. The Administrator cannot create or decide requests. |
+| Administrator | `ADMIN` | Manages user accounts, reads all requests, and may configure approval steps on any draft. The Administrator cannot create or decide requests. |
 
 ## 3. Product scope
 
@@ -118,7 +118,7 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-23 | Only the request owner can add or remove an attachment, and only while the request is a DRAFT. Reading attachments follows BR-12. | 2 |
 | BR-24 | A requester or an approver who may see a request (BR-12) can add a comment to it in any status. The administrator reads comments only. A comment is 1 to 1000 characters after trimming. | 2 |
 | BR-25 | A comment cannot be edited or deleted. Adding a comment does not change the request status or its history. | 2 |
-| BR-26 | Only an approver who is not the requester may return a SUBMITTED request to DRAFT. A trimmed reason of 5 to 500 characters is required; the transition records RETURNED history and clears submittedAt and decidedAt. DRAFT requests are hidden from approvers, while APPROVED, REJECTED and CANCELLED requests return a state conflict. | 2 |
+| BR-26 | For an unconfigured request, only an approver who is not the requester may return a SUBMITTED request to DRAFT; for a configured request, only the current assigned approver may return it. A trimmed reason of 5 to 500 characters is required; the transition records RETURNED history and clears submittedAt and decidedAt. DRAFT requests are hidden from approvers, while APPROVED, REJECTED and CANCELLED requests return a state conflict. | 2 |
 | BR-27 | For an unconfigured request, submit notifies every active approver except the requester. For a configured chain, submit notifies only the current step approver; each intermediate approval notifies the next approver, and final approval, rejection or return notifies the requester. Notifications are created in the same transaction as the change, and a refused change creates none. | 2 |
 | BR-28 | A user reads and marks only their own notifications, and only those of requests they may see (BR-12). | 2 |
 | BR-29 | An administrator configures 1–5 distinct active approvers, none the requester, on a draft; an empty chain uses legacy F-03 behavior. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. A rejection ends the chain, and return/resubmission resets and starts it at step 1. F-05 cannot deactivate or change the role of a current assigned approver (409). | 3 |
