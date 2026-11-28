@@ -6,6 +6,7 @@ import Login from "./Login";
 import NewRequest from "./NewRequest";
 import Notifications from "./Notifications";
 import RequestDetail from "./RequestDetail";
+import Reports from "./Reports";
 import RequestList from "./RequestList";
 import { homePath } from "./routes";
 import Dashboard from "./Dashboard";
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/notifications" element={<RequireRole roles={["REQUESTER", "APPROVER"]}><Notifications /></RequireRole>} />
           <Route
             path="/requests"

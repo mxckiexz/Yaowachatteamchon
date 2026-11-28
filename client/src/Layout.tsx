@@ -52,6 +52,7 @@ export default function Layout() {
           {user.role === "ADMIN" && <Link className="nav-link" to="/all-requests">All requests</Link>}
           {user.role === "ADMIN" && <Link className="nav-link" to="/admin/users">Users</Link>}
           <Link className="nav-link" to="/dashboard">Dashboard</Link>
+          <Link className="nav-link" to="/reports">Reports</Link>
           {user.role !== "ADMIN" && (
             <Link className="nav-link" to="/notifications" aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}>
               Notifications
