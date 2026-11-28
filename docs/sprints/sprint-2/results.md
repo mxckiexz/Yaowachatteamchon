@@ -147,3 +147,46 @@ Implementation commit: `8e9f028`. Contract: `F-11-return-editing.md` v1.1. The A
 
 Full local suites at commit `78e0ec0`: server 184 passed, client 17 passed, full Playwright 48 passed. Raw output is in `test-output/server-f11-full-vitest.txt` and `test-output/browser-f11-full-playwright.txt`. No production deployment has been performed.
 
+
+## F-12 in-app notifications
+
+Implementation commit: `41ec23e`. Contract: `F-12-notifications.md` v1.1. Run date: 28 November 2026, on a local PostgreSQL database.
+
+| AC | Implementation | Test | Actual result | Commit |
+|---|---|---|---|---|
+| AC-180 | `notifyApprovers` in the submit transaction | TEST-211 | Passed: the recipients of the request are exactly the active approvers without the requester | `41ec23e` |
+| AC-181 | Same, requester excluded | TEST-212 | Passed | `41ec23e` |
+| AC-182 | `notifyRequester` in the approve and reject transaction | TEST-213 | Passed | `41ec23e` |
+| AC-183 | `notifyRequester` in the return transaction | TEST-214 | Passed: one `RETURNED`, and a new submit notifies the approvers again | `41ec23e` |
+| AC-184 | Notifications only after a successful conditional update | TEST-215 | Passed: nine refused calls added no row | `41ec23e` |
+| AC-185 | Same | TEST-216 | Passed: five rounds each of approve against reject and return against approve | `41ec23e` |
+| AC-186 | One transaction with the status and history | TEST-217 | Passed for submit, approve and return, with a database trigger that fails the notification insert and another that fails the commit | `41ec23e` |
+| AC-187 | No other route writes notifications | TEST-218 | Passed | `41ec23e` |
+| AC-188 | `GET /api/notifications` | TEST-219 | Passed: 50 of 55 in order, exact fields, current item name, unread count 44 | `41ec23e` |
+| AC-189 | BR-12 filter on the request | TEST-220 | Passed through return, resubmit, role changes, a second return and cancel; no existing row changed | `41ec23e` |
+| AC-190 | `POST /api/notifications/:id/read` | TEST-221 | Passed: the first `readAt` is kept | `41ec23e` |
+| AC-191 | Same | TEST-222 | Passed: 404 for another user's, hidden, unknown and non-numeric ids | `41ec23e` |
+| AC-192 | `POST /api/notifications/read-all` | TEST-223 | Passed: all 55, also beyond the 50 listed; hidden and other users' rows unchanged | `41ec23e` |
+| AC-193 | Origin, session and role checks | TEST-224 | Passed, including the order of the checks | `41ec23e` |
+| AC-194 | No create or delete route | TEST-225 | Passed: 404 from the framework; body values ignored | `41ec23e` |
+| AC-195 | Stored in the `Notification` table; additive migration | TEST-226 and migration check | Passed; see the migration check below | `41ec23e` |
+| AC-196 | Navigation count and notifications page | TEST-227 | Passed in the browser; an item name with HTML characters is shown as text | `41ec23e` |
+| AC-197 | Page states | TEST-228 | Passed: loading, load error with Retry, empty, failed mark, failed count | `41ec23e` |
+| AC-198 | Names, announcements and focus | TEST-229 | Passed with the keyboard only | `41ec23e` |
+| AC-199 | Responsive layout | TEST-230 | Passed: no horizontal page scroll at 375, 768 and 1280 px; axe found no serious or critical violation | `41ec23e` |
+| AC-200 | Role guard on the link and the route | TEST-231 | Passed | `41ec23e` |
+
+Full local suites at commit `41ec23e`: server 200 passed, client 17 passed, full Playwright 53 passed; server type check and both builds passed. Raw output is in `test-output/server-f12-full-vitest.txt`, `test-output/client-f12.txt` and `test-output/browser-f12-full-playwright.txt`. CI does not run Playwright. Before the commit, the final F-12 server file also passed 10 times in a row and the final F-12 browser file 5 times in a row.
+
+Checks of the tests: the code was broken on purpose 17 times, one rule at a time, and in the final version of the tests each break made at least one F-12 test fail. Server: notifications written outside the transaction (submit, decision and return separately), inactive approvers notified, a decision notifying before its update succeeds, no visibility filter, no limit of 50, a second mark replacing `readAt`, mark all limited to 50, and the administrator allowed. User interface: no focus on the link, no focus on the heading, no announcement, no focus back on the button after a failure, following a link not marking, the count not reloaded on a page change, and a link for the administrator. The source was restored after each run.
+
+Migration check (`test-output/migration-f12.txt`): on a local database filled by the `staging` browser suite, the row counts and checksums of all six existing tables and the request number sequence were the same before and after the migration, and no notification was created. The 184 server tests of `staging` then passed against the migrated database, so the earlier revision works with the new table present.
+
+Known limitations:
+
+- Only the 50 newest visible notifications are listed; older ones cannot be opened.
+- There are no live updates. The count is loaded on a page change and after marking.
+- Found while testing: Prisma 5.22 does not report a failed `COMMIT` of an interactive transaction. Nothing is stored, so the data stays consistent, but the call would answer 200. This applies to every route that uses such a transaction, not only to F-12. It was produced only with a deferred trigger created by the test; the application has no deferred constraint. It is not fixed here.
+- The migration has not been run on a copy of the deployed data.
+- The notifications page has no separate client unit tests; its behaviour is covered by the browser tests.
+- No production deployment has been performed.

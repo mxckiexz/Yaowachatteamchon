@@ -1,0 +1,45 @@
+F-12 migration check on a local database that already has data (2026-11-28 17:43 +0700)
+Schema before: staging 6a003bc. Data: the staging Playwright suite. This is not a copy of the deployed data.
+Prisma's update notice and its tree-drawing lines are left out of the command output below.
+
+Before (table, rows, checksum of all rows):
+User             5 cefca6824a827fee482f173e8fb5611f
+Session          56 cd31f5f1f802baa95cb16332a53ad127
+PurchaseRequest  41 0ea8dbcc0a370bf7f95a83e2b7d37f92
+RequestHistory   83 76421f9950a269dba1d5c5b970d64418
+Attachment       8 fb5b64bb294b27a65612dc07cbf95aea
+Comment          8 549270510ec52b1c16b45c9a7cf377ae
+sequences        58
+
+$ npx prisma migrate deploy
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "bf_f12_red", schema "public"
+
+6 migrations found in prisma/migrations
+
+Applying migration `20261128103000_add_notification`
+
+The following migration(s) have been applied:
+
+migrations/
+      
+All migrations have been successfully applied.
+
+After:
+User             5 cefca6824a827fee482f173e8fb5611f
+Session          56 cd31f5f1f802baa95cb16332a53ad127
+PurchaseRequest  41 0ea8dbcc0a370bf7f95a83e2b7d37f92
+RequestHistory   83 76421f9950a269dba1d5c5b970d64418
+Attachment       8 fb5b64bb294b27a65612dc07cbf95aea
+Comment          8 549270510ec52b1c16b45c9a7cf377ae
+sequences        58
+
+Notification rows after the migration: 0
+Row counts, checksums and the request number sequence are identical before and after.
+
+Earlier revision on the migrated database (server test suite of staging 6a003bc, which does not know the Notification table):
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+Test Files  1 failed | 25 passed (26)
+Tests  16 failed | 184 passed (200)
+The one failing file and its 16 tests are tests/f12, which was present in that tree for the red run and needs F-12. The other 25 files (184 tests) are staging's own and all passed.

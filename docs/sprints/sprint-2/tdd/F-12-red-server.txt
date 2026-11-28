@@ -1,0 +1,301 @@
+$ npx vitest run tests/f12/notifications.test.ts   (code: staging 6a003bc without F-12, final test file, new database; 2026-11-28 17:40 +0700)
+
+ RUN  v2.1.9 /private/tmp/claude-501/-Users-aphisamai-Downloads-toktickit/91627dde-f2fa-4478-92d0-d0692dd23ec5/scratchpad/f12red/server
+
+ ❯ tests/f12/notifications.test.ts (16 tests | 16 failed) 8444ms
+   × F-12 in-app notifications API > TEST-211 / AC-180: a submit notifies exactly the active approvers 44ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-212 / AC-181: an approver who submits is not notified, the other approvers are 11ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-213 / AC-182: a decision notifies the requester once 16ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-214 / AC-183: a return notifies the requester, and a new submit notifies the approvers again 13ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-215 / AC-184: a refused or invalid change creates no notification 8ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-216 / AC-185: of simultaneous changes only the winner notifies 16ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-217 / AC-186: if the notification or the transaction fails, nothing changes 25ms
+     → Cannot read properties of undefined (reading 'findMany')
+   × F-12 in-app notifications API > TEST-218 / AC-187: other actions create no notification 0ms
+     → Cannot read properties of undefined (reading 'count')
+   × F-12 in-app notifications API > TEST-219 / AC-188: the list holds the caller's 50 newest with exact fields and the full unread count 914ms
+     → Cannot read properties of undefined (reading 'createMany')
+   × F-12 in-app notifications API > TEST-220 / AC-189: visibility follows the request and the role, and rows are never edited 15ms
+     → expected 404 to be 200 // Object.is equality
+   × F-12 in-app notifications API > TEST-221 / AC-190: marking sets readAt once and lowers the count 15ms
+     → expected 404 to be 200 // Object.is equality
+   × F-12 in-app notifications API > TEST-222 / AC-191: another user's, a hidden, a missing and a non-numeric id give 404 9ms
+     → expected 404 to be 200 // Object.is equality
+   × F-12 in-app notifications API > TEST-223 / AC-192: mark all reads every visible one, also beyond 50, and nothing else 0ms
+     → Cannot read properties of undefined (reading 'deleteMany')
+   × F-12 in-app notifications API > TEST-224 / AC-193: session, role and origin checks, in that order 8ms
+     → expected 404 to be 200 // Object.is equality
+   × F-12 in-app notifications API > TEST-225 / AC-194: no route creates or deletes, and body values change nothing 9ms
+     → expected 404 to be 200 // Object.is equality
+   × F-12 in-app notifications API > TEST-226 / AC-195: notifications and their read state survive a new session 14ms
+     → expected 404 to be 200 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-211 / AC-180: a submit notifies exactly the active approvers
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:133:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-212 / AC-181: an approver who submits is not notified, the other approvers are
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:145:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-213 / AC-182: a decision notifies the requester once
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:157:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-214 / AC-183: a return notifies the requester, and a new submit notifies the approvers again
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:165:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-215 / AC-184: a refused or invalid change creates no notification
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:179:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-216 / AC-185: of simultaneous changes only the winner notifies
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ outcomeRows tests/f12/notifications.test.ts:203:61
+ ❯ tests/f12/notifications.test.ts:208:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-217 / AC-186: if the notification or the transaction fails, nothing changes
+TypeError: Cannot read properties of undefined (reading 'findMany')
+ ❯ rowsOf tests/f12/notifications.test.ts:55:51
+     53| }
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+       |                                                   ^
+     56| const allRows = () => getPrisma().notification.count();
+     57| 
+ ❯ tests/f12/notifications.test.ts:232:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-218 / AC-187: other actions create no notification
+TypeError: Cannot read properties of undefined (reading 'count')
+ ❯ allRows tests/f12/notifications.test.ts:56:35
+     54| 
+     55| const rowsOf = (requestId: number) => getPrisma().notification.findMan…
+     56| const allRows = () => getPrisma().notification.count();
+       |                                   ^
+     57| 
+     58| const send = (agent: Agent, path: string, body: object = {}, origin = …
+ ❯ tests/f12/notifications.test.ts:251:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-219 / AC-188: the list holds the caller's 50 newest with exact fields and the full unread count
+TypeError: Cannot read properties of undefined (reading 'createMany')
+ ❯ insertRows tests/f12/notifications.test.ts:78:21
+     76| async function insertRows(recipientId: number, requestId: number, coun…
+     77|   const base = Date.UTC(2026, 0, 1);
+     78|   await getPrisma().notification.createMany({
+       |                     ^
+     79|     data: Array.from({ length: count }, (_, i) => ({
+     80|       recipientId,
+ ❯ tests/f12/notifications.test.ts:278:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-220 / AC-189: visibility follows the request and the role, and rows are never edited
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:304:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-221 / AC-190: marking sets readAt once and lowers the count
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:363:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-222 / AC-191: another user's, a hidden, a missing and a non-numeric id give 404
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:379:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-223 / AC-192: mark all reads every visible one, also beyond 50, and nothing else
+TypeError: Cannot read properties of undefined (reading 'deleteMany')
+ ❯ tests/f12/notifications.test.ts:400:23
+    398| 
+    399|   it("TEST-223 / AC-192: mark all reads every visible one, also beyond…
+    400|     await getPrisma().notification.deleteMany({ where: { recipientId: …
+       |                       ^
+    401|     const reader = await loginAgent(READER);
+    402|     const neighbour = await loginAgent(NEIGHBOUR);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-224 / AC-193: session, role and origin checks, in that order
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:423:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-225 / AC-194: no route creates or deletes, and body values change nothing
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:453:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  tests/f12/notifications.test.ts > F-12 in-app notifications API > TEST-226 / AC-195: notifications and their read state survive a new session
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ list tests/f12/notifications.test.ts:65:22
+     63| async function list(agent: Agent) {
+     64|   const res = await agent.get("/api/notifications");
+     65|   expect(res.status).toBe(200);
+       |                      ^
+     66|   expect(Object.keys(res.body).sort()).toEqual(["notifications", "unre…
+     67|   return res.body as { notifications: Note[]; unreadCount: number };
+ ❯ forRequest tests/f12/notifications.test.ts:70:64
+ ❯ tests/f12/notifications.test.ts:472:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+ Test Files  1 failed (1)
+      Tests  16 failed (16)
+   Start at  17:40:16
+   Duration  9.18s (transform 187ms, setup 0ms, collect 452ms, tests 8.44s, environment 0ms, prepare 101ms)
+

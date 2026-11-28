@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import Layout, { RequireRole } from "./Layout";
 import Login from "./Login";
 import NewRequest from "./NewRequest";
+import Notifications from "./Notifications";
 import RequestDetail from "./RequestDetail";
 import RequestList from "./RequestList";
 import { homePath } from "./routes";
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/notifications" element={<RequireRole roles={["REQUESTER", "APPROVER"]}><Notifications /></RequireRole>} />
           <Route
             path="/requests"
             element={
