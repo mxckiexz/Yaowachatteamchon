@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 3.2. Version 3.2 records the F-13 ApprovalStep entity, configuration and current-step decision implementation, including the additive migration and transactional guards.
+Version 3.3. Version 3.2 records the F-13 ApprovalStep entity, configuration and current-step decision implementation, including the additive migration and transactional guards. Version 3.3 adds the planned F-17 report page, endpoints and permissions.
 
 ## 1. Architecture and stack
 
@@ -60,6 +60,7 @@ Seed accounts (synthetic): `ploy@purchaseflow.test` and `nattapong@purchaseflow.
 | Review queue | `/reviews` | approver |
 | All requests (read only) | `/all-requests` | administrator |
 | Users | `/admin/users` | administrator |
+| Reports (F-17, planned) | `/reports` | requester, approver, administrator |
 
 Shared behavior:
 
@@ -95,6 +96,7 @@ Endpoint list (details are in the feature contracts):
 | `POST /api/requests/:id/return` | F-11 |
 | `GET /api/notifications`, `POST /api/notifications/:id/read`, `POST /api/notifications/read-all` | F-12 (implemented) |
 | `GET`, `PUT /api/requests/:id/approval-steps` | F-13 |
+| `GET /api/reports/summary`, `GET /api/reports/export.csv` | F-17 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
 ## 5. Roles and permissions
@@ -113,6 +115,7 @@ Endpoint list (details are in the feature contracts):
 | Return for editing (F-11) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
 | Configure approval steps (F-13) | 401 | 403 | 403 | any draft; empty or 1–5 valid steps |
 | Decide current approval step (F-13) | 401 | 403 | assigned current step only; others `NOT_CURRENT_APPROVER` | 403 |
+| Read the report and export it (F-17, planned) | 401 | own requests | own requests, and every request that is not a draft | all, read only |
 | List and mark notifications (F-12) | 401 | own, for requests they may see (other: 404) | own, for requests they may see (other: 404) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |
 | Add or delete an attachment (F-09) | 401 | own draft only (other: 404, not a draft: 409) | own draft only (other: 404, not a draft: 409) | 404 |
