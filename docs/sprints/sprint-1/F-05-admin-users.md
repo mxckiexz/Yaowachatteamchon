@@ -8,7 +8,7 @@ Linked requirements: FR-15. Rules: BR-13, BR-16. Depends on: F-01.
 | Version | Date | Change |
 |---|---|---|
 | 2.0 | Before implementation | Initial administrator contract. |
-| 2.1 | 28 November 2026 | F-13 revision: a current or waiting step of a submitted request protects its approver from deactivation or role change; cancelled requests do not block users. |
+| 2.1 | 28 November 2026 | F-13 revision: a current or waiting step of a submitted request protects its approver from deactivation or role change; cancelled requests do not block users. The protection is specified and tested by F-13 AC-221 (TEST-252). |
 
 ## 1. Feature design
 
@@ -54,7 +54,6 @@ Updates `User.isActive` and `User.role`. No schema change. Deactivation needs no
 | AC-42 | The administrator cannot deactivate or change the role of their own account (409 `SELF_CHANGE`); nothing changes. |
 | AC-43 | An unknown user id gives 404; an empty or invalid body gives 422. |
 | AC-44 | In the browser: the administrator sees the users, deactivates one and the status changes, and cannot change their own row; a requester who opens `/admin/users` is redirected and the API gives 403. |
-| AC-45 | F-13 protection: deactivation or role change is refused for CURRENT and WAITING approvers of a SUBMITTED request, and is allowed after cancel, reject, final approval or return. |
 
 ## 6. Software test specification
 
@@ -67,5 +66,4 @@ Updates `User.isActive` and `User.role`. No schema change. Deactivation needs no
 | TEST-65 | AC-41 | API integration | A requester | Change role to APPROVER; then to `BOSS`, to `""`, and send `{}` | 200 with the new role; 422 for the invalid ones; role unchanged |
 | TEST-66 | AC-42 | API integration | Logged-in administrator | PATCH own id with `isActive: false` and with `role: "REQUESTER"` | 409 `SELF_CHANGE`; the administrator can still use the API |
 | TEST-67 | AC-43 | API integration | Logged-in administrator | PATCH id 999999 and `abc`; PATCH with `isActive: "yes"` | 404; 404; 422 |
-| TEST-68 | AC-45 | API integration | Users assigned to CURRENT/WAITING steps and requests in each later state | PATCH active/role | 409 `APPROVER_IN_USE` while submitted; 200 after cancel, reject, final approval or return |
 | TEST-75 | AC-44 | UI end to end | Seeded accounts | The administrator deactivates a requester (status changes); the requester can no longer log in; the administrator's own row is locked; a requester opens `/admin/users` | Status text changes; login refused; no controls on the own row; redirect and 403 |
