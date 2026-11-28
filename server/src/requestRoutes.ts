@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { requireAuth, requireRole, type AuthedRequest } from "./auth.js";
 import { asyncHandler, parseId } from "./http.js";
 import { calculateTotalSatang, satangToBaht } from "./money.js";
-import { notifyApprovers, notifyRequester } from "./notifications.js";
+import { notifyApprover, notifyApprovers, notifyRequester } from "./notifications.js";
 import { getPrisma } from "./prisma.js";
 import { APPROVAL_STEPS_INCLUDE, HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
@@ -139,7 +139,9 @@ requestRouter.post(
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "SUBMITTED", fromStatus: "DRAFT", toStatus: "SUBMITTED" },
         });
-        await notifyApprovers(tx, id, userId);
+        const first = chain.configured ? await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } }) : null;
+        if (first) await notifyApprover(tx, id, first.approverId, userId);
+        else await notifyApprovers(tx, id, userId);
       }
       return result.count;
     });
@@ -207,7 +209,10 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
       if (result.count === 1) {
         if (step) {
           await tx.approvalStep.update({ where: { id: step.id }, data: { status: decision === "REJECTED" ? "REJECTED" : "APPROVED", decidedAt: new Date(), decisionComment: text || null } });
-          if (next && decision === "APPROVED") await tx.approvalStep.update({ where: { id: next.id }, data: { status: "CURRENT" } });
+          if (next && decision === "APPROVED") {
+            await tx.approvalStep.update({ where: { id: next.id }, data: { status: "CURRENT" } });
+            await notifyApprover(tx, id, next.approverId, userId);
+          }
         }
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: step && targetStatus === "SUBMITTED" ? "STEP_APPROVED" : decision, fromStatus: "SUBMITTED", toStatus: targetStatus, comment: text || null },
@@ -285,6 +290,10 @@ requestRouter.post(
     if (existing.status !== "SUBMITTED") {
       return res.status(409).json({ error: "Only a submitted request can be returned.", code: "ILLEGAL_TRANSITION" });
     }
+    const configuredStep = await prisma.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } });
+    if (configuredStep && configuredStep.approverId !== userId) {
+      return res.status(403).json({ error: "You are not the current approver.", code: "NOT_CURRENT_APPROVER" });
+    }
     const raw = req.body?.reason;
     const reason = typeof raw === "string" ? raw.trim() : "";
     if (typeof raw !== "string" || reason.length < MIN_REASON_LENGTH || reason.length > MAX_TEXT_LENGTH || reason.includes("\u0000")) {
@@ -301,6 +310,9 @@ requestRouter.post(
         data: { status: "DRAFT", submittedAt: null, decidedAt: null },
       });
       if (result.count === 1) {
+        if (configuredStep) {
+          await tx.approvalStep.updateMany({ where: { requestId: id }, data: { status: "PLANNED", decidedAt: null, decisionComment: null } });
+        }
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: reason },
         });

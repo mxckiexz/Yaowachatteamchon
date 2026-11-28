@@ -51,6 +51,13 @@ adminRouter.patch(
     if (id === req.user!.id) {
       return res.status(409).json({ error: "You cannot change your own account.", code: "SELF_CHANGE" });
     }
+    if (data.isActive === false || data.role !== undefined) {
+      const inUse = await prisma.approvalStep.findFirst({
+        where: { approverId: id, status: { in: ["CURRENT", "WAITING"] }, request: { status: "SUBMITTED" } },
+        select: { id: true },
+      });
+      if (inUse) return res.status(409).json({ error: "This approver is assigned to a submitted request.", code: "APPROVER_IN_USE" });
+    }
     const user = await prisma.user.update({ where: { id }, data, select: USER_SELECT });
     res.json({ user });
   })
