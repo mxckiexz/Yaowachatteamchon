@@ -1,14 +1,15 @@
 # Feature contract F-12: In-app notifications
 
-Contract version 1.0, 28 November 2026. Contract only, for review before implementation. Tracks Issue #71 and implements FR-22.
+Contract version 1.1, 28 November 2026. Contract only, for review before implementation. Tracks Issue #71 and implements FR-22.
 
-Linked requirements: FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03 (decisions) and F-11 (return for editing, Issue #64), and uses the visibility rules of F-04. It follows F-11 contract v1.1, approved and merged in Pull Request 65. If F-11 changes its transition, history action or visibility, this contract must be revised.
+Linked requirements: FR-22, BR-12, BR-17, BR-27, BR-28, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03 (decisions) and F-11 (return for editing, Issue #64), and uses the visibility rules of F-04. It follows F-11 contract v1.1, which was approved and merged in Pull Request 65. The F-11 implementation is a separate change, Pull Request 66, which is not merged at the time of this version. If F-11 changes its transition, history action or visibility, this contract must be revised.
 
 ## Change log
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 28 November 2026 | Initial F-12 contract proposed for review. |
+| 1.1 | 28 November 2026 | After review: AC-186 and TEST-217 include the return; TEST-211 counts the rows of one request against the active approvers; the effect of status and role changes on earlier notifications is stated, and AC-189 and TEST-220 cover it, including cancel; AC-192 and TEST-223 cover unread notifications beyond the 50; the answer to an unknown route and the administrator path `/admin/users` are named; the F-11 contract and implementation Pull Requests are distinguished. |
 
 ## 1. Feature design
 
@@ -26,7 +27,16 @@ New business rules:
 - **BR-27:** The notifications of an event are created in the same transaction as the status change and its history entry. A refused or failed change creates none. Of simultaneous changes (BR-17) only the successful one creates notifications. Recipients are chosen at the time of the event. No other action creates a notification.
 - **BR-28:** A user reads and marks only their own notifications, and only those of requests they may see now (BR-12). Any other notification is not listed, not counted and answers as not found.
 
-BR-28 matters after a return: the request is a draft again, so an approver can no longer see it. The approver's older `SUBMITTED` notification is then hidden. If the request is submitted again, the older notification is visible again beside the new one. It is also visible again if the owner cancels the returned draft, because approvers may see a cancelled request. The same applies to a user who is no longer an approver.
+BR-28 changes only what a user can see. A change of status or role never edits or deletes an existing notification row, and its `readAt` is kept. Only the events in the table above add rows. For an approver's earlier `SUBMITTED` notification of a request:
+
+| What happens | The earlier notification |
+|---|---|
+| The request is returned, so it is a draft again | Hidden: not listed, not counted, marking it answers 404, and **Mark all as read** leaves it unchanged |
+| The owner submits it again | Visible again, beside the new `SUBMITTED` notification |
+| The owner cancels the returned draft | Visible again, because approvers may see a cancelled request. Cancelling adds no notification |
+| The recipient becomes a requester | Hidden, because the request belongs to another user |
+| The recipient becomes an approver again | Visible again if the request is not a draft |
+| The recipient becomes an administrator | Every notification route answers 403 (check 3) |
 
 Out of scope: e-mail, push or browser notifications, live updates without a page change, user settings, notifications for cancellation, comments or attachments, deleting notifications, and paging. The list shows the 50 newest visible notifications. Older ones cannot be opened, but unread ones are still counted and **Mark all as read** includes them. This is a known limitation.
 
@@ -50,7 +60,7 @@ The page `/notifications` has the heading **Notifications**.
 
 The buttons are disabled while their call runs. Everything works with the keyboard in reading order. After **Mark as read** the focus moves to the request link of that entry. After **Mark all as read** the focus moves to the page heading. At 375, 768 and 1280 px there is no horizontal page scrolling, including the navigation and a 100-character item name.
 
-The administrator has no link. If the administrator opens `/notifications`, the app shows the administrator's first screen, as other pages of other roles do.
+The administrator has no link. If the administrator opens `/notifications`, the app redirects to `/admin/users`, the administrator's first screen, as it does for other pages of other roles.
 
 ## 3. API specification
 
@@ -79,6 +89,7 @@ The item name is the current one. Reasons and comments are not copied into notif
 - Marking sets `readAt` to the server time. Marking an already read notification succeeds and keeps the first `readAt`.
 - Mark all changes only the caller's unread notifications that the caller may see. A hidden one stays unread.
 - A request body is ignored. No route creates, changes the content of, or deletes a notification.
+- A method and path that are not in the table above keep the application's existing answer to an unknown route: status 404 with the framework's default body, not the JSON body of check 4. The application does not answer 405. Check 1 still comes first.
 
 ### Errors and order of checks
 
@@ -123,13 +134,13 @@ The `RETURNED` notification needs the F-11 route. The F-12 implementation theref
 | AC-183 | A return creates exactly one `RETURNED` notification for the requester, and submitting again creates new `SUBMITTED` notifications. |
 | AC-184 | A refused or invalid submit, decision or return creates no notification. |
 | AC-185 | Of simultaneous decisions and returns on one request, only the successful one creates a notification. |
-| AC-186 | If creating the notifications fails, the status and the history are unchanged. |
+| AC-186 | If creating the notifications fails during a submit, a decision or a return, the status and the history are unchanged. |
 | AC-187 | Creating or editing a draft, cancelling, commenting and adding or removing an attachment create no notification. |
 | AC-188 | The list returns only the caller's notifications with exactly the listed fields, newest first, at most 50, and `unreadCount` counts all visible unread ones. |
-| AC-189 | A notification of a request the caller may not see is not listed or counted, and is listed again when the request becomes visible. |
+| AC-189 | A notification of a request the caller may not see is not listed, counted or changed. It is listed again, with the same `readAt`, when the request becomes visible again. |
 | AC-190 | Marking sets `readAt` and lowers the count; marking again keeps the first `readAt`. |
 | AC-191 | Marking another user's, a hidden, a missing or a non-numeric id gives 404 without data and changes nothing. |
-| AC-192 | Mark all changes only the caller's visible unread notifications. |
+| AC-192 | Mark all changes only the caller's visible unread notifications, including those beyond the 50 listed. |
 | AC-193 | Without a session every route gives 401, the administrator gets 403, a POST from another origin gets 403, and nothing changes. |
 | AC-194 | No route creates or deletes a notification, and values in a request body change nothing. |
 | AC-195 | Notifications and their read state are still there after a new session. The migration creates none for existing requests and changes no existing row. |
@@ -137,33 +148,33 @@ The `RETURNED` notification needs the F-11 route. The F-12 implementation theref
 | AC-197 | The UI shows the loading, empty and load-error with Retry states; a failed mark shows the error and keeps the entry unread; a failed count leaves the page usable. |
 | AC-198 | The link has the accessible name with the unread count, unread is shown in words, the page works with the keyboard, marking is announced and focus is handled as in section 2. |
 | AC-199 | At 375, 768 and 1280 px with a 100-character item name there is no horizontal page scrolling, and axe-core reports no serious or critical violation on the navigation and the page. |
-| AC-200 | The administrator has no Notifications link and cannot open the page. |
+| AC-200 | The administrator has no Notifications link, and opening `/notifications` redirects to `/admin/users`. |
 
 ## 6. Software test specification
 
 | Test | AC | Level | Precondition and input | Expected result |
 |---|---|---|---|---|
-| TEST-211 | AC-180 | API integration | Two active approvers, one inactive approver, another requester and an administrator exist; a requester submits | Exactly one row for each active approver among them, with the requester as actor, and no row for the others. Rows of other approvers in the shared test database are allowed |
+| TEST-211 | AC-180 | API integration | Two active approvers, one inactive approver, another requester and an administrator exist; a requester submits | Looking only at the rows of that request: their recipients are exactly the users who are active approvers at the time of the submit, read from the database, without the requester. Each recipient has exactly one row, of type `SUBMITTED`, with the requester as actor. Both active fixture approvers are among them; the inactive approver, the other requester, the administrator and the requester are not |
 | TEST-212 | AC-181 | API integration | An approver submits their own request | The other fixture approver has a row; the submitter has none |
 | TEST-213 | AC-182 | API integration | Approve one submitted request and reject another | One row of the right type for the requester each |
 | TEST-214 | AC-183 | API integration | Return a submitted request, then submit it again | One `RETURNED` row for the requester, then new `SUBMITTED` rows for the approvers |
 | TEST-215 | AC-184 | API integration | Incomplete submit, second submit, self-approval, decision on a decided request, rejection and return with a short reason, calls by wrong roles | Each is refused as before and adds no row |
 | TEST-216 | AC-185 | API integration | At the same time, several times each: approve against reject, and return against approve | One succeeds each time; exactly one notification for the requester, of the winning type |
-| TEST-217 | AC-186 | API integration | Force the notification insert to fail during a submit and during a decision | The call fails with the safe 500 body; status and history are unchanged |
+| TEST-217 | AC-186 | API integration | Force the notification insert to fail during a submit, during a decision and during a return | Each call fails with the safe 500 body; the status, `submittedAt`, `decidedAt`, the history and the notification rows of the request are unchanged |
 | TEST-218 | AC-187 | API integration | Create, edit, comment, add and remove an attachment, cancel | The number of notification rows does not change |
 | TEST-219 | AC-188 | API integration | A user with 55 notifications, some read, and another user with their own | 50 newest of the caller only, in order, with exact fields; `unreadCount` counts the unread among all 55 |
-| TEST-220 | AC-189 | API integration | An approver has a notification; the request is returned, then submitted again; a second approver is changed to requester | Hidden and not counted while the request is not visible; listed again afterwards; the former approver sees none for others' requests |
+| TEST-220 | AC-189 | API integration | A request is submitted, so approvers A and B each have a notification, and B marks theirs as read. Then, in order: return; submit again; change B to requester and back to approver; return again; the owner cancels the draft | After each return: the approvers' rows are not listed or counted, and marking one answers 404. After submitting again: the earlier and the new rows are listed. While B is a requester: B sees none of them; as approver again: B sees them. After cancelling: the earlier rows are listed and no row was added by cancelling. In every step no existing row is edited or deleted, and B's `readAt` is kept |
 | TEST-221 | AC-190 | API integration | Mark one notification twice | `readAt` is set once and kept; the count falls by one |
 | TEST-222 | AC-191 | API integration | Another user's id, a hidden one, an unknown id and `abc` | 404 with the notification body; no row changes |
-| TEST-223 | AC-192 | API integration | Caller has visible and hidden unread ones, another user has unread ones; call mark all | Only the caller's visible ones are read |
+| TEST-223 | AC-192 | API integration | The caller has 55 visible unread notifications and one hidden unread one; another user has unread ones; call mark all | All 55, including the 5 not listed, get `readAt`; `unreadCount` is 0 in the response and in the next list; the hidden one and the other user's rows stay unread |
 | TEST-224 | AC-193 | API integration | All three routes without a session and as administrator; both POSTs with a foreign Origin | 401, 403, 403; no row changes |
-| TEST-225 | AC-194 | API integration | `POST /api/notifications` and `DELETE /api/notifications/:id` with the client origin; mark with `recipientId`, `readAt` and `type` in the body | 404 for the first two; the mark uses server values only |
+| TEST-225 | AC-194 | API integration | `POST /api/notifications` and `DELETE /api/notifications/:id` with the client origin; mark with `recipientId`, `readAt` and `type` in the body | The first two answer status 404, the existing answer to an unknown route (only the status is checked), and add or remove no row; the mark uses server values only |
 | TEST-226 | AC-195 | API integration and migration check | Read with a new session; apply the migration to a database that already has requests | Same data; no notification created; existing row counts and checksums unchanged |
 | TEST-227 | AC-196 | Browser end to end | Requester submits an item with HTML characters in its name; approver reads it, then approves; requester looks | Counts, links, read state and messages as stated; the name is text and no dialog opens |
 | TEST-228 | AC-197 | Browser end to end | Delay and fail the list, then Retry; fail a mark; fail the count call on another page | Each state shows its text; the entry stays unread; the other page works |
 | TEST-229 | AC-198 | Browser end to end | Use only the keyboard to open the page, mark one and mark all | Accessible names, the word Unread, announcements and focus as specified |
 | TEST-230 | AC-199 | Browser responsive and accessibility | A 100-character item name at 375, 768 and 1280 px; run axe on the navigation and the page | No horizontal page overflow; no serious or critical violation |
-| TEST-231 | AC-200 | Browser end to end | Sign in as administrator and open `/notifications` | No link; the administrator's first screen is shown |
+| TEST-231 | AC-200 | Browser end to end | Sign in as administrator and open `/notifications` | No Notifications link; the address becomes `/admin/users` |
 
 ## 7. Definition of Done
 
