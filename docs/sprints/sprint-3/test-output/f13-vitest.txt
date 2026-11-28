@@ -1,5 +1,35 @@
 
-Targeted F-13 API run (captured from the final implementation):
-Test Files  1 passed (1)
-Tests       18 passed (18)
+> purchaseflow-server@1.0.0 test
+> vitest run tests/f13/multi-step-approval.test.ts
+
+
+ RUN  v2.1.9 C:/Users/Thanwarat/OneDrive/KMUTT/cpe/CPE334/Yaowachatteamchon/server
+
+stderr | tests/f13/multi-step-approval.test.ts > F-13 multi-step approval > TEST-246 / AC-215: history failure rolls back the step decision
+PrismaClientUnknownRequestError: 
+Invalid `tx.requestHistory.create()` invocation in
+C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\src\requestRoutes.ts:227:33
+
+  224     await notifyApprover(tx, id, next.approverId, locked.requesterId);
+  225   }
+  226 }
+→ 227 await tx.requestHistory.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "P0001", message: "forced f13 history failure", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+    at $n.handleRequestError (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:121:7505)
+    at $n.handleAndLogRequestError (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at l (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\src\requestRoutes.ts:227:9
+    at Proxy._transactionWithCallback (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\server\src\requestRoutes.ts:203:21 {
+  clientVersion: '5.22.0'
+}
+
+ ✓ tests/f13/multi-step-approval.test.ts (18 tests) 8402ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  00:49:33
+   Duration  9.42s (transform 227ms, setup 0ms, collect 696ms, tests 8.40s, environment 0ms, prepare 126ms)
 

@@ -26,7 +26,7 @@ Version 2.19. Requirement, feature or responsibility, sprint, acceptance criteri
 | FR-20 | F-10 | 2 | AC-141 to AC-159 | TEST-172 to 190 |
 | FR-21 | F-11 | 2 | AC-160 to AC-179 | TEST-191 to TEST-208 |
 | FR-22 | F-12 | 2 | AC-180 to AC-200 | TEST-211 to TEST-231 |
-| FR-23 | F-13 | 3 | AC-201 to AC-221 | TEST-232 to TEST-252 |
+| FR-23 | F-13 | 3 | AC-201 to AC-221 | TEST-232 to TEST-252 (API executed; browser/evidence pending) |
 | FR-24 | F-14 | 3 | planned | planned |
 | FR-25 | F-15 | 3 | planned | planned |
 | FR-26 | F-16 | 3 | planned | planned |

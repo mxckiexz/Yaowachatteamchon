@@ -10,8 +10,11 @@ const OTHER = "f13-other@test.local";
 const APPROVER1 = "f13-approver1@test.local";
 const APPROVER2 = "f13-approver2@test.local";
 const APPROVER3 = "f13-approver3@test.local";
+const APPROVER4 = "f13-approver4@test.local";
+const APPROVER5 = "f13-approver5@test.local";
+const APPROVER6 = "f13-approver6@test.local";
 const ADMIN = "f13-admin@test.local";
-const USERS = [OWNER, OTHER, APPROVER1, APPROVER2, APPROVER3, ADMIN];
+const USERS = [OWNER, OTHER, APPROVER1, APPROVER2, APPROVER3, APPROVER4, APPROVER5, APPROVER6, ADMIN];
 type Agent = ReturnType<typeof request.agent>;
 let owner: Agent;
 let other: Agent;
@@ -27,9 +30,12 @@ beforeAll(async () => {
   ids.approver1 = (await createUser(APPROVER1, { role: "APPROVER", name: "F13 approver one" })).id;
   ids.approver2 = (await createUser(APPROVER2, { role: "APPROVER", name: "F13 approver two" })).id;
   ids.approver3 = (await createUser(APPROVER3, { role: "APPROVER", name: "F13 approver three" })).id;
+  ids.approver4 = (await createUser(APPROVER4, { role: "APPROVER", name: "F13 approver four" })).id;
+  ids.approver5 = (await createUser(APPROVER5, { role: "APPROVER", name: "F13 approver five" })).id;
+  ids.approver6 = (await createUser(APPROVER6, { role: "APPROVER", name: "F13 approver six" })).id;
   ids.admin = (await createUser(ADMIN, { role: "ADMIN", name: "F13 administrator" })).id;
-  [owner, other, approver1, approver2, approver3, admin] = await Promise.all(USERS.map((email) => loginAgent(email)));
-  for (const id of [ids.approver1, ids.approver2, ids.approver3]) {
+  [owner, other, approver1, approver2, approver3, , , , admin] = await Promise.all(USERS.map((email) => loginAgent(email)));
+  for (const id of [ids.approver1, ids.approver2, ids.approver3, ids.approver4, ids.approver5, ids.approver6]) {
     await admin.patch(`/api/admin/users/${id}`).set("Origin", ORIGIN).send({ role: "APPROVER", isActive: true });
   }
 });
@@ -70,8 +76,10 @@ describe("F-13 multi-step approval", () => {
   it("TEST-234 / AC-203: invalid arrays and ids return 422 without changing data", async () => {
     const draft = await createDraft(owner);
     await configure(draft.id, [ids.approver1]);
-    for (const value of [null, "x", [ids.approver1, ids.approver1], [ids.owner], [999999], [ids.approver1, ids.approver2, ids.approver3, ids.approver1, ids.approver2, ids.approver3]]) {
-      expect((await putSteps(admin, draft.id, value)).status).toBe(422);
+    for (const value of [null, "x", [ids.approver1, ids.approver1], [ids.owner], [999999], [ids.approver1, ids.approver2, ids.approver3, ids.approver4, ids.approver5, ids.approver6]]) {
+      const response = await putSteps(admin, draft.id, value);
+      expect(response.status).toBe(422);
+      expect(response.body.fields).toHaveProperty("approverIds");
     }
     expect((await getSteps(owner, draft.id)).body.steps.map((s: any) => s.approver.id)).toEqual([ids.approver1]);
   });
