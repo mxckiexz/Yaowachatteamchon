@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ApiError, approveRequest, cancelRequest, getRequest, rejectRequest, returnRequest, submitRequest, updateRequest, type RequestDetail as Detail } from "./api";
+import { ApiError, approveRequest, cancelRequest, getRequest, listUsers, rejectRequest, returnRequest, setApprovalSteps, submitRequest, updateRequest, type AdminUser, type RequestDetail as Detail } from "./api";
 import Attachments from "./Attachments";
 import { useAuth } from "./AuthContext";
 import Comments from "./Comments";
 import { CATEGORY_LABEL, formatBaht, formatDateTime, StatusBadge } from "./format";
 import RequestForm from "./RequestForm";
 
-const ACTION_TEXT: Record<string, string> = { CREATED: "Created", SUBMITTED: "Submitted", RETURNED: "Returned for editing", APPROVED: "Approved", REJECTED: "Rejected", CANCELLED: "Cancelled" };
+const ACTION_TEXT: Record<string, string> = { CREATED: "Created", SUBMITTED: "Submitted", RETURNED: "Returned for editing", APPROVED: "Approved", REJECTED: "Rejected", CANCELLED: "Cancelled", STEP_APPROVED: "Approval step approved" };
+const STEP_STATUS: Record<string, string> = { PLANNED: "Planned", WAITING: "Waiting", CURRENT: "Current", APPROVED: "Approved", REJECTED: "Rejected" };
 
 export default function RequestDetail() {
   const { id } = useParams();
@@ -16,6 +17,10 @@ export default function RequestDetail() {
   const [request, setRequest] = useState<Detail | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [selectedApproverIds, setSelectedApproverIds] = useState<number[]>([]);
+  const [stepsError, setStepsError] = useState<string | null>(null);
+  const [stepsBusy, setStepsBusy] = useState(false);
 
   function load() {
     setError(null);
@@ -27,6 +32,13 @@ export default function RequestDetail() {
       });
   }
   useEffect(load, [id]);
+  useEffect(() => {
+    if (user?.role !== "ADMIN" || request?.status !== "DRAFT") return;
+    listUsers().then((result) => setAdminUsers(result.users.filter((u) => u.isActive && u.role === "APPROVER" && u.id !== request.requester.id))).catch(() => setAdminUsers([]));
+  }, [user?.role, request?.status, request?.requester.id]);
+  useEffect(() => {
+    setSelectedApproverIds(request?.approvalSteps?.map((step) => step.approver.id) ?? []);
+  }, [request?.id, request?.updatedAt]);
 
   if (notFound) return <p>Request not found.</p>;
   if (error) return <div role="alert" className="alert alert-danger">{error} <button className="btn btn-sm btn-outline-danger ms-2" onClick={load}>Retry</button></div>;
@@ -35,8 +47,11 @@ export default function RequestDetail() {
   const isOwner = request.requester.id === user.id;
   const canEdit = isOwner && request.status === "DRAFT";
   const canCancel = isOwner && (request.status === "DRAFT" || request.status === "SUBMITTED");
-  const canDecide = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
-  const canReturn = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner;
+  const currentStep = request.approvalSteps?.find((step) => step.status === "CURRENT");
+  const hasApprovalChain = (request.approvalSteps?.length ?? 0) > 0;
+  const isCurrentApprover = !hasApprovalChain || currentStep?.approver.id === user.id;
+  const canDecide = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner && isCurrentApprover;
+  const canReturn = user.role === "APPROVER" && request.status === "SUBMITTED" && !isOwner && isCurrentApprover;
   // After a change the server's version, with its history, is loaded again.
   const reload = () => getRequest(request.id).then((r) => setRequest(r.request));
 
@@ -93,9 +108,42 @@ export default function RequestDetail() {
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
       {canReturn && <ReturnPanel request={request} onReturned={() => navigate("/reviews", { state: { returnedRequestNumber: request.requestNumber } })} />}
 
+      {user.role === "ADMIN" && request.status === "DRAFT" && (
+        <section className="border rounded p-3 mb-3" aria-label="Configure approval steps">
+          <h2 className="h6">Approval chain</h2>
+          <p className="text-muted">Choose the approvers in order. The chain can contain up to five approvers.</p>
+          {selectedApproverIds.map((approverId, index) => (
+            <div className="d-flex align-items-end gap-2 mb-2" key={`${index}-${approverId}`}>
+              <div className="flex-grow-1">
+                <label className="form-label" htmlFor={`approval-step-${index}`}>Step {index + 1} approver</label>
+                <select id={`approval-step-${index}`} className="form-select" value={approverId} onChange={(event) => {
+                  const next = [...selectedApproverIds]; next[index] = Number(event.target.value); setSelectedApproverIds(next);
+                }}>
+                  <option value="">Choose an approver</option>
+                  {adminUsers.filter((candidate) => candidate.id === approverId || !selectedApproverIds.includes(candidate.id)).map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.name} ({candidate.email})</option>)}
+                </select>
+              </div>
+              <button type="button" className="btn btn-outline-danger" onClick={() => setSelectedApproverIds(selectedApproverIds.filter((_, i) => i !== index))}>Remove</button>
+            </div>
+          ))}
+          <div className="d-flex gap-2 flex-wrap">
+            <button type="button" className="btn btn-outline-secondary" disabled={selectedApproverIds.length >= 5 || adminUsers.length <= selectedApproverIds.length} onClick={() => setSelectedApproverIds([...selectedApproverIds, adminUsers.find((candidate) => !selectedApproverIds.includes(candidate.id))?.id ?? 0])}>Add approver</button>
+            <button type="button" className="btn btn-primary" disabled={stepsBusy || selectedApproverIds.some((approverId) => !approverId)} onClick={async () => {
+              setStepsBusy(true); setStepsError(null);
+              try { await setApprovalSteps(request.id, selectedApproverIds); await reload(); }
+              catch (err) { setStepsError(err instanceof ApiError ? err.message : "Could not save the approval chain."); }
+              finally { setStepsBusy(false); }
+            }}>{stepsBusy ? "Saving..." : "Save approval chain"}</button>
+            <button type="button" className="btn btn-outline-danger" disabled={stepsBusy || selectedApproverIds.length === 0} onClick={() => setSelectedApproverIds([])}>Clear</button>
+          </div>
+          {stepsError && <div role="alert" className="alert alert-danger mt-2 mb-0">{stepsError}</div>}
+        </section>
+      )}
+
       {request.approvalSteps && request.approvalSteps.length > 0 && <section className="border rounded p-3 mb-3" aria-label="Approval steps">
         <h2 className="h6">Approval steps</h2>
-        <ol className="mb-0">{request.approvalSteps.map((step) => <li key={step.id}>{step.stepNumber}. {step.approver.name} — {step.status.replace("_", " ")}</li>)}</ol>
+        <p className="mb-2">Step {Math.min(request.approvalSteps.filter((step) => step.status === "APPROVED").length + 1, request.approvalSteps.length)} of {request.approvalSteps.length}</p>
+        <ol className="mb-0">{request.approvalSteps.map((step) => <li key={step.id}><strong>Step {step.stepNumber} of {request.approvalSteps!.length}:</strong> {step.approver.name} — <span className="badge text-bg-secondary">{STEP_STATUS[step.status]}</span>{step.decidedAt && <> <span className="text-muted">{formatDateTime(step.decidedAt)}</span></>}{step.decisionComment && <> — {step.decisionComment}</>}</li>)}</ol>
       </section>}
 
       <Attachments requestId={request.id} canChange={canEdit} />
