@@ -5,7 +5,7 @@ import { calculateTotalSatang, satangToBaht } from "./money.js";
 import { getPrisma } from "./prisma.js";
 import { HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
-import { validateRequestInput } from "./validation.js";
+import { cleanText, validateRequestInput, visibleLength } from "./validation.js";
 
 export const requestRouter = Router();
 
@@ -54,6 +54,10 @@ requestRouter.post(
   })
 );
 
+// Only a REQUESTER or an APPROVER may change their own request. The role comes from the session lookup,
+// which reads the user from the database on every request, so a promotion takes effect at once.
+const isReadOnly = (req: AuthedRequest) => req.user!.role === "ADMIN";
+
 // F-02: the owner edits a DRAFT. FR-02, BR-10, BR-18. For everyone else the request is "not found".
 requestRouter.patch(
   "/requests/:id",
@@ -61,6 +65,8 @@ requestRouter.patch(
   asyncHandler(async (req: AuthedRequest, res) => {
     const id = parseId(req.params.id);
     if (id === null) return res.status(404).json(notFound);
+    // DEF-03 (UAT #69): the administrator is read only (AC-17, BR-18), even for a draft created before a promotion.
+    if (isReadOnly(req)) return res.status(404).json(notFound);
     const prisma = getPrisma();
     const existing = await prisma.purchaseRequest.findFirst({ where: { id, requesterId: req.user!.id } });
     if (!existing) return res.status(404).json(notFound);
@@ -107,6 +113,7 @@ requestRouter.post(
   asyncHandler(async (req: AuthedRequest, res) => {
     const id = parseId(req.params.id);
     if (id === null) return res.status(404).json(notFound);
+    if (isReadOnly(req)) return res.status(404).json(notFound);
     const prisma = getPrisma();
     const userId = req.user!.id;
 
@@ -117,7 +124,7 @@ requestRouter.post(
     }
 
     const missing: Record<string, string> = {};
-    if (existing.reason.trim() === "") missing.reason = "Reason is required to submit.";
+    if (visibleLength(existing.reason) === 0) missing.reason = "Reason is required to submit.";
     if (existing.category === null) missing.category = "Category is required to submit.";
     if (Object.keys(missing).length > 0) {
       return res.status(422).json({ error: "The request is incomplete.", code: "INCOMPLETE", fields: missing });
@@ -164,14 +171,14 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
     if (existing.status === "DRAFT") return res.status(404).json(notFound);
 
     const raw = decision === "REJECTED" ? req.body?.reason : req.body?.comment;
-    const text = typeof raw === "string" ? raw.trim() : "";
+    const text = typeof raw === "string" ? cleanText(raw) : "";
     if (raw !== undefined && raw !== null && typeof raw !== "string") {
       return res.status(422).json({ error: "The text must be a string.", code: "VALIDATION_ERROR", fields: { text: "Must be text." } });
     }
     if (text.length > MAX_TEXT_LENGTH) {
       return res.status(422).json({ error: "The text is too long (at most 500 characters).", code: "VALIDATION_ERROR", fields: { text: "Too long." } });
     }
-    if (decision === "REJECTED" && text.length < MIN_REASON_LENGTH) {
+    if (decision === "REJECTED" && visibleLength(text) < MIN_REASON_LENGTH) {
       return res.status(422).json({
         error: `A rejection needs a reason of at least ${MIN_REASON_LENGTH} characters.`,
         code: "REASON_REQUIRED",

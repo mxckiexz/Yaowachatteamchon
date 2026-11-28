@@ -1,0 +1,15 @@
+   × DEF-02 (#68): zero-width characters do not count as text > TEST-L6-01 / BR-01, BR-02: an item name or description made only of invisible characters is refused, and nothing is stored 305ms
+     → itemName U+200b: expected 201 to be 422 // Object.is equality
+   × DEF-02 (#68): zero-width characters do not count as text > TEST-L6-02 / BR-01: invisible characters around real text are removed before storing; visible text is kept unchanged 271ms
+     → expected '​\ufeff Laser printer ​' to be 'Laser printer' // Object.is equality
+   × DEF-02 (#68): zero-width characters do not count as text > TEST-L6-03 / BR-06: a reason made only of invisible characters is missing, so the draft cannot be submitted 280ms
+     → expected 200 to be 422 // Object.is equality
+   × DEF-02 (#68): zero-width characters do not count as text > TEST-L6-04 / BR-06: a stored reason of invisible characters (saved before this fix) also blocks the submit 277ms
+     → expected 200 to be 422 // Object.is equality
+   × DEF-02 (#68): zero-width characters do not count as text > TEST-L6-05 / BR-09: a rejection reason needs five visible characters; invisible ones are not counted 542ms
+     → "​​​​​": expected 200 to be 422 // Object.is equality
+   × DEF-03 (#69): an administrator cannot edit or submit, even a draft created before the promotion > TEST-L6-06 / AC-17, BR-18: after promotion to ADMIN, PATCH and submit of the user's own draft return 404 and change nothing 540ms
+     → expected 200 to be 404 // Object.is equality
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)

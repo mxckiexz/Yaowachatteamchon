@@ -1,0 +1,3 @@
+  ✓  1 [chromium] › e2e/quality/long-item-name.spec.ts:7:5 › TEST-L6-E2E-01 / AC-53: a 100-character unbroken item name wraps inside a 375 px window (1.2s)
+  ✓  2 [chromium] › e2e/quality/responsive-keyboard.spec.ts:12:5 › TEST-88 / AC-53: no horizontal scrolling at 1280, 768 and 375 px, and the login works with the keyboard alone (6.2s)
+  2 passed (10.4s)
