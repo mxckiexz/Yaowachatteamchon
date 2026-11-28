@@ -93,6 +93,11 @@ export default function RequestDetail() {
       {canDecide && <DecisionPanel request={request} onDone={reload} />}
       {canReturn && <ReturnPanel request={request} onReturned={() => navigate("/reviews", { state: { returnedRequestNumber: request.requestNumber } })} />}
 
+      {request.approvalSteps && request.approvalSteps.length > 0 && <section className="border rounded p-3 mb-3" aria-label="Approval steps">
+        <h2 className="h6">Approval steps</h2>
+        <ol className="mb-0">{request.approvalSteps.map((step) => <li key={step.id}>{step.stepNumber}. {step.approver.name} — {step.status.replace("_", " ")}</li>)}</ol>
+      </section>}
+
       <Attachments requestId={request.id} canChange={canEdit} />
 
       <h2 className="h6 mt-4">History</h2>
