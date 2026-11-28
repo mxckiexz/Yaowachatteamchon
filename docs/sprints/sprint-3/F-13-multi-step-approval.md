@@ -1,86 +1,99 @@
 # Feature contract F-13: Multi-step approval
 
-Contract version 1.0, 28 November 2026. Contract only, for review before implementation. Tracks FR-23 and the F-13 Issue.
+Contract version 1.1, 28 November 2026. Contract only; implementation follows review of this contract. Tracks Issue #74 and FR-23.
 
-Linked requirements: FR-23, BR-12, BR-17, BR-19, BR-29, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03 decisions, F-04 visibility, F-06 cancellation, F-11 return for editing and F-12 notifications. F-14 may revise how the chain is selected by amount, but must preserve the step and history rules here.
+Linked requirements: FR-23, BR-12, BR-17, BR-19, BR-29, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-03, F-04, F-06, F-11 and F-12. F-14 may select the chain by amount, and F-16 may provide delegation, but both must preserve these step, actor and history rules.
 
 ## Change log
-
 | Version | Date | Change |
 |---|---|---|
-| 1.0 | 28 November 2026 | Initial F-13 contract proposed for review. |
+| 1.0 | 28 November 2026 | Initial contract proposed. |
+| 1.1 | 28 November 2026 | Made administration the sole configurator; defined empty/legacy chains, step storage and reset, current-approver permissions, notifications, history, API checks, and cross-feature rules. |
 
 ## 1. Feature design
+Only an administrator configures an ordered approval chain while a request is `DRAFT`. An empty chain means the legacy F-03 path: any eligible approver may decide a submitted request. A non-empty chain is snapshotted at submit and advances one current step at a time.
 
-An administrator prepares an ordered approval chain for a request before it is submitted. The chain is copied to immutable approval-step rows when the request is submitted. The request then moves through the steps in order. A step can be decided only by its assigned approver; the next step is opened only after approval of the current step.
+**BR-29:** A configured chain has 1–5 distinct active approvers, none the requester. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. Rejection ends the chain. Return resets the saved chain to planned steps and resubmission starts step 1. If the current approver is deactivated or loses the approver role, F-05 refuses that change with `409 APPROVER_IN_USE` while the step is current.
 
-**BR-29:** An approval chain has one or more distinct active approvers, none of whom is the requester. Steps are ordered and are immutable after submission. A request can be approved only by the current step's approver. A rejection ends the chain and a return sends the request back to `DRAFT`; resubmission starts the saved chain again from step 1. An administrator may configure a chain before submission but cannot decide a request.
-
-The existing single-step F-03 behaviour remains the one-step case. A request with multiple steps is `SUBMITTED` until every step approves it; only then does it become `APPROVED`. Approval and rejection remain recorded in request history. Cancellation and return are allowed only under their existing F-06/F-11 rules.
+F-03 AC-28/TEST-41 is revised: the unrestricted “any other approver” rule applies only when no chain is configured; a configured request requires its current assigned approver. F-11 BR-26/AC-164 is likewise revised for configured requests: only the current assigned approver may return. Competing approve/reject/return/cancel operations follow existing conditional-update rules: one transition may win; a later hidden request can be `404`, a terminal request `409`, and return followed by cancel may legitimately produce two ordered history rows ending in `CANCELLED`.
 
 ## 2. Configuration and UI
+On any `DRAFT`, an administrator sees **Approval steps** with an ordered list and Add, Move up, Move down and Remove controls. Saving `[]` clears the draft chain; saving 1–5 valid ids replaces it atomically. Requesters and approvers see the configuration read-only and cannot save it. After submit, the list is read-only. The detail page shows Step N of M, assigned approver, status (`Waiting`, `Current`, `Approved`, `Rejected`), decision time and comment. Only the current approver sees decision controls; the review queue remains all submitted requests of other users, and its dashboard `reviewWaiting` count remains that same set.
 
-On a request owned by the requester or approver, an administrator can configure the chain while the request is `DRAFT`. The control is labelled **Approval steps** and contains an ordered list of selected active approvers, with **Add step**, **Move up**, **Move down** and **Remove** controls. The same approver cannot appear twice. The requester cannot be selected. Saving an invalid chain shows the server validation message and leaves the draft unchanged.
-
-After submission, the chain is read-only. The request detail shows **Step N of M**, the assigned approver for each step, and each step's state (`Waiting`, `Current`, `Approved` or `Rejected`). The current approver sees Approve and Reject actions; other approvers see the request but no decision controls. The requester sees progress and history but cannot decide. The administrator sees the same read-only progress.
-
-The page keeps one mounted polite `role="status"` region for success and error announcements. At 375, 768 and 1280 px the page has no horizontal document scrolling. All controls have visible labels and keyboard focus is preserved after adding, reordering, removing and deciding a step.
+The page keeps one mounted polite `role="status"` region. All controls have visible labels and keyboard focus is preserved. At 375, 768 and 1280 px there is no horizontal document scrolling (an internal table may scroll).
 
 ## 3. API specification
-
 ### Configure steps
-
 | Method and path | Request | Success |
 |---|---|---|
-| `PUT /api/requests/:id/approval-steps` | `{ "approverIds": [3, 7] }` | `200 { "steps": [...] }` |
+| `PUT /api/requests/:id/approval-steps` | `{ "approverIds": [3, 7] }` or `[]` | `200 { "steps": [...] }` |
 | `GET /api/requests/:id/approval-steps` | none | `200 { "steps": [...] }` |
 
-Configuration is allowed only for the owner or an administrator while the request is `DRAFT`. The administrator may configure any draft; the requester may configure their own draft. An approver who is not the owner cannot configure it. The list rejects repeated ids, unknown/inactive users, non-approvers, the requester, an empty list and duplicate ids with `422` and a `fields.approverIds` entry. A non-visible request is `404`; a non-draft request is `409`. Saving replaces the draft configuration atomically and does not create history or notifications.
+Checks: origin (PUT), session (401), role (ADMIN only; others 403), parse id, visibility (404), request status (`DRAFT` only, otherwise 409), then body validation (422). IDs must be an array of 0–5 integers; non-approver, inactive, unknown, duplicate or requester ids give `422 fields.approverIds`, with no change. A save creates no history or notification.
+
+Each step response is exactly `{ id, stepNumber, approver: { id, name }, status, decidedAt, decisionComment }`; no email or hidden user data is returned.
 
 ### Decide a step
+Existing origin/session/role checks run first, then request visibility (404), self-approval (403 `SELF_APPROVAL`), current-step assignment (403 `NOT_CURRENT_APPROVER` for a configured chain), body validation (422), and terminal/illegal-state checks (409). A step decision is one conditional transaction. Intermediate approval keeps request status `SUBMITTED`, marks the step `APPROVED`, opens the next step, and writes `STEP_APPROVED` history with `SUBMITTED` → `SUBMITTED`; final approval writes ordinary `APPROVED` history and changes status. Reject writes `REJECTED` history and ends the chain.
 
-The existing `POST /api/requests/:id/approve` and `/reject` routes keep their check order and response format. For a multi-step request, only the current step's assigned approver may decide. An early or unrelated approver gets `403` with code `NOT_CURRENT_APPROVER`; an already decided or terminal request keeps the existing `409`. A successful intermediate approval keeps the request `SUBMITTED`, advances the current step and creates one history row and one `APPROVED` notification for the requester only after the conditional update succeeds. The final approval changes the request to `APPROVED`.
+At submit, the server builds the snapshot and determines the current actor in one place. With a chain, only step 1 receives the F-12 `SUBMITTED` notification; each intermediate approval notifies the next approver using that type and the requester as actor; the requester receives `APPROVED` only on final approval. F-12 BR-27/AC-180/AC-182 are revised for this stepped behavior.
 
 ## 4. Data and migration
+Add `ApprovalStep(id, requestId, stepNumber, approverId, status, decidedAt, decisionComment, createdAt, updatedAt)`. Statuses are `PLANNED`, `WAITING`, `CURRENT`, `APPROVED`, `REJECTED`; `(requestId, stepNumber)` and `(requestId, approverId)` are unique. Existing requests have no rows and therefore retain F-03 behavior. Draft configuration stores `PLANNED` rows; submit changes them atomically to `CURRENT/WAITING`; return resets them to `PLANNED` and clears decision fields; resubmit snapshots the saved chain again; cancel leaves rows unchanged.
 
-Add an `ApprovalStep` table with `id`, `requestId`, `stepNumber`, `approverId`, `status`, `decidedAt`, `decisionComment` and timestamps. Add a status enum with `WAITING`, `CURRENT`, `APPROVED` and `REJECTED`. `(requestId, stepNumber)` and `(requestId, approverId)` are unique. Foreign keys restrict deleting a referenced user and cascade when a request is deleted.
-
-The migration is additive and creates no steps for existing requests. Existing one-step requests continue to use the F-03 path; implementation must either create one step on submit from the configured chain or explicitly record the legacy one-step decision. Existing request, history and notification rows are unchanged. The migration must be tested against a database containing existing data.
+The migration is additive, has no backfill, and must be tested with existing data. F-05 must reject deactivation or role change of a current assigned approver with `409 APPROVER_IN_USE`.
 
 ## 5. Acceptance criteria
-
 | AC | Observable outcome |
 |---|---|
-| AC-201 | An administrator can configure an ordered chain of one or more active approvers on a draft. |
-| AC-202 | A requester can configure their own draft; another user and an approver who is not the owner cannot. |
-| AC-203 | Duplicate, inactive, unknown, non-approver and requester ids are rejected with `422` and no data change. |
-| AC-204 | Configuration is rejected for submitted, approved, rejected or cancelled requests with `409`. |
-| AC-205 | Submit snapshots the configured chain and opens step 1 as `CURRENT`; later configuration cannot change it. |
-| AC-206 | A request with multiple steps remains `SUBMITTED` after an intermediate approval and advances exactly one step. |
-| AC-207 | Only the current assigned approver can approve or reject; other approvers receive `403 NOT_CURRENT_APPROVER`. |
-| AC-208 | Each step uses a different approver and none is the requester. |
-| AC-209 | Final approval changes the request to `APPROVED` only after every step is approved. |
-| AC-210 | Rejection records the reason, marks the current step rejected and ends the chain with `REJECTED`. |
-| AC-211 | A return resets the request to `DRAFT` under F-11 and resubmission restarts at step 1 using the saved chain. |
-| AC-212 | Cancellation follows F-06 and does not create an approval-step decision. |
-| AC-213 | Each successful step decision writes exactly one matching history row. |
-| AC-214 | A simultaneous decision on one current step produces one success and one refusal, with one step transition. |
-| AC-215 | Status, step transition, history and notification are atomic when any insert fails. |
-| AC-216 | Detail and list responses expose step number, assigned approver and current state without hidden users or data. |
-| AC-217 | The UI shows labelled step progress and only the current approver's decision controls. |
-| AC-218 | Keyboard use, focus return, status announcements and visible labels work for configuration and decisions. |
-| AC-219 | The pages have no horizontal document scrolling at 375, 768 or 1280 px and no serious or critical axe violation. |
-| AC-220 | Existing F-03 single-step requests and F-06/F-11/F-12 cross-feature behaviour remain unchanged. |
+| AC-201 | Administrator can configure 1–5 ordered active approvers on a draft. |
+| AC-202 | Requester, approver and anonymous caller cannot configure; administrator can configure any visible draft. |
+| AC-203 | Invalid array, ids, duplicates, inactive users and requester are `422 fields.approverIds`; no data changes. |
+| AC-204 | Configuration of non-draft is `409`; `[]` clears a draft chain. |
+| AC-205 | Submit snapshots steps; step 1 is `CURRENT`, rest `WAITING`; later edits cannot change them. |
+| AC-206 | Intermediate approval keeps `SUBMITTED` and advances exactly one step. |
+| AC-207 | Only current assigned approver can approve, reject or return; another approver gets `403 NOT_CURRENT_APPROVER`. |
+| AC-208 | Steps are distinct and exclude requester. |
+| AC-209 | Final approval changes status only after every step is approved. |
+| AC-210 | Rejection records reason, marks current step rejected and ends chain. |
+| AC-211 | Return resets steps to planned; resubmit starts step 1 with saved chain. |
+| AC-212 | Cancel follows F-06 and does not decide a step. |
+| AC-213 | Every step decision has one matching `STEP_APPROVED`, `APPROVED` or `REJECTED` history row. |
+| AC-214 | Concurrent decisions produce one step transition; allowed return/cancel race outcomes are recorded. |
+| AC-215 | Status, step, history and notification writes are atomic on insert failure. |
+| AC-216 | Detail/list/queue/dashboard expose only exact step fields and preserve existing visibility/count rules. |
+| AC-217 | UI labels progress and shows controls only to current approver. |
+| AC-218 | Keyboard focus, labels and mounted status announcements work. |
+| AC-219 | No horizontal page scroll at 375/768/1280 and no serious/critical axe violation. |
+| AC-220 | Legacy F-03, F-06, F-11 and F-12 behavior remains unchanged when no chain is configured. |
 
-## 6. Planned tests
-
-TEST-232 to TEST-251 will map one-to-one to AC-201 to AC-220. They will include API permission and boundary tests, concurrent-step tests, rollback tests, migration checks, browser tests at the three required widths, keyboard and axe checks, and cross-feature tests for submit, approve, reject, return, cancel and notifications. Red output will be run against `staging` before implementation and raw server/Playwright output will be stored under `docs/sprints/sprint-3/`.
+## 6. Software test specification
+| Test | AC | Level | Input | Expected |
+|---|---|---|---|---|
+| TEST-232 | AC-201 | API | Admin saves 1–5 approvers | 200, ordered steps |
+| TEST-233 | AC-202 | API | requester/approver/anonymous save | 403/401, unchanged |
+| TEST-234 | AC-203 | API | invalid arrays and ids | 422 fields, unchanged |
+| TEST-235 | AC-204 | API | non-draft and `[]` | 409; draft clears |
+| TEST-236 | AC-205 | API | submit configured request | step 1 current, rest waiting |
+| TEST-237 | AC-206 | API | approve step 1 | submitted, step 2 current |
+| TEST-238 | AC-207 | API | wrong/current approvers | 403/200 as applicable |
+| TEST-239 | AC-208 | API | duplicate/requester ids | 422 |
+| TEST-240 | AC-209 | API | approve final step | approved only at end |
+| TEST-241 | AC-210 | API | reject current step | rejected, history reason |
+| TEST-242 | AC-211 | API | return then resubmit | planned then step 1 current |
+| TEST-243 | AC-212 | API | cancel configured request | cancelled, no step decision |
+| TEST-244 | AC-213 | API | each decision | exactly one matching history |
+| TEST-245 | AC-214 | API | concurrent decisions and return/cancel | allowed winner/outcome and history |
+| TEST-246 | AC-215 | API | forced history/notification failure | 500 and full rollback |
+| TEST-247 | AC-216 | API | detail/list/queue/dashboard | exact fields, no hidden data |
+| TEST-248 | AC-217 | Browser | current/non-current roles | labels and controls correct |
+| TEST-249 | AC-218 | Browser | keyboard configure/decide | focus and status announcements |
+| TEST-250 | AC-219 | Browser | 375/768/1280 and axe | no overflow, no serious/critical axe |
+| TEST-251 | AC-220 | Integration | legacy request plus F-03/F-06/F-11/F-12 | existing behavior unchanged |
 
 ## 7. Definition of Done
-
 - Every AC has one numbered test and an executed result.
-- The server and client type checks, builds, unit tests and full Playwright suite pass.
-- TDD red and green output is stored unchanged under `docs/sprints/sprint-3/tdd/`; raw suite output is stored under `docs/sprints/sprint-3/test-output/`.
-- The migration is additive and is tested with existing data.
+- Server/client type checks, builds, unit tests and full Playwright suite pass; raw output and TDD red/green output are stored under `docs/sprints/sprint-3/`.
+- Migration is additive and tested with existing data.
 - SRS, feature inventory, traceability and System SDS are updated consistently.
-- The implementation PR references and closes the F-13 Issue and is reviewed by Thanwarat before merge into `staging`.
+- Implementation PR references and closes Issue #74 and is reviewed by Aphisaimai before merge into `staging`.

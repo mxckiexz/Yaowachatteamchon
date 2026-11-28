@@ -2,7 +2,7 @@
 
 Contract version 1.1, 28 November 2026. Contract only; implementation follows after review. Tracks Issue #64 and implements FR-21.
 
-Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-06, NFR-07, NFR-09 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), F-06 (cancelled requests cannot be returned), and F-09 (owner can change attachments on a returned draft). If a later feature changes the editable statuses or adds another approver role, this contract must be revised.
+Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-06, NFR-07, NFR-09 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), F-06 (cancelled requests cannot be returned), and F-09 (owner can change attachments on a returned draft). F-13 revises BR-26/AC-164 for configured requests: only the current assigned approver may return; unconfigured requests retain the existing any-approver rule.
 
 ## Change log
 

@@ -24,7 +24,7 @@ The system tells a user inside the application when a request needs their attent
 
 New business rules:
 
-- **BR-27:** The notifications of an event are created in the same transaction as the status change and its history entry. A refused or failed change creates none. Of simultaneous changes (BR-17) only the successful one creates notifications. Recipients are chosen at the time of the event. No other action creates a notification.
+- **BR-27:** For an unconfigured request, submit notifies every active approver except the requester. For a configured F-13 chain, submit notifies only the current step approver and each intermediate approval notifies the next step approver; final approval, rejection and return notify the requester. Notifications are created in the same transaction as the status change and its history entry. A refused or failed change creates none. Of simultaneous changes (BR-17) only successful changes create notifications.
 - **BR-28:** A user reads and marks only their own notifications, and only those of requests they may see now (BR-12). Any other notification is not listed, not counted and answers as not found.
 
 BR-28 changes only what a user can see. A change of status or role never edits or deletes an existing notification row, and its `readAt` is kept. Only the events in the table above add rows. For an approver's earlier `SUBMITTED` notification of a request:
@@ -128,9 +128,9 @@ The `RETURNED` notification needs the F-11 route. The F-12 implementation theref
 
 | AC | Observable outcome |
 |---|---|
-| AC-180 | A submit creates exactly one `SUBMITTED` notification, with the requester as actor, for each active approver except the requester, and none for the requester, an administrator, another requester or an inactive approver. |
+| AC-180 | An unconfigured submit creates exactly one `SUBMITTED` notification for each active approver except the requester; a configured submit creates one only for the current step approver. |
 | AC-181 | When an approver submits their own request, the other active approvers are notified and the submitter is not. |
-| AC-182 | An approval creates exactly one `APPROVED` and a rejection exactly one `REJECTED` notification for the requester, with the approver as actor. |
+| AC-182 | Final approval creates one `APPROVED` notification and rejection one `REJECTED` notification for the requester; an intermediate F-13 approval notifies only the next step approver. |
 | AC-183 | A return creates exactly one `RETURNED` notification for the requester, and submitting again creates new `SUBMITTED` notifications. |
 | AC-184 | A refused or invalid submit, decision or return creates no notification. |
 | AC-185 | Of simultaneous decisions and returns on one request, only the successful one creates a notification. |

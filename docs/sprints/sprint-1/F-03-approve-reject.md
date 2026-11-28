@@ -59,7 +59,7 @@ Updates `PurchaseRequest.status`, `decidedAt`, `rejectionReason`; inserts one `R
 | AC-25 | An approver rejects with a reason of 5 or more characters: REJECTED, the reason stored in `rejectionReason` and in the history. A rejection without a reason or with fewer than 5 characters returns 422 `REASON_REQUIRED` and the status stays SUBMITTED. |
 | AC-26 | A requester and the administrator calling approve or reject get 403; the request does not change. |
 | AC-27 | An approver cannot approve or reject their own request: 403 `SELF_APPROVAL`; the request does not change. |
-| AC-28 | Another approver, who is not the requester, can decide a SUBMITTED request (there is no assignment). |
+| AC-28 | For a request with no configured approval chain, another approver who is not the requester can decide a SUBMITTED request (there is no assignment). F-13 revises this for configured requests: only the current assigned approver can decide. |
 | AC-29 | A decided request cannot be decided again (409). A draft of another user is not found (404). A CANCELLED request cannot be decided (409). Nothing changes. |
 | AC-30 | Two simultaneous decisions on one SUBMITTED request: exactly one succeeds (200) and the other gets 409; the request has one decision and one decision history row. |
 | AC-31 | The transition rule allows only DRAFT to SUBMITTED, SUBMITTED to APPROVED and SUBMITTED to REJECTED. |
@@ -74,7 +74,7 @@ Updates `PurchaseRequest.status`, `decidedAt`, `rejectionReason`; inserts one `R
 | TEST-38 | AC-25 | API integration | SUBMITTED request | Reject with no reason, "abcd" (4), "    ", then "abcde" (5) | 422 `REASON_REQUIRED` and still SUBMITTED for the first three; 200 REJECTED for the last |
 | TEST-39 | AC-26 | API integration | SUBMITTED request | Requester, then administrator, call approve and reject | 403 each; status SUBMITTED; no new history row |
 | TEST-40 | AC-27 | API integration | An approver creates and submits their own request | The same approver approves it, then rejects it | 403 `SELF_APPROVAL` both times; still SUBMITTED |
-| TEST-41 | AC-28 | API integration | SUBMITTED request of a requester | A second approver approves | 200 APPROVED |
+| TEST-41 | AC-28 | API integration | SUBMITTED request with no configured chain | A second approver approves | 200 APPROVED; configured-chain behavior is covered by F-13 |
 | TEST-42 | AC-29 | API integration | An APPROVED request | Approver rejects it | 409 `ILLEGAL_TRANSITION`; still APPROVED; history unchanged |
 | TEST-43 | AC-29 | API integration | A DRAFT of a requester | An approver approves it | 404; still DRAFT |
 | TEST-44 | AC-29 | API integration | A CANCELLED request (made in the database) | An approver approves it | 409; still CANCELLED |
