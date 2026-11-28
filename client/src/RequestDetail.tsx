@@ -20,7 +20,9 @@ export default function RequestDetail() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [selectedApproverIds, setSelectedApproverIds] = useState<number[]>([]);
   const [stepsError, setStepsError] = useState<string | null>(null);
+  const [stepsMessage, setStepsMessage] = useState<string | null>(null);
   const [stepsBusy, setStepsBusy] = useState(false);
+  const stepSelectRefs = useRef<Record<number, HTMLSelectElement | null>>({});
 
   function load() {
     setError(null);
@@ -113,29 +115,41 @@ export default function RequestDetail() {
           <h2 className="h6">Approval chain</h2>
           <p className="text-muted">Choose the approvers in order. The chain can contain up to five approvers.</p>
           {selectedApproverIds.map((approverId, index) => (
-            <div className="d-flex align-items-end gap-2 mb-2" key={`${index}-${approverId}`}>
+            <div className="d-flex align-items-end gap-2 mb-2" key={index}>
               <div className="flex-grow-1">
                 <label className="form-label" htmlFor={`approval-step-${index}`}>Step {index + 1} approver</label>
-                <select id={`approval-step-${index}`} className="form-select" value={approverId} onChange={(event) => {
+                <select ref={(element) => { stepSelectRefs.current[index] = element; }} id={`approval-step-${index}`} className="form-select" value={approverId || ""} onChange={(event) => {
                   const next = [...selectedApproverIds]; next[index] = Number(event.target.value); setSelectedApproverIds(next);
                 }}>
                   <option value="">Choose an approver</option>
                   {adminUsers.filter((candidate) => candidate.id === approverId || !selectedApproverIds.includes(candidate.id)).map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.name} ({candidate.email})</option>)}
                 </select>
               </div>
-              <button type="button" className="btn btn-outline-danger" onClick={() => setSelectedApproverIds(selectedApproverIds.filter((_, i) => i !== index))}>Remove</button>
+              <div className="d-flex gap-1">
+                <button type="button" className="btn btn-outline-secondary" disabled={index === 0} onClick={() => {
+                  const next = [...selectedApproverIds]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; setSelectedApproverIds(next); setTimeout(() => stepSelectRefs.current[index - 1]?.focus(), 0);
+                }}>Move up</button>
+                <button type="button" className="btn btn-outline-secondary" disabled={index === selectedApproverIds.length - 1} onClick={() => {
+                  const next = [...selectedApproverIds]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; setSelectedApproverIds(next); setTimeout(() => stepSelectRefs.current[index + 1]?.focus(), 0);
+                }}>Move down</button>
+                <button type="button" className="btn btn-outline-danger" onClick={() => {
+                  const next = selectedApproverIds.filter((_, i) => i !== index); setSelectedApproverIds(next);
+                  setTimeout(() => (stepSelectRefs.current[Math.min(index, next.length - 1)] ?? document.querySelector<HTMLButtonElement>("[data-testid='add-approver']"))?.focus(), 0);
+                }}>Remove</button>
+              </div>
             </div>
           ))}
           <div className="d-flex gap-2 flex-wrap">
-            <button type="button" className="btn btn-outline-secondary" disabled={selectedApproverIds.length >= 5 || adminUsers.length <= selectedApproverIds.length} onClick={() => setSelectedApproverIds([...selectedApproverIds, adminUsers.find((candidate) => !selectedApproverIds.includes(candidate.id))?.id ?? 0])}>Add approver</button>
+            <button type="button" data-testid="add-approver" className="btn btn-outline-secondary" disabled={selectedApproverIds.length >= 5 || adminUsers.length <= selectedApproverIds.length} onClick={() => setSelectedApproverIds([...selectedApproverIds, adminUsers.find((candidate) => !selectedApproverIds.includes(candidate.id))?.id ?? 0])}>Add approver</button>
             <button type="button" className="btn btn-primary" disabled={stepsBusy || selectedApproverIds.some((approverId) => !approverId)} onClick={async () => {
-              setStepsBusy(true); setStepsError(null);
-              try { await setApprovalSteps(request.id, selectedApproverIds); await reload(); }
+              setStepsBusy(true); setStepsError(null); setStepsMessage(null);
+              try { await setApprovalSteps(request.id, selectedApproverIds); setStepsMessage("Approval chain saved."); await reload(); }
               catch (err) { setStepsError(err instanceof ApiError ? err.message : "Could not save the approval chain."); }
               finally { setStepsBusy(false); }
             }}>{stepsBusy ? "Saving..." : "Save approval chain"}</button>
             <button type="button" className="btn btn-outline-danger" disabled={stepsBusy || selectedApproverIds.length === 0} onClick={() => setSelectedApproverIds([])}>Clear</button>
           </div>
+          <p className="visually-hidden" role="status" aria-live="polite">{stepsMessage ?? ""}</p>
           {stepsError && <div role="alert" className="alert alert-danger mt-2 mb-0">{stepsError}</div>}
         </section>
       )}
