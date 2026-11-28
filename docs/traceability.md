@@ -36,7 +36,7 @@ Version 2.19. Requirement, feature or responsibility, sprint, acceptance criteri
 | BR-02 | F-02 | 1 | AC-14 | TEST-18, 34 |
 | BR-03 | F-02 | 1 | AC-14 | TEST-19, 34 |
 | BR-04 | F-02 | 1 | AC-14 | TEST-20, 33, 34 |
-| BR-05 | F-02 | 1 | AC-13 | TEST-16, 17, 23 |
+| BR-05 | F-02, F-17 | 1, 3 | AC-13, AC-303 | TEST-16, 17, 23, 334 |
 | BR-06 | F-02 | 1 | AC-19 | TEST-27 |
 | BR-07 | F-03 | 1 | AC-27 | TEST-40 |
 | BR-08 | F-03 | 1 | AC-29 | TEST-42, 43, 44 |

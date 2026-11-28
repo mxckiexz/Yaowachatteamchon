@@ -1,14 +1,15 @@
 # Feature contract F-17: Reports and export
 
-Contract version 1.0, 28 November 2026. Contract only, for review before implementation. Tracks Issue #76 and implements FR-27.
+Contract version 1.1, 28 November 2026. Contract only, for review before implementation. Tracks Issue #76 and implements FR-27.
 
-Linked requirements: FR-27, BR-12, BR-15, BR-40, BR-41, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-04 (visibility), and uses the status and category values of F-02, F-06 and F-11. F-13 does not change a request's status values, so approval steps are not part of this report. If a later feature adds a request status or a category, changes who may see a request, or adds departments (F-15) to the report, this contract must be revised.
+Linked requirements: FR-27, BR-05, BR-12, BR-15, BR-40, BR-41, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09 and NFR-10. Depends on F-04 (visibility), F-02 (the categories, the request total of BR-05 and the statuses of a draft and a submitted request), F-06 (the `CANCELLED` status) and F-11 (return to `DRAFT`). The statuses `APPROVED` and `REJECTED` come from F-03. F-13 does not change a request's status values, so approval steps are not part of this report. If a later feature adds a request status or a category, changes who may see a request, or adds departments (F-15) to the report, this contract must be revised.
 
 ## Change log
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 28 November 2026 | Initial F-17 contract proposed for review. |
+| 1.1 | 28 November 2026 | After review: BR-05 is linked and F-02, F-06 and F-11 are listed as dependencies; rejected and cancelled amounts are tested explicitly; TEST-339 checks the exact file name with the Bangkok date; formula protection includes LF; TEST-345 and AC-314 exclude any part of a file; AC-320 states why a returned request leaves another approver's report. |
 
 ## 1. Feature design
 
@@ -105,7 +106,7 @@ All are optional and combine with AND. As in F-07, an empty value counts as abse
 | Times | `YYYY-MM-DD HH:mm` in Bangkok time, or an empty field |
 | Requester | The requester's name; no e-mail address |
 | Quoting | A field with a comma, a double quote, CR or LF is put in double quotes, and each double quote in it is doubled |
-| Formula protection (BR-41) | If the item name or the requester name starts with `=`, `+`, `-`, `@`, a tab or a CR, an apostrophe `'` is put in front, before quoting. Other fields are made by the server and are not changed |
+| Formula protection (BR-41) | If the item name or the requester name starts with `=`, `+`, `-`, `@`, a tab, a CR or an LF, an apostrophe `'` is put in front, before quoting. Other fields are made by the server and are not changed |
 | Size | At most 5,000 requests. With more matches the answer is an error and no file |
 
 ### Errors and order of checks
@@ -130,24 +131,24 @@ No schema change and no migration. Both routes only read. They create no history
 | AC-300 | A requester's summary covers only their own requests, in every status, with exactly the listed response fields. |
 | AC-301 | An approver's summary covers their own requests in every status and the requests of others that are not drafts, and no draft of another user. |
 | AC-302 | The administrator's summary covers all requests. |
-| AC-303 | The two lists have all their entries in the stated order, with zeros where nothing matches; their counts and totals add up to the overall values without rounding error. |
+| AC-303 | The two lists have all their entries in the stated order, with zeros where nothing matches. The overall count and amount include rejected and cancelled requests, and the counts and totals of each list add up to the overall values without rounding error. |
 | AC-304 | `status` and `category` narrow the report and combine; a request without a category matches no category filter. |
 | AC-305 | `from` and `to` include whole Bangkok calendar days, checked at both ends of a day, whatever the time zone of the server. |
 | AC-306 | Wrong or repeated parameters give 422 with `fields` on both routes; empty values count as absent; no error answer contains request data. |
 | AC-307 | Without a session both routes give 401 and no data. Extra parameters such as `scope` or `requesterId` change nothing. |
 | AC-308 | The export has the stated headers, byte order mark, CR LF lines and first line, and one row for each matching visible request in the stated order: the same set as the summary. |
 | AC-309 | Labels, money, times in Bangkok, empty fields and quoting of commas, double quotes and line breaks are as stated, and a CSV reader gets back the stored text, apart from the apostrophe of AC-310. |
-| AC-310 | An item name or requester name that starts with `=`, `+`, `-`, `@`, a tab or a CR is written with a leading apostrophe; other text is unchanged. |
+| AC-310 | An item name or requester name that starts with `=`, `+`, `-`, `@`, a tab, a CR or an LF is written with a leading apostrophe; other text is unchanged. |
 | AC-311 | The export contains no description, reason, rejection reason, comment, attachment, e-mail address or password data. |
 | AC-312 | 5,000 matching requests export; 5,001 give 422 `EXPORT_TOO_LARGE` and no file; the limit counts only requests the caller may see. |
 | AC-313 | The two routes change no row. |
-| AC-314 | If reading the data fails, both routes give the safe 500 JSON answer and no part of a file. |
+| AC-314 | If reading the data fails, both routes give the safe 500 JSON answer, without `Content-Disposition` and without any part of a CSV file. |
 | AC-315 | In the UI every role has the Reports link; the tables show the values of the API; the filters are in the address and survive reload and Back; Clear removes them. |
 | AC-316 | The UI shows the loading, empty (export disabled), load error with Retry, filter error and export error states; the button is disabled during an export. |
 | AC-317 | **Export CSV** downloads a file with the stated name that matches the applied filters. |
 | AC-318 | The page works with the keyboard alone, every field has a label, the focus is as stated, and the result and the export are announced. |
 | AC-319 | At 375, 768 and 1280 px the page has no horizontal page scrolling, and axe-core reports no serious or critical violation on the navigation and the page. |
-| AC-320 | After submit, approve, reject, return and cancel the report shows the new status; a returned request leaves another approver's report. |
+| AC-320 | After submit, approve, reject, return and cancel the report shows the new status. A returned request is a `DRAFT` again: its owner's report shows it as a draft, and it leaves the report of another approver, because BR-12 hides the drafts of others. |
 
 ## 6. Software test specification
 
@@ -156,24 +157,24 @@ No schema change and no migration. Both routes only read. They create no history
 | TEST-331 | AC-300 | API integration | A requester with requests in several statuses; another requester with their own | Only the caller's values; exact keys |
 | TEST-332 | AC-301 | API integration | An approver with an own draft; another user with a draft and with submitted and decided requests | Own draft counted; the other draft not; the others counted |
 | TEST-333 | AC-302 | API integration | Administrator reads the summary | The same count and total as all rows in the database |
-| TEST-334 | AC-303 | API integration | Prices such as 0.10 and 0.20; some statuses and categories empty | Exact sums, fixed order, zeros, lists add up |
+| TEST-334 | AC-303 | API integration | Requests in all five statuses, including at least one `REJECTED` and one `CANCELLED` with their own amounts; prices such as 0.10 and 0.20; then a filter that leaves some statuses and categories empty | The overall count and amount include the rejected and cancelled requests; their rows in `byStatus` show their own amounts; both lists add up exactly to the overall values; fixed order and zeros |
 | TEST-335 | AC-304 | API integration | Filter by status, by category and by both, with a request without a category | Only matching requests; no category never matches |
 | TEST-336 | AC-305 | API integration | Rows created at 23:59:59.999 and 00:00 Bangkok around both ends; run with the server time zone set to UTC | Exactly the rows of the chosen Bangkok days |
 | TEST-337 | AC-306 | API integration | `2026-02-30`, `1-1-2026`, `0001-01-01`, `3000-01-01`, `from` after `to`, unknown and lower-case values, repeated and empty parameters, on both routes | 422 with the right fields; empty ignored; no data |
 | TEST-338 | AC-307 | API/security integration | No session; a requester adds `scope=all` and another user's `requesterId` | 401; the same result as without the extra parameters |
-| TEST-339 | AC-308 | API integration | Export as each role, with and without filters, and with no match | Headers, mark, line ends, first line, order; same set as the summary |
+| TEST-339 | AC-308 | API integration | Export as each role, with and without filters, and with no match, with the clock set to a moment when the Bangkok date differs from the UTC date | `Content-Disposition` is exactly `attachment; filename="purchase-requests-YYYY-MM-DD.csv"` with the Bangkok date; the other headers, mark, line ends, first line and order; the same set as the summary |
 | TEST-340 | AC-309 | API integration | Thai text, a comma, a double quote and a line break in an item name; a draft without category and dates | Parsed with a CSV reader: the stated values |
-| TEST-341 | AC-310 | API/security integration | Item names starting with `=`, `+`, `-`, `@`, a tab and a CR, a requester name starting with `=`, and ordinary names. A leading tab or CR is stored directly in the database, because the form trims it | Apostrophe only where stated |
+| TEST-341 | AC-310 | API/security integration | Item names starting with `=`, `+`, `-`, `@`, a tab, a CR and an LF, a requester name starting with `=`, and ordinary names. A leading tab, CR or LF is stored directly in the database, because the form trims it | Apostrophe only where stated |
 | TEST-342 | AC-311 | API integration | Requests with marker text in description, reason, rejection reason, comment and attachment | No marker and no e-mail address in the file |
 | TEST-343 | AC-312 | API integration | 5,000 and 5,001 matching rows of one requester, plus rows the caller cannot see | 200 with 5,000 rows; 422; hidden rows do not count |
 | TEST-344 | AC-313 | API integration | Count and compare rows before and after both routes | No change |
-| TEST-345 | AC-314 | API integration | Force the database read to fail on both routes | Safe 500 JSON; no `Content-Disposition` |
+| TEST-345 | AC-314 | API integration | Force the database read to fail on the summary and on the export | 500 with `Content-Type` JSON and the body exactly `{ "error": "Something went wrong." }`; no `Content-Disposition`; the body has no byte order mark, no CSV first line and no row |
 | TEST-346 | AC-315 | Browser end to end | Each role opens Reports, filters, reloads, goes Back and clears | Link, values equal to the API, address kept |
 | TEST-347 | AC-316 | Browser end to end | Delay and fail the summary, then Retry; an empty result; a wrong date in the address; fail an export | Each state as stated |
 | TEST-348 | AC-317 | Browser end to end | Apply a filter, change the form without applying, export | File name; the content matches the applied filter |
 | TEST-349 | AC-318 | Browser end to end | Use only the keyboard to filter, clear and export | Labels, focus and announcements |
 | TEST-350 | AC-319 | Browser responsive and accessibility | 375, 768 and 1280 px with data in both tables; run axe | No page overflow; no serious or critical violation |
-| TEST-351 | AC-320 | API integration | Submit, approve, reject, return and cancel, reading the report after each | The report follows the status and BR-12 |
+| TEST-351 | AC-320 | API integration | Submit, approve, reject, return and cancel, reading the report of the owner and of another approver after each | The report follows the status; after the return the owner sees one more draft and the other approver's count and amounts no longer include the request (BR-12) |
 
 ## 7. Definition of Done
 
