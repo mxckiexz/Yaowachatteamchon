@@ -24,3 +24,5 @@ After the first green run, deliberately breaking the code showed that TEST-186 s
 
 Further temporary changes were each caught by the matching test: long words that do not wrap (TEST-190), no guard against a second post (TEST-188), focus not returned to the text area (TEST-189), a text area that cuts long text (TEST-188), a form shown to the administrator (TEST-187), ordering by id only (TEST-180), no role check (TEST-177) and no visibility rule (TEST-178). The source was restored after each run.
 
+F-11 tests were run against `origin/staging` before the return route existed. The unchanged terminal output is `tdd/F-11-red-run.txt` (9 of 9 tests failed with the expected missing-route behavior). The green F-11 output is `test-output/server-f11-vitest.txt` (9 passed), and the browser output is `test-output/browser-f11-playwright.txt` (6 passed). Full-suite raw output is in `test-output/server-f11-full-vitest.txt` (184 passed) and `test-output/browser-f11-full-playwright.txt` (48 passed).
+
