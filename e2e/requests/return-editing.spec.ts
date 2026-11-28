@@ -27,6 +27,9 @@ test("TEST-200 / AC-171: approver can return a submitted request with confirmati
   await expect(page).toHaveURL(/\/reviews$/);
   await expect(page.getByRole("status")).toContainText("was returned to the requester");
   await expect(page.getByRole("heading", { name: "Review queue" })).toBeFocused();
+  await page.getByLabel("Search text").fill("no-request-can-match-this-filter");
+  await page.getByRole("button", { name: "Apply filters" }).click();
+  await expect(page.getByRole("status")).toHaveText("0 results");
   await page.goto(`/requests/${id}`);
   await expect(page.getByRole("region", { name: "Return for editing" })).toHaveCount(0);
   const own = await page.request.post("/api/requests", { headers: { Origin: "http://localhost:5173" }, data: { itemName: "Own F11 request", description: "Own request", quantity: 1, unitPrice: 10, reason: "Own reason", category: "EQUIPMENT" } });
@@ -60,7 +63,10 @@ test("TEST-202 / AC-173: returned drafts remain usable by the owner", async ({ p
   const id = await createDraftViaUi(page, uniqueName("Return cross feature")); await submitViaUi(page);
   const before = await page.request.get("/api/dashboard"); const beforeData = await before.json();
   const approver = await context.newPage(); await loginAs(approver, ACCOUNTS.approver);
+  const reviewBefore = await approver.request.get("/api/dashboard"); const reviewBeforeData = await reviewBefore.json();
   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200);
+  const reviewAfter = await approver.request.get("/api/dashboard"); const reviewAfterData = await reviewAfter.json();
+  expect(reviewAfterData.reviewWaiting).toBe(reviewBeforeData.reviewWaiting - 1);
   await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
   await expect(page.getByRole("region", { name: "Edit draft" })).toBeVisible();
   const after = await page.request.get("/api/dashboard"); const afterData = await after.json();
