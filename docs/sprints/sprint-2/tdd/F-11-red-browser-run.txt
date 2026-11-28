@@ -1,12 +1,12 @@
-[WebServer] (node:18352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:13924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:20600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:32680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:4408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:13940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:29024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:31048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:20580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
 > purchaseflow-server@1.0.0 prisma:seed
@@ -16,45 +16,36 @@ Seeded demo accounts.
 
 Running 6 tests using 1 worker
 
-(node:8452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:33156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:8452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:33156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
   x  1 [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (30.6s)
-(node:19444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:13440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:19444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:13440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  2 [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (3.3s)
-(node:22364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  2 [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (3.0s)
+(node:29312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:22364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:29312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  3 [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (3.1s)
-(node:30148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  3 [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (2.5s)
+(node:32144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:30148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:32144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  4 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (30.5s)
-(node:15940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  4 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (30.3s)
+(node:33340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:15940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:33340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] 15:01:55 [vite] http proxy error: /api/auth/login
-[WebServer] Error: read ECONNRESET
-[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
-[WebServer] 15:01:55 [vite] http proxy error: /api/auth/me
-[WebServer] AggregateError [ECONNREFUSED]: 
-[WebServer]     at internalConnectMultiple (node:net:1139:18)
-[WebServer]     at afterConnectMultiple (node:net:1712:7)
-[WebServer] (node:24236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
   x  5 [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (30.2s)
-(node:31916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:3280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:31916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:3280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ok 6 [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (3.0s)
+  x  6 [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (2.3s)
 
 
   1) [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation 
@@ -106,11 +97,11 @@ Running 6 tests using 1 worker
         at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:50:29
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-2.png
+    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-1.png
+    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-2.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     Error Context: test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\error-context.md
@@ -193,22 +184,19 @@ Running 6 tests using 1 worker
 
     Test timeout of 30000ms exceeded.
 
-    Error: page.waitForURL: Test timeout of 30000ms exceeded.
-    =========================== logs ===========================
-    waiting for navigation to "**/requests" until "load"
-    ============================================================
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Return for editing', exact: true })
 
-       at helpers\accounts.ts:18
 
-      16 |   await page.getByLabel("Password").fill(DEMO_PASSWORD);
-      17 |   await page.getByRole("button", { name: "Log in" }).click();
-    > 18 |   await page.waitForURL(account.landing);
-         |              ^
-      19 | }
-      20 |
-      21 | export async function logout(page: Page) {
-        at loginAs (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\helpers\accounts.ts:18:14)
-        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:92:3
+      90 |
+      91 | test("TEST-204 / AC-175: return section has no serious or critical axe violations", async ({ page }) => {
+    > 92 |   await loginAs(page, ACCOUNTS.requester); const id = await createDraftViaUi(page, uniqueName("Return axe")); await submitViaUi(page); await logout(page); await loginAs(page, ACCOUNTS.approver); await page.goto(`/requests/${id}`); await page.getByRole("button", { name: "Return for editing", exact: true }).click();
+         |                                                                                                                                                                                                                                                                                                                    ^
+      93 |   const result = await new AxeBuilder({ page }).analyze(); expect(result.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
+      94 | });
+      95 |
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:92:308
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
     test-results\requests-return-editing-TE-27f0a--or-critical-axe-violations-chromium\test-failed-1.png
@@ -224,10 +212,44 @@ Running 6 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  5 failed
+  6) [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 404
+
+       96 | test("TEST-205 / AC-176: return reason is rendered as text and success is announced", async ({ page, context }) => {
+       97 |   await loginAs(page, ACCOUNTS.requester); const id = await createDraftViaUi(page, uniqueName("Return text")); await submitViaUi(page); const approver = await context.newPage(); await loginAs(approver, ACCOUNTS.approver);
+    >  98 |   const reason = "Please <b>fix</b> the details"; const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200); await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
+          |                                                                                                                                                                                                                             ^
+       99 |   await expect(page.getByTestId("history")).toContainText(reason); await expect(page.getByTestId("history").locator("b")).toHaveCount(0);
+      100 | });
+      101 |
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:98:221
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
     [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation 
     [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft 
     [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner 
     [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths 
     [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations 
-  1 passed (1.9m)
+    [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced 
