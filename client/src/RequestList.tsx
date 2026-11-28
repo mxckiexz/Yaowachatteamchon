@@ -43,7 +43,7 @@ export default function RequestList({ scope, title, emptyText, showRequester, da
   }, [scope, location.state]);
   useEffect(() => {
     const returned = (location.state as { returnedRequestNumber?: string } | null)?.returnedRequestNumber;
-    if (returned) setAnnouncement(`${returned} was returned to the requester.`);
+    setAnnouncement(returned ? `${returned} was returned to the requester.` : "");
   }, [location.state]);
 
   function applyFilters(event?: FormEvent) {

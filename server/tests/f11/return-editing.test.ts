@@ -3,19 +3,21 @@ import request from "supertest";
 import { app } from "../../src/app.js";
 import { getPrisma } from "../../src/prisma.js";
 import { cleanupUsers, createUser, loginAgent, ORIGIN } from "../helpers/fixtures.js";
-import { approve, cancel, createSubmitted, loadRequest, submit } from "../helpers/requests.js";
+import { approve, cancel, createSubmitted, loadRequest, reject, submit } from "../helpers/requests.js";
 
 const OWNER = "f11-owner@test.local";
 const OTHER = "f11-other@test.local";
 const APPROVER = "f11-approver@test.local";
 const APPROVER2 = "f11-approver2@test.local";
-const ALL = [OWNER, OTHER, APPROVER, APPROVER2];
+const ADMIN = "f11-admin@test.local";
+const ALL = [OWNER, OTHER, APPROVER, APPROVER2, ADMIN];
 
 beforeAll(async () => {
   await createUser(OWNER, { role: "REQUESTER", name: "F11 owner" });
   await createUser(OTHER, { role: "REQUESTER", name: "F11 other" });
   await createUser(APPROVER, { role: "APPROVER", name: "F11 approver" });
   await createUser(APPROVER2, { role: "APPROVER", name: "F11 approver two" });
+  await createUser(ADMIN, { role: "ADMIN", name: "F11 admin" });
 });
 afterAll(async () => { await cleanupUsers(ALL); await getPrisma().$disconnect(); });
 
@@ -29,7 +31,9 @@ describe("F-11 return for editing", () => {
     const row = await createSubmitted(owner); const response = await returned(approver, row.id);
     expect(response.status).toBe(200);
     expect(response.body.request).toMatchObject({ id: row.id, status: "DRAFT", submittedAt: null, decidedAt: null });
-    expect((await loadRequest(row.id)).history.at(-1)).toMatchObject({ action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: "Please add the missing details" });
+    const history = (await loadRequest(row.id)).history;
+    const approverUser = await getPrisma().user.findUniqueOrThrow({ where: { email: APPROVER } });
+    expect(history.at(-1)).toMatchObject({ actorId: approverUser.id, action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: "Please add the missing details" });
   });
 
   it("TEST-192 / AC-163: owner edits and resubmits a returned request", async () => {
@@ -40,8 +44,8 @@ describe("F-11 return for editing", () => {
   });
 
   it("TEST-193 / AC-164: only another approver may return", async () => {
-    const owner = await loginAgent(OWNER); const approver = await loginAgent(APPROVER); const other = await loginAgent(OTHER); const row = await createSubmitted(owner);
-    expect((await returned(owner, row.id)).status).toBe(403); expect((await returned(other, row.id)).status).toBe(403); expect((await returned(approver, row.id)).status).toBe(200);
+    const owner = await loginAgent(OWNER); const approver = await loginAgent(APPROVER); const other = await loginAgent(OTHER); const admin = await loginAgent(ADMIN); const row = await createSubmitted(owner);
+    expect((await returned(owner, row.id)).status).toBe(403); expect((await returned(other, row.id)).status).toBe(403); expect((await returned(admin, row.id)).status).toBe(403); expect((await returned(approver, row.id)).status).toBe(200);
     const own = await createSubmitted(approver); expect((await returned(approver, own.id)).status).toBe(404);
   });
 
@@ -55,11 +59,14 @@ describe("F-11 return for editing", () => {
   it("TEST-195 / AC-166 and AC-179: valid boundaries pass and invalid reasons fail", async () => {
     const owner = await loginAgent(OWNER); const approver = await loginAgent(APPROVER);
     for (const reason of ["12345", "x".repeat(500)]) { const row = await createSubmitted(owner); expect((await returned(approver, row.id, reason)).status).toBe(200); }
-    for (const reason of ["", "1234", "x".repeat(501), "bad\u0000reason"]) { const row = await createSubmitted(owner); expect((await returned(approver, row.id, reason)).status).toBe(422); }
+    for (const reason of ["", "1234", "x".repeat(501), "bad\u0000reason"]) { const row = await createSubmitted(owner); const response = await returned(approver, row.id, reason); expect(response.status).toBe(422); expect(response.body.fields?.reason).toBeTruthy(); expect((await loadRequest(row.id)).history.filter((h) => h.action === "RETURNED")).toHaveLength(0); }
   });
 
   it("TEST-196 / AC-167: hidden, unknown and non-numeric ids return 404", async () => {
     const owner = await loginAgent(OWNER); const approver = await loginAgent(APPROVER); const row = await createSubmitted(owner); expect((await returned(approver, row.id)).status).toBe(200);
+    expect((await approver.get(`/api/requests/${row.id}`).set("Origin", ORIGIN)).status).toBe(404);
+    expect((await approver.get(`/api/requests/${row.id}/history`).set("Origin", ORIGIN)).status).toBe(404);
+    expect((await approver.get("/api/requests?scope=review").set("Origin", ORIGIN)).body.requests.map((r: { id: number }) => r.id)).not.toContain(row.id);
     for (const path of [`/api/requests/${row.id}/return`, "/api/requests/999999999/return", "/api/requests/abc/return"]) { const response = await approver.post(path).set("Origin", ORIGIN).send({ reason: "Please add details" }); expect(response.status).toBe(404); expect(response.body).not.toHaveProperty("request"); }
   });
 
@@ -73,8 +80,10 @@ describe("F-11 return for editing", () => {
   it("TEST-198 / AC-169: concurrent returns and cancel have only contract-allowed outcomes", async () => {
     const owner = await loginAgent(OWNER); const a = await loginAgent(APPROVER); const b = await loginAgent(APPROVER2); const row = await createSubmitted(owner);
     const [first, second] = await Promise.all([returned(a, row.id), returned(b, row.id)]);
-    expect([first.status, second.status].filter((s) => s === 200)).toHaveLength(1); expect([first.status, second.status].some((s) => s === 404 || s === 409)).toBe(true); expect((await loadRequest(row.id)).history.filter((h) => h.action === "RETURNED")).toHaveLength(1);
-    const row2 = await createSubmitted(owner); const [ret, stop] = await Promise.all([returned(a, row2.id), cancel(owner, row2.id)]); expect([ret.status, stop.status].every((s) => [200, 404, 409].includes(s))).toBe(true);
+    expect([first.status, second.status].filter((s) => s === 200)).toHaveLength(1); expect([first.status, second.status].some((s) => s === 404 || s === 409)).toBe(true); expect((await loadRequest(row.id)).status).toBe("DRAFT"); expect((await loadRequest(row.id)).history.filter((h) => h.action === "RETURNED")).toHaveLength(1);
+    const decisionRow = await createSubmitted(owner); const [retDecision, decision] = await Promise.all([returned(a, decisionRow.id), approve(b, decisionRow.id, "Looks good")]); expect([retDecision.status, decision.status].filter((s) => s === 200)).toHaveLength(1); expect([retDecision.status, decision.status].some((s) => s === 404 || s === 409)).toBe(true);
+    const rejectRow = await createSubmitted(owner); const [retReject, rejection] = await Promise.all([returned(a, rejectRow.id), reject(b, rejectRow.id, "Not needed")]); expect([retReject.status, rejection.status].filter((s) => s === 200)).toHaveLength(1); expect([retReject.status, rejection.status].some((s) => s === 404 || s === 409)).toBe(true);
+    const row2 = await createSubmitted(owner); const [ret, stop] = await Promise.all([returned(a, row2.id), cancel(owner, row2.id)]); const outcomes = [ret.status, stop.status]; expect(outcomes.every((s) => [200, 404, 409].includes(s))).toBe(true); expect(outcomes.filter((s) => s === 200).length === 1 || outcomes.every((s) => s === 200)).toBe(true); const final = await loadRequest(row2.id); expect(["DRAFT", "CANCELLED"]).toContain(final.status); expect(final.history.filter((h) => ["RETURNED", "CANCELLED"].includes(h.action))).toHaveLength(outcomes.every((s) => s === 200) ? 2 : 1);
   });
 
   it("TEST-199 / AC-170: history failure rolls back status", async () => {
