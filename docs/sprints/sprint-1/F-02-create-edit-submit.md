@@ -1,6 +1,13 @@
 # Feature contract F-02: Create, edit and submit a purchase request
 
-Contract version 2.0. Written before implementation.
+Contract version 2.1. Written before implementation.
+
+## Change log
+
+| Version | Date | Change |
+|---|---|---|
+| 2.0 | Before implementation | Initial create, edit and submit contract. |
+| 2.1 | 29 November 2026 | F-14 revision of AC-18: a complete draft can be submitted only when its approval chain also meets BR-42 (specified and tested by F-14, TEST-354 and TEST-355). |
 
 Linked requirements: FR-01, FR-02, FR-03, FR-14. Rules: BR-01 to BR-06, BR-10, BR-14, BR-15, BR-18. NFR-08. Depends on: F-01.
 
@@ -68,7 +75,7 @@ Response 201: `{ "request": { "id": 12, "requestNumber": "PR-2026-0007", "itemNa
 | AC-15 | Request numbers are unique: 20 simultaneous creates give 20 different numbers, all of the right form. |
 | AC-16 | The owner edits a DRAFT: the fields change, the total is recalculated, the request number and the status stay. The same validation applies. |
 | AC-17 | Editing a request that is SUBMITTED, APPROVED, REJECTED or CANCELLED returns 409 `NOT_EDITABLE` and changes nothing. Anyone who is not the owner (another requester, an approver, the administrator) gets 404 and changes nothing. |
-| AC-18 | The owner submits a complete DRAFT: 200, status SUBMITTED, `submittedAt` set, a SUBMITTED history entry exists. |
+| AC-18 | The owner submits a complete DRAFT: 200, status SUBMITTED, `submittedAt` set, a SUBMITTED history entry exists. For a total that needs approval steps (BR-42, F-14), the chain must also be long enough. |
 | AC-19 | Submitting a draft without a reason or without a category returns 422 `INCOMPLETE` naming the missing fields, and the request stays a DRAFT. |
 | AC-20 | Submitting a request that is not a DRAFT returns 409 `ILLEGAL_TRANSITION`. Someone who is not the owner gets 404. Nothing changes. |
 | AC-21 | Editing or submitting one user's request never changes the stored data of another user's request. |

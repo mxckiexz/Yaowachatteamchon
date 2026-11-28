@@ -1,7 +1,7 @@
 # PurchaseFlow Software Requirements Specification (SRS)
 
 PurchaseFlow: Equipment Purchase Approval System. Theme 5: Workflow and Approval System.
-Document version 2.8. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, version 2.1 records the approved BR-21 baseline addition for F-06, version 2.2 adds BR-22 and BR-23 for F-09, version 2.3 adds BR-24 and BR-25 for F-10, version 2.4 adds BR-26 for F-11, version 2.5 adds BR-27 and BR-28 for F-12, version 2.6 adds BR-29 for F-13, version 2.7 revises F-13 cross-feature rules, and version 2.8 adds BR-40 and BR-41 for F-17 (see the change log).
+Document version 2.9. Version 1.0 described an earlier design called BuyFlow; version 2.0 realigned the whole baseline with the team's project proposal, version 2.1 records the approved BR-21 baseline addition for F-06, version 2.2 adds BR-22 and BR-23 for F-09, version 2.3 adds BR-24 and BR-25 for F-10, version 2.4 adds BR-26 for F-11, version 2.5 adds BR-27 and BR-28 for F-12, version 2.6 adds BR-29 for F-13, version 2.7 revises F-13 cross-feature rules, version 2.8 adds BR-40 and BR-41 for F-17, and version 2.9 adds BR-42 for F-14 (see the change log).
 
 ## 1. Stakeholder problem and context
 
@@ -121,9 +121,10 @@ BR-01 to BR-14 are those of the proposal (BR-09 and BR-10 refined). BR-15 to BR-
 | BR-26 | For an unconfigured request, only an approver who is not the requester may return a SUBMITTED request to DRAFT; for a configured request, only the current assigned approver may return it. A trimmed reason of 5 to 500 characters is required; the transition records RETURNED history and clears submittedAt and decidedAt. DRAFT requests are hidden from approvers, while APPROVED, REJECTED and CANCELLED requests return a state conflict. | 2 |
 | BR-27 | For an unconfigured request, submit notifies every active approver except the requester. For a configured chain, submit notifies only the current step approver; each intermediate approval notifies the next approver, and final approval, rejection or return notifies the requester. Notifications are created in the same transaction as the change, and a refused change creates none. | 2 |
 | BR-28 | A user reads and marks only their own notifications, and only those of requests they may see (BR-12). | 2 |
-| BR-29 | An administrator configures 1–5 distinct active approvers, none the requester, on a draft; an empty chain uses legacy F-03 behavior. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. A rejection ends the chain, and return/resubmission resets and starts it at step 1. F-05 refuses (`409 APPROVER_IN_USE`) to deactivate or change the role of an approver who has a `CURRENT` or `WAITING` step of a `SUBMITTED` request. | 3 |
+| BR-29 | An administrator configures 1–5 distinct active approvers, none the requester, on a draft; an empty chain uses legacy F-03 behavior when BR-42 needs no steps. Steps are ordered and fixed after submission; only the current step's approver may approve, reject or return. A rejection ends the chain, and return/resubmission resets and starts it at step 1. F-05 refuses (`409 APPROVER_IN_USE`) to deactivate or change the role of an approver who has a `CURRENT` or `WAITING` step of a `SUBMITTED` request. | 3 |
 | BR-40 | A report and its export contain exactly the requests the caller may see (BR-12) that match the filters. No parameter widens this set. | 3 |
 | BR-41 | Text typed by a user that is written into an export file must not be run as a formula when the file is opened in a spreadsheet program. | 3 |
+| BR-42 | The total of a request at submit decides its route: up to 10,000.00 baht no approval step is needed; from 10,000.01 to 100,000.00 baht at least 2 steps; above 100,000.00 baht at least 3. Requests already submitted keep their route. | 3 |
 
 ## 8. Non-functional requirements (NFR)
 
@@ -185,3 +186,4 @@ NFR-01 to NFR-08 are those of the proposal, with measurable targets and a verifi
 | 2.6 | 2026-11-28 | Added BR-29 for F-13 multi-step approval. Reason: FR-23 and BR-19 did not define who configures the ordered chain, how steps advance, or how return and resubmission affect it. |
 | 2.7 | 2026-11-28 | Revised F-13 baseline: administrator-only configuration, legacy empty chains, current-approver return, step storage/reset, and stepped notification/history rules. |
 | 2.8 | 2026-11-28 | Added BR-40 and BR-41 for F-17 reports and export. Reason: FR-27 did not define who may see what in a report or how an export file is kept safe. BR-30 to BR-39 are left for other Sprint 3 features. |
+| 2.9 | 2026-11-29 | Added BR-42, the thresholds of BR-20, for F-14 approval by amount, and limited the empty chain of BR-29 to totals that need no steps. Reason: BR-20 left the thresholds to the Sprint 3 contract. |
