@@ -22,7 +22,7 @@ Version 2.0. Every baseline FR, BR and NFR is covered by a feature (F-xx) or a s
 | F-14 | Approval by amount | The approval route depends on the total. | FR-24, BR-20 | F-13 | 3 |
 | F-15 | Departments | Users belong to departments. | FR-25 | F-05 | 3 |
 | F-16 | Delegation | An approver delegates approval. | FR-26 | F-13 | 3 |
-| F-17 | Reports and export | Reports and export of requests. | FR-27 | F-04 | 3 |
+| F-17 | Reports and export | Every role sees counts and amounts by status and category of the requests it may see, filtered by date, status and category, and exports them as CSV. | FR-27, BR-05, BR-12, BR-15, BR-40, BR-41, NFR-01, NFR-02, NFR-04, NFR-05, NFR-07, NFR-09, NFR-10 | F-02, F-04, F-06, F-11 | 3 |
 | F-18 | Audit log | An audit log of important actions. | FR-28 | F-05 | 3 |
 | F-19 | Accessibility and responsive hardening | Fix remaining accessibility and layout problems found by tests and UAT. | NFR-05, NFR-10 | all UI | 3 |
 | F-20 | Deployment preparation | Dockerfile, pipeline and cloud configuration (Lab 5). | NFR-11 | all | Lab 5 and 3 |
