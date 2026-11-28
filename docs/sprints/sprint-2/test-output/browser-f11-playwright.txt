@@ -1,12 +1,12 @@
-[WebServer] (node:9436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:20356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:13572) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:15484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:30560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:32204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:19072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:20600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:28844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:15232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
 > purchaseflow-server@1.0.0 prisma:seed
@@ -14,13 +14,17 @@
 
 Seeded demo accounts.
 
-Running 2 tests using 1 worker
+Running 6 tests using 1 worker
 
-(node:34512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:11860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:34512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:11860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ok 1 [chromium] › e2e\requests\return-editing.spec.ts:5:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (2.4s)
-  ok 2 [chromium] › e2e\requests\return-editing.spec.ts:22:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (2.9s)
+  ok 1 [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (4.7s)
+  ok 2 [chromium] › e2e\requests\return-editing.spec.ts:40:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (2.8s)
+  ok 3 [chromium] › e2e\requests\return-editing.spec.ts:58:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (3.5s)
+  ok 4 [chromium] › e2e\requests\return-editing.spec.ts:79:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (2.2s)
+  ok 5 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (2.6s)
+  ok 6 [chromium] › e2e\requests\return-editing.spec.ts:90:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (2.8s)
 
-  2 passed (12.3s)
+  6 passed (25.8s)

@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.13. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation is on this branch; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
+Version 2.14. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation and final evidence are at commit `8e9f028`; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -73,5 +73,7 @@ Version 2.13. Requirement, feature or responsibility, sprint, acceptance criteri
 | NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
+
+F-11 final verification: commit `8e9f028`; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Red/green and full-suite output are recorded in `docs/sprints/sprint-2/tdd/` and `docs/sprints/sprint-2/test-output/`.
 
 F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 AC-117 to AC-140 are implemented, TEST-148 to TEST-171 passed, and the branch was merged into `staging` (merge commit `7d50cdc`). F-10 AC-141 to AC-159 are implemented and TEST-172 to TEST-190 passed on branch `feature/F-10-comments`, pending review and merge. F-11 contract v1.1 is implemented on this branch with AC-160 to AC-179 and TEST-191 to TEST-208; server TEST-191 to TEST-199 passed locally, while browser and final evidence remain pending. F-12 to F-28, BR-19 and BR-20 and their later feature tests remain planned because they have not started. This is planned, not forgotten.
