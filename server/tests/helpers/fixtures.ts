@@ -38,6 +38,7 @@ export async function cleanupUsers(emails: string[]) {
   const prisma = getPrisma();
   const users = await prisma.user.findMany({ where: { email: { in: emails } }, select: { id: true } });
   const ids = users.map((u) => u.id);
+  await prisma.notification.deleteMany({ where: { OR: [{ recipientId: { in: ids } }, { actorId: { in: ids } }] } });
   await prisma.requestHistory.deleteMany({ where: { OR: [{ actorId: { in: ids } }, { request: { requesterId: { in: ids } } }] } });
   await prisma.purchaseRequest.deleteMany({ where: { requesterId: { in: ids } } });
   await prisma.session.deleteMany({ where: { userId: { in: ids } } });

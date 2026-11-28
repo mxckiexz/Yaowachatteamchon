@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { requireAuth, requireRole, type AuthedRequest } from "./auth.js";
 import { asyncHandler, parseId } from "./http.js";
 import { calculateTotalSatang, satangToBaht } from "./money.js";
+import { notifyApprovers, notifyRequester } from "./notifications.js";
 import { getPrisma } from "./prisma.js";
 import { HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
@@ -134,6 +135,7 @@ requestRouter.post(
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "SUBMITTED", fromStatus: "DRAFT", toStatus: "SUBMITTED" },
         });
+        await notifyApprovers(tx, id, userId);
       }
       return result.count;
     });
@@ -194,6 +196,7 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: decision, fromStatus: "SUBMITTED", toStatus: decision, comment: text || null },
         });
+        await notifyRequester(tx, { requestId: id, requesterId: existing.requesterId, actorId: userId, type: decision });
       }
       return result.count;
     });
@@ -285,6 +288,7 @@ requestRouter.post(
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: reason },
         });
+        await notifyRequester(tx, { requestId: id, requesterId: existing.requesterId, actorId: userId, type: "RETURNED" });
       }
       return result.count;
     });

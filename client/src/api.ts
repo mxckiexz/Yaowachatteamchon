@@ -177,3 +177,18 @@ export interface RequestComment {
 export const listComments = (requestId: number) => api<{ comments: RequestComment[] }>(`/requests/${requestId}/comments`);
 export const addComment = (requestId: number, text: string) =>
   api<{ comment: RequestComment }>(`/requests/${requestId}/comments`, { method: "POST", body: { text } });
+
+// F-12: notifications are only listed and marked as read.
+export type NotificationType = "SUBMITTED" | "APPROVED" | "REJECTED" | "RETURNED";
+// "Notification" is already a DOM type, hence the longer name.
+export interface AppNotification {
+  id: number;
+  type: NotificationType;
+  createdAt: string;
+  readAt: string | null;
+  actor: { id: number; name: string };
+  request: { id: number; requestNumber: string; itemName: string };
+}
+export const listNotifications = () => api<{ notifications: AppNotification[]; unreadCount: number }>("/notifications");
+export const markNotificationRead = (id: number) => api<{ notification: AppNotification }>(`/notifications/${id}/read`, { method: "POST" });
+export const markAllNotificationsRead = () => api<{ unreadCount: number }>("/notifications/read-all", { method: "POST" });

@@ -30,6 +30,13 @@ enum HistoryAction {
   CANCELLED
 }
 
+enum NotificationType {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  RETURNED
+}
+
 enum Category {
   EQUIPMENT
   SOFTWARE
@@ -39,18 +46,20 @@ enum Category {
 }
 
 model User {
-  id             Int               @id @default(autoincrement())
-  name           String
-  email          String            @unique
-  passwordHash   String
-  role           Role
-  isActive       Boolean           @default(true)
-  createdAt      DateTime          @default(now())
-  sessions       Session[]
-  requests       PurchaseRequest[]
-  historyEntries RequestHistory[]
-  attachments    Attachment[]
-  comments       Comment[]
+  id                 Int               @id @default(autoincrement())
+  name               String
+  email              String            @unique
+  passwordHash       String
+  role               Role
+  isActive           Boolean           @default(true)
+  createdAt          DateTime          @default(now())
+  sessions           Session[]
+  requests           PurchaseRequest[]
+  historyEntries     RequestHistory[]
+  attachments        Attachment[]
+  comments           Comment[]
+  notifications      Notification[]    @relation("NotificationRecipient")
+  actedNotifications Notification[]    @relation("NotificationActor")
 }
 
 model Session {
@@ -82,6 +91,7 @@ model PurchaseRequest {
   history         RequestHistory[]
   attachments     Attachment[]
   comments        Comment[]
+  notifications   Notification[]
 
   @@index([requesterId])
   @@index([status, submittedAt])
@@ -128,5 +138,23 @@ model Comment {
   request   PurchaseRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   author    User            @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
+  @@index([requestId])
+}
+
+// F-12: in-app notifications (BR-27, BR-28). Created only with a status change; only "readAt" changes afterwards.
+// The message is not stored: the client builds it from the type, the actor and the request.
+model Notification {
+  id          Int              @id @default(autoincrement())
+  recipientId Int
+  requestId   Int
+  actorId     Int
+  type        NotificationType
+  createdAt   DateTime         @default(now())
+  readAt      DateTime?
+  recipient   User             @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Restrict)
+  actor       User             @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Restrict)
+  request     PurchaseRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, createdAt])
   @@index([requestId])
 }
