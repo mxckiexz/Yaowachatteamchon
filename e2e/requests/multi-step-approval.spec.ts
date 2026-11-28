@@ -20,7 +20,7 @@ test("TEST-248 / AC-217: approval progress labels and current approver controls"
   expect((await admin.request.put(`/api/requests/${id}/approval-steps`, { headers: { Origin: ORIGIN }, data: { approverIds: list.map((u: any) => u.id) } })).status()).toBe(200);
   await admin.goto(`/requests/${id}`);
   await expect(admin.getByRole("heading", { name: "Approval steps" })).toBeVisible();
-  await expect(admin.getByRole("region", { name: "Approval steps" }).getByText("Step 1 of 2")).toBeVisible();
+  await expect(admin.getByRole("region", { name: "Approval steps" }).getByText("Step 1 of 2", { exact: true })).toBeVisible();
   await logout(admin);
   await admin.close();
 });
