@@ -28,6 +28,15 @@ enum HistoryAction {
   APPROVED
   REJECTED
   CANCELLED
+  STEP_APPROVED
+}
+
+enum ApprovalStepStatus {
+  PLANNED
+  WAITING
+  CURRENT
+  APPROVED
+  REJECTED
 }
 
 enum NotificationType {
@@ -60,6 +69,7 @@ model User {
   comments           Comment[]
   notifications      Notification[]    @relation("NotificationRecipient")
   actedNotifications Notification[]    @relation("NotificationActor")
+  approvalSteps     ApprovalStep[]
 }
 
 model Session {
@@ -92,6 +102,7 @@ model PurchaseRequest {
   attachments     Attachment[]
   comments        Comment[]
   notifications   Notification[]
+  approvalSteps    ApprovalStep[]
 
   @@index([requesterId])
   @@index([status, submittedAt])
@@ -139,6 +150,24 @@ model Comment {
   author    User            @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
   @@index([requestId])
+}
+
+model ApprovalStep {
+  id              Int               @id @default(autoincrement())
+  requestId       Int
+  stepNumber      Int
+  approverId      Int
+  status          ApprovalStepStatus @default(PLANNED)
+  decidedAt       DateTime?
+  decisionComment String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  request         PurchaseRequest   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver        User              @relation(fields: [approverId], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, stepNumber])
+  @@unique([requestId, approverId])
+  @@index([approverId, status])
 }
 
 // F-12: in-app notifications (BR-27, BR-28). Created only with a status change; only "readAt" changes afterwards.

@@ -46,12 +46,24 @@ adminRouter.patch(
     }
 
     const prisma = getPrisma();
-    const existing = await prisma.user.findUnique({ where: { id }, select: { id: true } });
-    if (!existing) return res.status(404).json({ error: "User not found.", code: "NOT_FOUND" });
-    if (id === req.user!.id) {
-      return res.status(409).json({ error: "You cannot change your own account.", code: "SELF_CHANGE" });
-    }
-    const user = await prisma.user.update({ where: { id }, data, select: USER_SELECT });
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${id} FOR UPDATE`;
+      const existing = await tx.user.findUnique({ where: { id }, select: { id: true, role: true, isActive: true } });
+      if (!existing) return { kind: "not_found" as const };
+      if (id === req.user!.id) return { kind: "self_change" as const };
+      if ((data.isActive === false && existing.isActive) || (data.role !== undefined && data.role !== existing.role)) {
+        const inUse = await tx.approvalStep.findFirst({
+          where: { approverId: id, status: { in: ["CURRENT", "WAITING"] }, request: { status: "SUBMITTED" } },
+          select: { id: true },
+        });
+        if (inUse) return { kind: "in_use" as const };
+      }
+      return { kind: "ok" as const, user: await tx.user.update({ where: { id }, data, select: USER_SELECT }) };
+    });
+    if (result.kind === "not_found") return res.status(404).json({ error: "User not found.", code: "NOT_FOUND" });
+    if (result.kind === "self_change") return res.status(409).json({ error: "You cannot change your own account.", code: "SELF_CHANGE" });
+    if (result.kind === "in_use") return res.status(409).json({ error: "This approver is assigned to a submitted request.", code: "APPROVER_IN_USE" });
+    const user = result.user;
     res.json({ user });
   })
 );

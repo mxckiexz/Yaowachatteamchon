@@ -3,14 +3,16 @@ import { Prisma } from "@prisma/client";
 import { requireAuth, requireRole, type AuthedRequest } from "./auth.js";
 import { asyncHandler, parseId } from "./http.js";
 import { calculateTotalSatang, satangToBaht } from "./money.js";
-import { notifyApprovers, notifyRequester } from "./notifications.js";
+import { notifyApprover, notifyApprovers, notifyRequester } from "./notifications.js";
 import { getPrisma } from "./prisma.js";
-import { HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
+import { APPROVAL_STEPS_INCLUDE, HISTORY_INCLUDE, REQUEST_INCLUDE, serializeHistory, serializeRequest } from "./requestView.js";
 import { canTransition } from "./transitions.js";
 import { validateRequestInput } from "./validation.js";
 import { visibilityWhere } from "./visibility.js";
+import { activateApprovalSteps } from "./approvalStepRoutes.js";
 
 export const requestRouter = Router();
+const REQUEST_WITH_STEPS = { ...REQUEST_INCLUDE, ...APPROVAL_STEPS_INCLUDE };
 
 const notFound = { error: "Request not found.", code: "NOT_FOUND" };
 const validationError = (fields: Record<string, string>) => ({
@@ -52,7 +54,7 @@ requestRouter.post(
       });
       return request;
     });
-    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id: created.id }, include: REQUEST_INCLUDE });
+    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id: created.id }, include: REQUEST_WITH_STEPS });
     res.status(201).json({ request: serializeRequest(full) });
   })
 );
@@ -98,7 +100,7 @@ requestRouter.patch(
       },
     });
     if (result.count !== 1) return res.status(409).json({ error: "Only a draft can be edited.", code: "NOT_EDITABLE" });
-    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_INCLUDE });
+    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_WITH_STEPS });
     res.json({ request: serializeRequest(full) });
   })
 );
@@ -127,6 +129,11 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id, requesterId: userId }, select: { status: true } });
+      if (!locked || locked.status !== "DRAFT") return 0;
+      const chain = await activateApprovalSteps(tx, id);
+      if (!chain.valid) return -1;
       const result = await tx.purchaseRequest.updateMany({
         where: { id, requesterId: userId, status: "DRAFT" },
         data: { status: "SUBMITTED", submittedAt: new Date() },
@@ -135,13 +142,16 @@ requestRouter.post(
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "SUBMITTED", fromStatus: "DRAFT", toStatus: "SUBMITTED" },
         });
-        await notifyApprovers(tx, id, userId);
+        const first = chain.configured ? await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } }) : null;
+        if (first) await notifyApprover(tx, id, first.approverId, userId);
+        else await notifyApprovers(tx, id, userId);
       }
       return result.count;
     });
+    if (changed === -1) return res.status(409).json({ error: "An approval step is no longer an active approver.", code: "APPROVER_IN_USE" });
     if (changed !== 1) return res.status(409).json({ error: "Only a draft can be submitted.", code: "ILLEGAL_TRANSITION" });
 
-    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_INCLUDE });
+    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_WITH_STEPS });
     res.json({ request: serializeRequest(full) });
   })
 );
@@ -166,6 +176,10 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
       return res.status(403).json({ error: "You cannot decide your own request.", code: "SELF_APPROVAL" });
     }
     if (existing.status === "DRAFT") return res.status(404).json(notFound);
+    const currentStep = existing.status === "SUBMITTED" ? await prisma.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } }) : null;
+    if (currentStep && currentStep.approverId !== userId) {
+      return res.status(403).json({ error: "You are not the current approver.", code: "NOT_CURRENT_APPROVER" });
+    }
 
     const raw = decision === "REJECTED" ? req.body?.reason : req.body?.comment;
     const text = typeof raw === "string" ? raw.trim() : "";
@@ -187,16 +201,33 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== "SUBMITTED") return 0;
+      const configured = await tx.approvalStep.findFirst({ where: { requestId: id }, select: { id: true } });
+      const step = configured
+        ? await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT", approverId: userId }, orderBy: { stepNumber: "asc" } })
+        : null;
+      if (configured && !step) return 0;
+      const next = step ? await tx.approvalStep.findFirst({ where: { requestId: id, stepNumber: step.stepNumber + 1 } }) : null;
+      const targetStatus = step && decision === "APPROVED" && next ? "SUBMITTED" : decision;
       // The status condition makes two simultaneous decisions safe: only one update can match (BR-17).
       const result = await tx.purchaseRequest.updateMany({
         where: { id, status: "SUBMITTED" },
-        data: { status: decision, decidedAt: new Date(), rejectionReason: decision === "REJECTED" ? text : null },
+        data: { status: targetStatus, decidedAt: targetStatus === "SUBMITTED" ? null : new Date(), rejectionReason: decision === "REJECTED" ? text : null },
       });
       if (result.count === 1) {
+        if (step) {
+          await tx.approvalStep.update({ where: { id: step.id }, data: { status: decision === "REJECTED" ? "REJECTED" : "APPROVED", decidedAt: new Date(), decisionComment: text || null } });
+          if (next && decision === "APPROVED") {
+            await tx.approvalStep.update({ where: { id: next.id }, data: { status: "CURRENT" } });
+            await notifyApprover(tx, id, next.approverId, locked.requesterId);
+          }
+        }
         await tx.requestHistory.create({
-          data: { requestId: id, actorId: userId, action: decision, fromStatus: "SUBMITTED", toStatus: decision, comment: text || null },
+          data: { requestId: id, actorId: userId, action: step && targetStatus === "SUBMITTED" ? "STEP_APPROVED" : decision, fromStatus: "SUBMITTED", toStatus: targetStatus, comment: text || null },
         });
-        await notifyRequester(tx, { requestId: id, requesterId: existing.requesterId, actorId: userId, type: decision });
+        if (!step || targetStatus !== "SUBMITTED") await notifyRequester(tx, { requestId: id, requesterId: existing.requesterId, actorId: userId, type: decision });
       }
       return result.count;
     });
@@ -204,7 +235,7 @@ function decisionHandler(decision: "APPROVED" | "REJECTED") {
       return res.status(409).json({ error: "This request has already been decided or cannot be decided.", code: "ILLEGAL_TRANSITION" });
     }
 
-    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_INCLUDE });
+    const full = await prisma.purchaseRequest.findUniqueOrThrow({ where: { id }, include: REQUEST_WITH_STEPS });
     res.json({ request: serializeRequest(full) });
   });
 }
@@ -229,6 +260,9 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== existing.status) return 0;
       const result = await tx.purchaseRequest.updateMany({
         // Match the status read before the transaction so the history fromStatus
         // cannot become stale if submit races with cancellation.
@@ -269,6 +303,10 @@ requestRouter.post(
     if (existing.status !== "SUBMITTED") {
       return res.status(409).json({ error: "Only a submitted request can be returned.", code: "ILLEGAL_TRANSITION" });
     }
+    const configuredStep = await prisma.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } });
+    if (configuredStep && configuredStep.approverId !== userId) {
+      return res.status(403).json({ error: "You are not the current approver.", code: "NOT_CURRENT_APPROVER" });
+    }
     const raw = req.body?.reason;
     const reason = typeof raw === "string" ? raw.trim() : "";
     if (typeof raw !== "string" || reason.length < MIN_REASON_LENGTH || reason.length > MAX_TEXT_LENGTH || reason.includes("\u0000")) {
@@ -280,11 +318,19 @@ requestRouter.post(
     }
 
     const changed = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "PurchaseRequest" WHERE "id" = ${id} FOR UPDATE`;
+      const locked = await tx.purchaseRequest.findUnique({ where: { id }, select: { status: true, requesterId: true } });
+      if (!locked || locked.status !== "SUBMITTED" || locked.requesterId === userId) return 0;
+      const current = await tx.approvalStep.findFirst({ where: { requestId: id, status: "CURRENT" } });
+      if (current && current.approverId !== userId) return 0;
       const result = await tx.purchaseRequest.updateMany({
-        where: { id, requesterId: { not: userId }, status: existing.status },
+        where: { id, requesterId: { not: userId }, status: "SUBMITTED" },
         data: { status: "DRAFT", submittedAt: null, decidedAt: null },
       });
       if (result.count === 1) {
+        if (current) {
+          await tx.approvalStep.updateMany({ where: { requestId: id }, data: { status: "PLANNED", decidedAt: null, decisionComment: null } });
+        }
         await tx.requestHistory.create({
           data: { requestId: id, actorId: userId, action: "RETURNED", fromStatus: "SUBMITTED", toStatus: "DRAFT", comment: reason },
         });
@@ -401,7 +447,7 @@ requestRouter.get(
     if (id === null) return res.status(404).json(notFound);
     const row = await getPrisma().purchaseRequest.findFirst({
       where: { id, ...visibilityWhere(req.user!) },
-      include: { ...REQUEST_INCLUDE, ...HISTORY_INCLUDE },
+      include: { ...REQUEST_WITH_STEPS, ...HISTORY_INCLUDE },
     });
     if (!row) return res.status(404).json(notFound);
     res.json({ request: serializeRequest(row) });

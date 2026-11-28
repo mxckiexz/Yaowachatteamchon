@@ -1,9 +1,10 @@
-import type { PurchaseRequest, RequestHistory, User } from "@prisma/client";
+import type { ApprovalStep, PurchaseRequest, RequestHistory, User } from "@prisma/client";
 import { satangToBaht } from "./money.js";
 
 export type RequestWithRelations = PurchaseRequest & {
   requester: Pick<User, "id" | "name">;
   history?: (RequestHistory & { actor: Pick<User, "id" | "name"> })[];
+  approvalSteps?: (ApprovalStep & { approver: Pick<User, "id" | "name"> })[];
 };
 
 export const REQUEST_INCLUDE = {
@@ -12,6 +13,10 @@ export const REQUEST_INCLUDE = {
 
 export const HISTORY_INCLUDE = {
   history: { include: { actor: { select: { id: true, name: true } } }, orderBy: [{ createdAt: "asc" as const }, { id: "asc" as const }] },
+};
+
+export const APPROVAL_STEPS_INCLUDE = {
+  approvalSteps: { include: { approver: { select: { id: true, name: true } } }, orderBy: { stepNumber: "asc" as const } },
 };
 
 export function serializeHistory(h: RequestHistory & { actor: Pick<User, "id" | "name"> }) {
@@ -46,5 +51,6 @@ export function serializeRequest(r: RequestWithRelations) {
     submittedAt: r.submittedAt,
     decidedAt: r.decidedAt,
     ...(r.history ? { history: r.history.map(serializeHistory) } : {}),
+    ...(r.approvalSteps ? { approvalSteps: r.approvalSteps.map((s) => ({ id: s.id, stepNumber: s.stepNumber, approver: s.approver, status: s.status, decidedAt: s.decidedAt, decisionComment: s.decisionComment })) } : {}),
   };
 }

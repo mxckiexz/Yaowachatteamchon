@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.19. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08, F-09, F-10, F-11 and F-12 are implemented and merged into `staging`; F-13 is planned in this contract. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
+Version 2.20. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`; Sprint 3 F-13 results are in `docs/sprints/sprint-3/results.md`. F-13 API/browser tests are implemented, with remaining red/full-suite/migration evidence tracked there. F-17 is a planned contract in this branch.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -26,7 +26,7 @@ Version 2.19. Requirement, feature or responsibility, sprint, acceptance criteri
 | FR-20 | F-10 | 2 | AC-141 to AC-159 | TEST-172 to 190 |
 | FR-21 | F-11 | 2 | AC-160 to AC-179 | TEST-191 to TEST-208 |
 | FR-22 | F-12 | 2 | AC-180 to AC-200 | TEST-211 to TEST-231 |
-| FR-23 | F-13 | 3 | AC-201 to AC-221 | TEST-232 to TEST-252 (planned) |
+| FR-23 | F-13 | 3 | AC-201 to AC-221 | TEST-232 to TEST-252 (API executed; browser/evidence pending) |
 | FR-24 | F-14 | 3 | planned | planned |
 | FR-25 | F-15 | 3 | planned | planned |
 | FR-26 | F-16 | 3 | planned | planned |
@@ -79,6 +79,6 @@ Version 2.19. Requirement, feature or responsibility, sprint, acceptance criteri
 
 ## Uncovered requirements
 
-F-11 final verification at commit `8ca0b20`: server TEST-191 to TEST-199 and browser TEST-200 to TEST-205 passed. Red/green and full-suite output are recorded in `docs/sprints/sprint-2/tdd/` and `docs/sprints/sprint-2/test-output/`. F-13 AC-201 to AC-221 and TEST-232 to TEST-252 are planned in the contract; implementation has not started.
+F-11 final verification at commit `8ca0b20`: server TEST-191 to TEST-199 and browser TEST-200 to TEST-205 passed. Red/green and full-suite output are recorded in `docs/sprints/sprint-2/tdd/` and `docs/sprints/sprint-2/test-output/`. F-13 implementation is in progress: API TEST-232 to TEST-247 and TEST-251 to TEST-252 pass, and browser TEST-248 to TEST-250 pass at the current branch; red/full-suite/migration evidence remains pending.
 
-F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 AC-117 to AC-140 are implemented, TEST-148 to TEST-171 passed, and the branch was merged into `staging` (merge commit `7d50cdc`). F-10 AC-141 to AC-159 are implemented, TEST-172 to TEST-190 passed, and the branch was merged into `staging` (merge commit `f7dd9d7`). F-11 AC-160 to AC-179 (TEST-191 to TEST-208) are implemented, verified at commit `8ca0b20` and merged into `staging` (merge commit `301a65c`). F-12 AC-180 to AC-200 are implemented, TEST-211 to TEST-231 passed at commit `41ec23e`, and merged into `staging` (merge commit `d2f3067`). F-13 AC-201 to AC-221 and TEST-232 to TEST-252 are proposed in the contract for review; implementation has not started. The F-17 contract (AC-300 to AC-320, TEST-331 to TEST-351) is proposed for review; implementation has not started. F-14 to F-16, F-18, F-19 and BR-20 remain planned because they have not started. This is planned, not forgotten.
+F-07 server tests TEST-106 to TEST-118 and TEST-124 to TEST-128 (18 passed) and browser tests TEST-119 to TEST-123 and TEST-129 to TEST-131 (8 passed) have executed at commit `fc0189f`. F-08 tests TEST-132 to TEST-147 are implemented and recorded in `docs/sprints/sprint-2/results.md`; the server and client suites are green and the Playwright run is recorded there. F-09 AC-117 to AC-140 are implemented, TEST-148 to TEST-171 passed, and the branch was merged into `staging` (merge commit `7d50cdc`). F-10 AC-141 to AC-159 are implemented, TEST-172 to TEST-190 passed, and the branch was merged into `staging` (merge commit `f7dd9d7`). F-11 AC-160 to AC-179 (TEST-191 to TEST-208) are implemented, verified at commit `8ca0b20` and merged into `staging` (merge commit `301a65c`). F-12 AC-180 to AC-200 are implemented, TEST-211 to TEST-231 passed at commit `41ec23e`, and merged into `staging` (merge commit `d2f3067`). F-13 implementation is in progress as described above. The F-17 contract (AC-300 to AC-320, TEST-331 to TEST-351) is proposed for review; implementation has not started. F-14 to F-16, F-18, F-19 and BR-20 remain planned because they have not started. This is planned, not forgotten.

@@ -79,6 +79,15 @@ export interface RequestDetail {
   submittedAt: string | null;
   decidedAt: string | null;
   history?: HistoryEntry[];
+  approvalSteps?: ApprovalStep[];
+}
+export interface ApprovalStep {
+  id: number;
+  stepNumber: number;
+  approver: { id: number; name: string };
+  status: "PLANNED" | "WAITING" | "CURRENT" | "APPROVED" | "REJECTED";
+  decidedAt: string | null;
+  decisionComment: string | null;
 }
 export interface RequestSummary {
   id: number;
@@ -166,6 +175,8 @@ export interface DashboardResponse {
   reviewWaiting?: number;
 }
 export const getDashboard = () => api<DashboardResponse>("/dashboard");
+export const getApprovalSteps = (requestId: number) => api<{ steps: ApprovalStep[] }>(`/requests/${requestId}/approval-steps`);
+export const setApprovalSteps = (requestId: number, approverIds: number[]) => api<{ steps: ApprovalStep[] }>(`/requests/${requestId}/approval-steps`, { method: "PUT", body: { approverIds } });
 
 // F-10: comments are only listed and added. "Comment" is already a DOM type, hence the longer name.
 export interface RequestComment {

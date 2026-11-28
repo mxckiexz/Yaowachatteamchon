@@ -1,6 +1,6 @@
 # PurchaseFlow System-Level Software Design Specification
 
-Version 3.2. Version 2.1 (27 November 2026) changes the planned attachment storage to PostgreSQL and adds the F-09 endpoints. Version 2.2 (27 November 2026) adds the planned Comment entity, endpoints and permissions of F-10. Version 2.3 (27 November 2026) records the implemented F-08 dashboard endpoint and screen. Version 2.4 (27 November 2026) records F-09 as implemented. Version 2.5 (27 November 2026) records F-10 as implemented. Version 2.6 (28 November 2026) records the planned F-11 return transition. Version 2.7 (28 November 2026) records the F-11 return endpoint and RETURNED history transition. Version 2.8 (28 November 2026) adds the planned Notification entity, endpoints and permissions of F-12. Version 2.9 (28 November 2026) records F-12 as implemented. Version 3.0 (28 November 2026) adds the planned ApprovalStep entity and F-13 configuration and decision endpoints. Version 3.1 clarifies administrator-only configuration, empty legacy chains and current-step permissions. Version 3.2 (28 November 2026) adds the planned F-17 report page, endpoints and permissions.
+Version 3.3. Version 3.2 records the F-13 ApprovalStep entity, configuration and current-step decision implementation, including the additive migration and transactional guards. Version 3.3 adds the planned F-17 report page, endpoints and permissions.
 
 ## 1. Architecture and stack
 
@@ -95,7 +95,7 @@ Endpoint list (details are in the feature contracts):
 | `GET`, `POST /api/requests/:id/comments` | F-10 (implemented) |
 | `POST /api/requests/:id/return` | F-11 |
 | `GET /api/notifications`, `POST /api/notifications/:id/read`, `POST /api/notifications/read-all` | F-12 (implemented) |
-| `GET`, `PUT /api/requests/:id/approval-steps` | F-13 (planned) |
+| `GET`, `PUT /api/requests/:id/approval-steps` | F-13 |
 | `GET /api/reports/summary`, `GET /api/reports/export.csv` | F-17 (planned) |
 | `GET /api/admin/users`, `PATCH /api/admin/users/:id` | F-05 |
 
@@ -113,8 +113,8 @@ Endpoint list (details are in the feature contracts):
 | Read a request and its history | 401 | own only (other: 404) | own, and every request that is not a draft (a draft of another: 404) | all |
 | Approve or reject | 401 | 403 | submitted request of another user (own: 403) | 403 |
 | Return for editing (F-11) | 401 | 403 | submitted request of another user (own, draft or hidden: 404; approved, rejected or cancelled: 409) | 403 |
-| Configure approval steps (F-13, planned) | 401 | 403 | 403 | any draft; empty or 1–5 valid steps |
-| Decide current approval step (F-13, planned) | 401 | 403 | assigned current step only; others `NOT_CURRENT_APPROVER` | 403 |
+| Configure approval steps (F-13) | 401 | 403 | 403 | any draft; empty or 1–5 valid steps |
+| Decide current approval step (F-13) | 401 | 403 | assigned current step only; others `NOT_CURRENT_APPROVER` | 403 |
 | Read the report and export it (F-17, planned) | 401 | own requests | own requests, and every request that is not a draft | all, read only |
 | List and mark notifications (F-12) | 401 | own, for requests they may see (other: 404) | own, for requests they may see (other: 404) | 403 |
 | List and download attachments (F-09) | 401 | own request (other: 404) | requests the approver may read (a draft of another: 404) | all |

@@ -4,15 +4,19 @@ import type { Prisma } from "@prisma/client";
 // together with the new status and its history entry, or not at all.
 
 // A submit tells every approver who is active at that moment, except the requester.
-export async function notifyApprovers(tx: Prisma.TransactionClient, requestId: number, requesterId: number) {
+export async function notifyApprovers(tx: Prisma.TransactionClient, requestId: number, requesterId: number, recipientIds?: number[]) {
   const approvers = await tx.user.findMany({
-    where: { role: "APPROVER", isActive: true, id: { not: requesterId } },
+    where: { role: "APPROVER", isActive: true, id: { not: requesterId, ...(recipientIds ? { in: recipientIds } : {}) } },
     select: { id: true },
     orderBy: { id: "asc" },
   });
   await tx.notification.createMany({
     data: approvers.map((a) => ({ recipientId: a.id, requestId, actorId: requesterId, type: "SUBMITTED" as const })),
   });
+}
+
+export async function notifyApprover(tx: Prisma.TransactionClient, requestId: number, approverId: number, actorId: number) {
+  await tx.notification.create({ data: { recipientId: approverId, requestId, actorId, type: "SUBMITTED" } });
 }
 
 // A decision or a return tells the requester.
