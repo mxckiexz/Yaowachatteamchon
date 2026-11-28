@@ -23,6 +23,8 @@ export default function RequestDetail() {
   const [stepsMessage, setStepsMessage] = useState<string | null>(null);
   const [stepsBusy, setStepsBusy] = useState(false);
   const stepSelectRefs = useRef<Record<number, HTMLSelectElement | null>>({});
+  const addApproverButton = useRef<HTMLButtonElement>(null);
+  const saveStepsButton = useRef<HTMLButtonElement>(null);
 
   function load() {
     setError(null);
@@ -140,14 +142,19 @@ export default function RequestDetail() {
             </div>
           ))}
           <div className="d-flex gap-2 flex-wrap">
-            <button type="button" data-testid="add-approver" className="btn btn-outline-secondary" disabled={selectedApproverIds.length >= 5 || adminUsers.length <= selectedApproverIds.length} onClick={() => setSelectedApproverIds([...selectedApproverIds, adminUsers.find((candidate) => !selectedApproverIds.includes(candidate.id))?.id ?? 0])}>Add approver</button>
-            <button type="button" className="btn btn-primary" disabled={stepsBusy || selectedApproverIds.some((approverId) => !approverId)} onClick={async () => {
+            <button ref={addApproverButton} type="button" data-testid="add-approver" className="btn btn-outline-secondary" disabled={selectedApproverIds.length >= 5 || adminUsers.length <= selectedApproverIds.length} onClick={() => {
+              const nextId = adminUsers.find((candidate) => !selectedApproverIds.includes(candidate.id))?.id ?? 0;
+              const nextIndex = selectedApproverIds.length;
+              setSelectedApproverIds([...selectedApproverIds, nextId]);
+              setTimeout(() => stepSelectRefs.current[nextIndex]?.focus(), 0);
+            }}>Add approver</button>
+            <button ref={saveStepsButton} type="button" className="btn btn-primary" disabled={stepsBusy || selectedApproverIds.some((approverId) => !approverId)} onClick={async () => {
               setStepsBusy(true); setStepsError(null); setStepsMessage(null);
               try { await setApprovalSteps(request.id, selectedApproverIds); setStepsMessage("Approval chain saved."); await reload(); }
               catch (err) { setStepsError(err instanceof ApiError ? err.message : "Could not save the approval chain."); }
-              finally { setStepsBusy(false); }
+              finally { setStepsBusy(false); setTimeout(() => saveStepsButton.current?.focus(), 0); }
             }}>{stepsBusy ? "Saving..." : "Save approval chain"}</button>
-            <button type="button" className="btn btn-outline-danger" disabled={stepsBusy || selectedApproverIds.length === 0} onClick={() => setSelectedApproverIds([])}>Clear</button>
+            <button type="button" className="btn btn-outline-danger" disabled={stepsBusy || selectedApproverIds.length === 0} onClick={() => { setSelectedApproverIds([]); setTimeout(() => addApproverButton.current?.focus(), 0); }}>Clear</button>
           </div>
           <p className="visually-hidden" role="status" aria-live="polite">{stepsMessage ?? ""}</p>
           {stepsError && <div role="alert" className="alert alert-danger mt-2 mb-0">{stepsError}</div>}
