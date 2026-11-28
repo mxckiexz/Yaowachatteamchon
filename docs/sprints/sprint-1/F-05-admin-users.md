@@ -1,8 +1,14 @@
 # Feature contract F-05: Administrator, user management
 
-Contract version 2.0. Written before implementation.
+Contract version 2.1. Written before implementation.
 
 Linked requirements: FR-15. Rules: BR-13, BR-16. Depends on: F-01.
+
+## Change log
+| Version | Date | Change |
+|---|---|---|
+| 2.0 | Before implementation | Initial administrator contract. |
+| 2.1 | 28 November 2026 | F-13 revision: a current or waiting step of a submitted request protects its approver from deactivation or role change; cancelled requests do not block users. The protection is specified and tested by F-13 AC-221 (TEST-252). |
 
 ## 1. Feature design
 
@@ -44,7 +50,7 @@ Updates `User.isActive` and `User.role`. No schema change. Deactivation needs no
 |---|---|
 | AC-39 | The administrator lists the users without any password hash. A requester or an approver gets 403 and no data. |
 | AC-40 | After the administrator deactivates a user, that user cannot log in, and the session they already had returns 401 on the next call. |
-| AC-41 | The administrator can reactivate a user, who can then log in; and can change a role to a valid value; an invalid role gives 422. |
+| AC-41 | The administrator can reactivate a user, who can then log in; and can change a role to a valid value; an invalid role gives 422. A user assigned to a `CURRENT` or `WAITING` step of an F-13 request that is `SUBMITTED` cannot be deactivated or moved out of APPROVER (`409 APPROVER_IN_USE`); cancelled requests do not block. |
 | AC-42 | The administrator cannot deactivate or change the role of their own account (409 `SELF_CHANGE`); nothing changes. |
 | AC-43 | An unknown user id gives 404; an empty or invalid body gives 422. |
 | AC-44 | In the browser: the administrator sees the users, deactivates one and the status changes, and cannot change their own row; a requester who opens `/admin/users` is redirected and the API gives 403. |

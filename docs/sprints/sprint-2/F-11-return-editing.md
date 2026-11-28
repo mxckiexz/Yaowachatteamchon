@@ -1,8 +1,8 @@
 # Feature contract F-11: Return for editing
 
-Contract version 1.1, 28 November 2026. Contract only; implementation follows after review. Tracks Issue #64 and implements FR-21.
+Contract version 1.2, 28 November 2026. Contract only; implementation follows after review. Tracks Issue #64 and implements FR-21.
 
-Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-06, NFR-07, NFR-09 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), F-06 (cancelled requests cannot be returned), and F-09 (owner can change attachments on a returned draft). If a later feature changes the editable statuses or adds another approver role, this contract must be revised.
+Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, NFR-04, NFR-05, NFR-06, NFR-07, NFR-09 and NFR-10. Depends on F-02 (owner edit and resubmit), F-03 (approver decision permissions), F-04 (visibility/history), F-06 (cancelled requests cannot be returned), and F-09 (owner can change attachments on a returned draft). F-13 revises BR-26/AC-164 for configured requests: only the current assigned approver may return; unconfigured requests retain the existing any-approver rule.
 
 ## Change log
 
@@ -10,6 +10,7 @@ Linked requirements: FR-21, BR-11, BR-12, BR-17, BR-21, BR-26, NFR-01, NFR-02, N
 |---|---|---|
 | 1.0 | 28 November 2026 | Initial F-11 contract proposed for review. |
 | 1.1 | 28 November 2026 | Clarified visibility after return, race outcomes, baseline links, UI accessibility and cross-feature behavior after review. |
+| 1.2 | 28 November 2026 | F-13 revision: configured requests may be returned only by the current assigned approver. |
 
 ## 1. Feature design
 
@@ -17,11 +18,11 @@ An approver can return another user's submitted request to the requester for cor
 
 New business rule:
 
-- **BR-26:** Only an approver who is not the requester may return a `SUBMITTED` request. The return reason is required, trimmed, and 5 to 500 characters. A returned request has one `RETURNED` history entry and no decision timestamp.
+- **BR-26:** For an unconfigured request, only an approver who is not the requester may return a `SUBMITTED` request; for a configured request, only its current assigned approver may return it. The return reason is required, trimmed, and 5 to 500 characters. A returned request has one `RETURNED` history entry and no decision timestamp.
 
 The administrator cannot return a request. A requester cannot return any request, including their own. `APPROVED`, `REJECTED`, `CANCELLED` and `DRAFT` requests cannot be returned.
 
-An approver's own request is visible under BR-12, but the return route deliberately answers `404 NOT_FOUND` for it, rather than the `403 SELF_APPROVAL` used by approve and reject. This keeps the return operation owner-scoped like editing and prevents the approver from changing their own lifecycle through a different action.
+An approver's own request is visible under BR-12, but the return route deliberately answers `404 NOT_FOUND` for it, rather than the `403 SELF_APPROVAL` used by approve and reject. This keeps the return operation owner-scoped like editing and prevents the approver from changing their own lifecycle through a different action. If a later feature changes the editable statuses or adds another approver role, this contract must be revised.
 
 The transition is atomic with its history insert. Against a concurrent return, approve or reject, exactly one call succeeds and the other receives `404` or `409`, depending on whether it reads before or after the request becomes a hidden draft. Against cancel, either the second call receives `404` or `409`, or return and cancel both commit as two valid history transitions, ending in `CANCELLED`.
 
@@ -65,7 +66,7 @@ The `RequestStatus` enum already contains `DRAFT` and `SUBMITTED`. `HistoryActio
 | AC-161 | The returned response contains the updated request and no client-supplied status or history fields are trusted. |
 | AC-162 | A `RETURNED` history row stores the approver, `SUBMITTED` to `DRAFT`, reason and timestamp. |
 | AC-163 | The owner can edit and resubmit a returned request. |
-| AC-164 | Only an approver may return, and an approver cannot return their own request. |
+| AC-164 | Only an approver may return; an unconfigured request accepts any non-owner approver, while a configured request accepts only its current assigned approver. An approver cannot return their own request. |
 | AC-165 | A visible APPROVED, REJECTED or CANCELLED request cannot be returned and produces 409; a DRAFT is hidden from the approver and produces 404. |
 | AC-166 | Missing, blank, short and overlong reasons produce 422 with `fields.reason`; valid boundary lengths are accepted. |
 | AC-167 | Hidden, missing and non-numeric request ids return 404 without request data. |
