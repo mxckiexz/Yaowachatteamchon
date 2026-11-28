@@ -1,12 +1,12 @@
-[WebServer] (node:30488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:18352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:28032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:13924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:28916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:32680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:17768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:13940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:19176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:31048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
 > purchaseflow-server@1.0.0 prisma:seed
@@ -16,52 +16,64 @@ Seeded demo accounts.
 
 Running 6 tests using 1 worker
 
-(node:35444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:8452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:35444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:8452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  1 [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (8.0s)
-(node:18636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  1 [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation (30.6s)
+(node:19444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:18636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:19444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  2 [chromium] › e2e\requests\return-editing.spec.ts:40:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (2.3s)
-(node:20376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  2 [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft (3.3s)
+(node:22364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:20376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:22364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  x  3 [chromium] › e2e\requests\return-editing.spec.ts:58:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (2.4s)
-(node:208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  x  3 [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner (3.1s)
+(node:30148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:30148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ok 4 [chromium] › e2e\requests\return-editing.spec.ts:79:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (2.2s)
-  ok 5 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (3.1s)
-  x  6 [chromium] › e2e\requests\return-editing.spec.ts:90:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (2.3s)
+  x  4 [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths (30.5s)
+(node:15940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 15:01:55 [vite] http proxy error: /api/auth/login
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 15:01:55 [vite] http proxy error: /api/auth/me
+[WebServer] AggregateError [ECONNREFUSED]: 
+[WebServer]     at internalConnectMultiple (node:net:1139:18)
+[WebServer]     at afterConnectMultiple (node:net:1712:7)
+[WebServer] (node:24236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  5 [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations (30.2s)
+(node:31916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 6 [chromium] › e2e\requests\return-editing.spec.ts:96:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced (3.0s)
 
 
   1) [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation 
 
-    Error: expect(page).toHaveURL(expected) failed
+    Test timeout of 30000ms exceeded.
 
-    Expected pattern: /\/reviews$/
-    Received string:  "http://localhost:5173/requests/4662"
-    Timeout: 5000ms
-
+    Error: locator.click: Test timeout of 30000ms exceeded.
     Call log:
-      - Expect "toHaveURL" with timeout 5000ms
-        14 × locator resolved to <html lang="en">…</html>
-           - unexpected value "http://localhost:5173/requests/4662"
+      - waiting for getByRole('region', { name: 'Return for editing' }).getByRole('button', { name: 'Return for editing', exact: true })
 
 
-      25 |   await section.getByLabel("Reason").fill("Please correct the quantity");
-      26 |   await section.getByRole("button", { name: "Confirm return" }).click();
-    > 27 |   await expect(page).toHaveURL(/\/reviews$/);
-         |                      ^
-      28 |   await expect(page.getByRole("status")).toContainText("was returned to the requester");
-      29 |   await expect(page.getByRole("heading", { name: "Review queue" })).toBeFocused();
-      30 |   await page.goto(`/requests/${id}`);
-        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:27:22
+      12 |   await page.goto(`/requests/${id}`);
+      13 |   const section = page.getByRole("region", { name: "Return for editing" });
+    > 14 |   await section.getByRole("button", { name: "Return for editing", exact: true }).click();
+         |                                                                                  ^
+      15 |   await expect(section.getByLabel("Reason")).toBeFocused();
+      16 |   await section.getByLabel("Reason").fill("Please correct the quantity");
+      17 |   await expect(section.getByRole("button", { name: "Keep submitted" })).toBeVisible();
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:14:82
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
     test-results\requests-return-editing-TE-cbe38-d-request-with-confirmation-chromium\test-failed-1.png
@@ -77,28 +89,28 @@ Running 6 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  2) [chromium] › e2e\requests\return-editing.spec.ts:40:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft 
+  2) [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft 
 
     Error: expect(received).toBe(expected) // Object.is equality
 
     Expected: 200
     Received: 404
 
-      45 |   await loginAs(approver, ACCOUNTS.approver);
-      46 |   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } });
-    > 47 |   expect(response.status()).toBe(200);
+      48 |   await loginAs(approver, ACCOUNTS.approver);
+      49 |   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } });
+    > 50 |   expect(response.status()).toBe(200);
          |                             ^
-      48 |   await logout(approver);
-      49 |   await approver.close();
-      50 |   await loginAs(page, ACCOUNTS.requester);
-        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:47:29
+      51 |   await logout(approver);
+      52 |   await approver.close();
+      53 |   await loginAs(page, ACCOUNTS.requester);
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:50:29
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-1.png
+    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-2.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-2.png
+    test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     Error Context: test-results\requests-return-editing-TE-f7cf5-resubmit-the-returned-draft-chromium\error-context.md
@@ -111,21 +123,21 @@ Running 6 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  3) [chromium] › e2e\requests\return-editing.spec.ts:58:5 › TEST-202 / AC-173: returned drafts remain usable by the owner 
+  3) [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner 
 
     Error: expect(received).toBe(expected) // Object.is equality
 
     Expected: 200
     Received: 404
 
-      61 |   const before = await page.request.get("/api/dashboard"); const beforeData = await before.json();
-      62 |   const approver = await context.newPage(); await loginAs(approver, ACCOUNTS.approver);
-    > 63 |   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200);
+      65 |   const approver = await context.newPage(); await loginAs(approver, ACCOUNTS.approver);
+      66 |   const reviewBefore = await approver.request.get("/api/dashboard"); const reviewBeforeData = await reviewBefore.json();
+    > 67 |   const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason: "Please add more detail" }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200);
          |                                                                                                                                                                                                       ^
-      64 |   await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
-      65 |   await expect(page.getByRole("region", { name: "Edit draft" })).toBeVisible();
-      66 |   const after = await page.request.get("/api/dashboard"); const afterData = await after.json();
-        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:63:199
+      68 |   const reviewAfter = await approver.request.get("/api/dashboard"); const reviewAfterData = await reviewAfter.json();
+      69 |   expect(reviewAfterData.reviewWaiting).toBe(reviewBeforeData.reviewWaiting - 1);
+      70 |   await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:67:199
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
     test-results\requests-return-editing-TE-dfb07--remain-usable-by-the-owner-chromium\test-failed-1.png
@@ -145,43 +157,77 @@ Running 6 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  4) [chromium] › e2e\requests\return-editing.spec.ts:90:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced 
+  4) [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths 
 
-    Error: expect(received).toBe(expected) // Object.is equality
+    Test timeout of 30000ms exceeded.
 
-    Expected: 200
-    Received: 404
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Return for editing', exact: true })
 
-      90 | test("TEST-205 / AC-176: return reason is rendered as text and success is announced", async ({ page, context }) => {
-      91 |   await loginAs(page, ACCOUNTS.requester); const id = await createDraftViaUi(page, uniqueName("Return text")); await submitViaUi(page); const approver = await context.newPage(); await loginAs(approver, ACCOUNTS.approver);
-    > 92 |   const reason = "Please <b>fix</b> the details"; const response = await approver.request.post(`/api/requests/${id}/return`, { data: { reason }, headers: { Origin: "http://localhost:5173" } }); expect(response.status()).toBe(200); await logout(approver); await approver.close(); await loginAs(page, ACCOUNTS.requester); await page.goto(`/requests/${id}`);
-         |                                                                                                                                                                                                                             ^
-      93 |   await expect(page.getByTestId("history")).toContainText(reason); await expect(page.getByTestId("history").locator("b")).toHaveCount(0);
-      94 | });
-      95 |
-        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:92:221
+
+      85 | test("TEST-203 / AC-174: return form has no horizontal page scrolling at required widths", async ({ page }) => {
+      86 |   await loginAs(page, ACCOUNTS.requester); const id = await createDraftViaUi(page, uniqueName("Return responsive")); await submitViaUi(page); await logout(page); await loginAs(page, ACCOUNTS.approver); await page.goto(`/requests/${id}`);
+    > 87 |   await page.getByRole("button", { name: "Return for editing", exact: true }).click();
+         |                                                                               ^
+      88 |   for (const width of [375, 768, 1280]) { await page.setViewportSize({ width, height: 800 }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true); }
+      89 | });
+      90 |
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:87:79
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\test-failed-1.png
+    test-results\requests-return-editing-TE-a07e9-crolling-at-required-widths-chromium\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\test-failed-2.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results\requests-return-editing-TE-a07e9-crolling-at-required-widths-chromium\error-context.md
 
-    Error Context: test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\trace.zip
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-a07e9-crolling-at-required-widths-chromium\trace.zip
     Usage:
 
-        npx playwright show-trace test-results\requests-return-editing-TE-49a1b-xt-and-success-is-announced-chromium\trace.zip
+        npx playwright show-trace test-results\requests-return-editing-TE-a07e9-crolling-at-required-widths-chromium\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  4 failed
+  5) [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForURL: Test timeout of 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "**/requests" until "load"
+    ============================================================
+
+       at helpers\accounts.ts:18
+
+      16 |   await page.getByLabel("Password").fill(DEMO_PASSWORD);
+      17 |   await page.getByRole("button", { name: "Log in" }).click();
+    > 18 |   await page.waitForURL(account.landing);
+         |              ^
+      19 | }
+      20 |
+      21 | export async function logout(page: Page) {
+        at loginAs (C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\helpers\accounts.ts:18:14)
+        at C:\Users\Thanwarat\OneDrive\KMUTT\cpe\CPE334\Yaowachatteamchon\e2e\requests\return-editing.spec.ts:92:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-27f0a--or-critical-axe-violations-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\requests-return-editing-TE-27f0a--or-critical-axe-violations-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\requests-return-editing-TE-27f0a--or-critical-axe-violations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\requests-return-editing-TE-27f0a--or-critical-axe-violations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
     [chromium] › e2e\requests\return-editing.spec.ts:6:5 › TEST-200 / AC-171: approver can return a submitted request with confirmation 
-    [chromium] › e2e\requests\return-editing.spec.ts:40:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft 
-    [chromium] › e2e\requests\return-editing.spec.ts:58:5 › TEST-202 / AC-173: returned drafts remain usable by the owner 
-    [chromium] › e2e\requests\return-editing.spec.ts:90:5 › TEST-205 / AC-176: return reason is rendered as text and success is announced 
-  2 passed (30.6s)
+    [chromium] › e2e\requests\return-editing.spec.ts:43:5 › TEST-201 / AC-172: owner can edit and resubmit the returned draft 
+    [chromium] › e2e\requests\return-editing.spec.ts:61:5 › TEST-202 / AC-173: returned drafts remain usable by the owner 
+    [chromium] › e2e\requests\return-editing.spec.ts:85:5 › TEST-203 / AC-174: return form has no horizontal page scrolling at required widths 
+    [chromium] › e2e\requests\return-editing.spec.ts:91:5 › TEST-204 / AC-175: return section has no serious or critical axe violations 
+  1 passed (1.9m)

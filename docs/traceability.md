@@ -1,6 +1,6 @@
 # PurchaseFlow Traceability Matrix
 
-Version 2.14. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation and final evidence are at commit `8e9f028`; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
+Version 2.15. Requirement, feature or responsibility, sprint, acceptance criteria and test references. Sprint 1 actual results are in `docs/sprints/sprint-1/results.md`; Sprint 2 results are in `docs/sprints/sprint-2/results.md`. F-07 server and browser tests are executed at commit `fc0189f`; F-08 is implemented and merged into `staging`; F-09 is implemented and merged into `staging`; F-10 server and browser tests passed on branch `feature/F-10-comments`, pending review. F-11 implementation and final evidence are at commit `8ca0b20`; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Full output is recorded in `docs/sprints/sprint-2/test-output/`.
 
 | Requirement | Feature or responsibility | Sprint | AC | Tests / results |
 |---|---|---|---|---|
@@ -73,6 +73,8 @@ Version 2.14. Requirement, feature or responsibility, sprint, acceptance criteri
 | NFR-13 | F-01, R-05 | 1 | AC-04, AC-05, AC-47 | TEST-06, 07, 82 |
 
 ## Uncovered requirements
+
+F-11 final verification at commit `8ca0b20`: server TEST-191 to TEST-199 and browser TEST-200 to TEST-205 passed. Red/green and full-suite output are recorded in `docs/sprints/sprint-2/tdd/` and `docs/sprints/sprint-2/test-output/`.
 
 F-11 final verification: commit `8e9f028`; TEST-191 to TEST-199 passed in the server suite and TEST-200 to TEST-205 passed in the browser suite. Red/green and full-suite output are recorded in `docs/sprints/sprint-2/tdd/` and `docs/sprints/sprint-2/test-output/`.
 
